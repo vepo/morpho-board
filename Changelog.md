@@ -15,6 +15,14 @@
 6. Substitui `"application/json"` por `MediaType.APPLICATION_JSON`
 7. Comentando testes que não foram implementados.
 
-## Video 003
+## Video 003 [Commit a246846](https://github.com/vepo/morpho-board/commit/a24684693c2d11a06ce368eb3a0fbd1737004e18)
 
 1. Adicionando projeto Angular com Quinoa para build.
+
+## Video 004 [Commit 5ec6761](https://github.com/vepo/morpho-board/commit/5ec67614da2ab79a305203710c0b0aac7ca28fe0)
+
+1. Modelando tabelas usando JPA (`User` e `Ticket`)
+
+## Video 005
+
+2. Criando APIs para criação de Tickets

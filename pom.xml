@@ -6,6 +6,9 @@
     <version>1.0.0</version>
     <properties>
         <quarkus.platform.version>3.24.0</quarkus.platform.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <quarkus.java.version>21</quarkus.java.version>
     </properties>
 
     <dependencyManagement>
