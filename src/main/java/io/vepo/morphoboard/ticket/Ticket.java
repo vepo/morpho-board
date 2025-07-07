@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.vepo.morphoboard.user.User;
+import io.vepo.morphoboard.ticket.Project;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,13 +27,16 @@ public class Ticket extends PanacheEntity {
     public Category category;
 
     @ManyToOne
-    public Status status;
+    public WorkflowStage workflowStage;
 
     @ManyToOne
     public User author;
 
     @ManyToOne
     public User assignee;
+
+    @ManyToOne(optional = false)
+    public Project project;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Comment> comments;
