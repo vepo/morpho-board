@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.seuprojeto</groupId>
-    <artifactId>meu-projeto</artifactId>
-    <version>1.0.0</version>
+    <groupId>io.vepo</groupId>
+    <artifactId>morpho-board</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <properties>
         <quarkus.platform.version>3.24.0</quarkus.platform.version>
         <maven.compiler.source>21</maven.compiler.source>
