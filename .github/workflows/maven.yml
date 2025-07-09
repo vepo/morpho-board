@@ -20,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      id-token: write  # Required for dependency submission
 
     steps:
     - uses: actions/checkout@v4
