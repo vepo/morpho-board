@@ -23,4 +23,13 @@ public class User extends PanacheEntity {
     // all created tickets
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     public List<Ticket> createdTickets;
+
+    public User(){}
+
+    public User(String name, String email, String password, String role) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 } 

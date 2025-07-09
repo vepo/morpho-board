@@ -13,8 +13,8 @@ export class App {
 
   constructor(http: HttpClient) {
     // Initialize the application, e.g., fetch initial data
-    http.get('/api/changes').subscribe(data => {
-      console.log('Initial data loaded:', data);
-    });
+    // http.get('/api/changes').subscribe(data => {
+    //   console.log('Initial data loaded:', data);
+    // });
   }
 }

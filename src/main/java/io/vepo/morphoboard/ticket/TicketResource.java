@@ -1,9 +1,13 @@
 package io.vepo.morphoboard.ticket;
 
+import java.time.Instant;
 import java.util.List;
 
+import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.user.User;
-import io.vepo.morphoboard.ticket.Project;
+import io.vepo.morphoboard.workflow.Workflow;
+import io.vepo.morphoboard.workflow.WorkflowStage;
+import io.vepo.morphoboard.workflow.WorkflowTransition;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
@@ -25,37 +29,75 @@ import jakarta.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TicketResource {
+    public static record CreateTicketRequest(String title,
+                                             String description,
+                                             Long categoryId,
+                                             Long authorId,
+                                             Long assigneeId,
+                                             Long projectId) {
+    }
+
+    public static record CommentRequest(String content, Long authorId) {
+    }
+
+    public static record UpdateTicketRequest(String title,
+                                             String description,
+                                             Long categoryId,
+                                             Long assigneeId) {
+    }
+
+    public static record MoveTicketRequest(Long toStageId) {
+    }
+
+    public static record TicketResponse(long id) {
+    }
+
+    public static record CommentResponse(long id, UserResponse author, String content, long createdAt) {
+    }
+
+    public static record UserResponse(long id, String email) {
+    }
+
+    private static final TicketResponse toResponse(Ticket ticket) {
+        return new TicketResponse(ticket.id);
+    }
+
+    private static final CommentResponse toResponse(Comment comment) {
+        return new CommentResponse(comment.id, toResponse(comment.author), comment.content, comment.createdAt.toEpochMilli());
+    }
+
+    private static UserResponse toResponse(User user) {
+        return new UserResponse(user.id, user.email);
+    }
+
     @Inject
     TicketRepository repository;
 
     @GET
-    public List<Ticket> listAll(@QueryParam("status") Long statusId) {
+    public List<TicketResponse> listAll(@QueryParam("status") Long statusId) {
         if (statusId != null) {
-            return repository.list("status.id", statusId);
+            return repository.stream("status.id", statusId)
+                             .map(TicketResource::toResponse)
+                             .toList();
         }
-        return repository.listAll();
+        return repository.streamAll()
+                         .map(TicketResource::toResponse)
+                         .toList();
     }
 
     @GET
     @Path("/{id}")
-    public Ticket findById(@PathParam("id") Long id) {
-        return repository.findById(id);
+    public TicketResponse findById(@PathParam("id") Long id) {
+        return repository.findByIdOptional(id)
+                         .map(TicketResource::toResponse)
+                         .orElseThrow(() -> new NotFoundException(String.format("Ticket does not found! ticketId=%d", id)));
     }
-
-    public static record CreateTicketRequest(
-        String title,
-        String description,
-        Long categoryId,
-        Long statusId,
-        Long authorId,
-        Long assigneeId,
-        Long projectId
-    ) {}
 
     @POST
     @Transactional
     public Response create(CreateTicketRequest request) {
-        if (request.title() == null || request.description() == null || request.categoryId() == null || request.statusId() == null || request.authorId() == null || request.projectId() == null) {
+        if (request.title() == null || request.description() == null || request.categoryId() == null || request.authorId() == null
+                || request.projectId() == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Campos obrigatórios não podem ser nulos").build();
         }
         Project project = Project.findById(request.projectId());
@@ -82,19 +124,11 @@ public class TicketResource {
         return Response.status(Response.Status.CREATED).entity(ticket).build();
     }
 
-    public static record UpdateTicketRequest(
-        String title,
-        String description,
-        Long categoryId,
-        Long statusId,
-        Long assigneeId
-    ) {}
-
     @PUT
     @Path("/{id}")
     @Transactional
-    public Ticket update(@PathParam("id") Long id, UpdateTicketRequest request) {
-        if (request.title() == null || request.description() == null || request.categoryId() == null || request.statusId() == null) {
+    public TicketResponse update(@PathParam("id") Long id, UpdateTicketRequest request) {
+        if (request.title() == null || request.description() == null || request.categoryId() == null) {
             throw new BadRequestException("Campos obrigatórios não podem ser nulos");
         }
         Ticket entity = repository.findById(id);
@@ -106,7 +140,7 @@ public class TicketResource {
         entity.category = Category.findById(request.categoryId());
         entity.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
         entity.updatedAt = java.time.LocalDateTime.now();
-        return entity;
+        return toResponse(entity);
     }
 
     @DELETE
@@ -116,48 +150,55 @@ public class TicketResource {
         repository.deleteById(id);
     }
 
-
     @GET
     @Path("/{id}/comments")
-    public List<Comment> listComments(@PathParam("id") Long id) {
+    public List<CommentResponse> listComments(@PathParam("id") Long id) {
         Ticket ticket = repository.findById(id);
         if (ticket == null) {
             throw new NotFoundException();
         }
-        return ticket.comments;
+        return ticket.comments.stream()
+                              .map(TicketResource::toResponse)
+                              .toList();
     }
 
     @POST
     @Path("/{id}/comments")
     @Transactional
-    public Response addComment(@PathParam("id") Long id, Comment comment) {
+    public Response addComment(@PathParam("id") Long id, CommentRequest request) {
         Ticket ticket = repository.findById(id);
         if (ticket == null) {
             throw new NotFoundException();
         }
+        var comment = new Comment();
         comment.ticket = ticket;
+        comment.author = User.findById(request.authorId());
+        comment.createdAt = Instant.now();
         ticket.comments.add(comment);
+
         return Response.status(Response.Status.CREATED).entity(comment).build();
     }
-
-    public static record MoveTicketRequest(Long toStageId) {}
 
     @PATCH
     @Path("/{id}/move")
     @Transactional
     public Response moveTicket(@PathParam("id") Long id, MoveTicketRequest request) {
         Ticket ticket = repository.findById(id);
-        if (ticket == null) throw new NotFoundException();
-        if (request.toStageId() == null) throw new BadRequestException("Destino não informado");
+        if (ticket == null)
+            throw new NotFoundException();
+        if (request.toStageId() == null)
+            throw new BadRequestException("Destino não informado");
         WorkflowStage fromStage = ticket.workflowStage;
         WorkflowStage toStage = WorkflowStage.findById(request.toStageId());
-        if (toStage == null) throw new BadRequestException("Destino inválido");
+        if (toStage == null)
+            throw new BadRequestException("Destino inválido");
         boolean allowed = WorkflowTransition
-            .find("workflow = ?1 and fromStage = ?2 and toStage = ?3", toStage.workflow, fromStage, toStage)
-            .firstResultOptional()
-            .isPresent();
-        if (!allowed) throw new BadRequestException("Transição não permitida");
+                                            .find("workflow = ?1 and fromStage = ?2 and toStage = ?3", ticket.project.workflow, fromStage, toStage)
+                                            .firstResultOptional()
+                                            .isPresent();
+        if (!allowed)
+            throw new BadRequestException("Transição não permitida");
         ticket.workflowStage = toStage;
         return Response.ok(ticket).build();
     }
-} 
+}

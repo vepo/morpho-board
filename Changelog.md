@@ -26,3 +26,13 @@
 ## Video 005 [Commit 601e396](https://github.com/vepo/morpho-board/commit/601e396b33a798c097245f149e579484447dcfb8)
 
 1. Criando APIs para criação de Tickets
+
+## Video 006 [Commit 2a6caf3](https://github.com/vepo/morpho-board/commit/2a6caf33abb04bbe09483ab6e775fe683fefaf82)
+
+1. Criação do serviço de Workflow 
+
+## Pós Video 006
+
+1. Separação de pacotes para os domínios Ticket, Project e Workflow.
+2. Validação de arquitetura pelo ArchUnit
+3. Implementação dos serviços essenciais para criação do Ticket. CRUD de Projeto e Workflow.

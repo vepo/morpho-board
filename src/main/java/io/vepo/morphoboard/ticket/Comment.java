@@ -1,6 +1,6 @@
 package io.vepo.morphoboard.ticket;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.vepo.morphoboard.user.User;
@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 public class Comment extends PanacheEntity {
     @Column(columnDefinition = "TEXT")
     public String content;
-    public LocalDateTime createdAt;
+    public Instant createdAt;
 
     @ManyToOne
     public Ticket ticket;

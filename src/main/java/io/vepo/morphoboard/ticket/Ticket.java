@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.user.User;
-import io.vepo.morphoboard.ticket.Project;
+import io.vepo.morphoboard.workflow.WorkflowStage;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
