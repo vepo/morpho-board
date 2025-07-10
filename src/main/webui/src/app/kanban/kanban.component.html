@@ -1,0 +1,15 @@
+<div class="kanban-container">
+  <div *ngIf="loading">Carregando tickets...</div>
+  <div *ngIf="error">{{ error }}</div>
+  <div class="kanban-board" *ngIf="!loading && !error">
+    <div class="kanban-column" *ngFor="let column of columns">
+      <div class="kanban-column-header">{{ column.status }}</div>
+      <div class="kanban-tickets">
+        <div class="kanban-ticket" *ngFor="let ticket of column.tickets">
+          <div class="kanban-ticket-title">{{ ticket.title }}</div>
+          <div class="kanban-ticket-desc">{{ ticket.description }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

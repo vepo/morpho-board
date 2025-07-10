@@ -1,0 +1,31 @@
+.main-header {
+  background: #f8f9fa;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+  
+  nav {
+    display: flex;
+    gap: 1rem;
+    
+    a {
+      color: #495057;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+      
+      &:hover {
+        background-color: #e9ecef;
+      }
+      
+      &.active {
+        background-color: #007bff;
+        color: white;
+      }
+    }
+  }
+}
+
+main {
+  min-height: calc(100vh - 80px);
+}

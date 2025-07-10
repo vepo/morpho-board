@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/maestro-frontend",
+            "outputPath": "dist/morphoboard",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js"

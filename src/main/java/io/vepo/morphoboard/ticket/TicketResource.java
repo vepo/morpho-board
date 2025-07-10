@@ -1,11 +1,13 @@
 package io.vepo.morphoboard.ticket;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.jboss.resteasy.reactive.ResponseStatus;
 
 import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.user.User;
-import io.vepo.morphoboard.workflow.Workflow;
 import io.vepo.morphoboard.workflow.WorkflowStage;
 import io.vepo.morphoboard.workflow.WorkflowTransition;
 import jakarta.inject.Inject;
@@ -49,7 +51,14 @@ public class TicketResource {
     public static record MoveTicketRequest(Long toStageId) {
     }
 
-    public static record TicketResponse(long id) {
+    public static record TicketResponse(long id,
+                                        String title,
+                                        String description,
+                                        Long categoryId,
+                                        Long authorId,
+                                        Long assigneeId,
+                                        Long projectId,
+                                        Long workflowStageId) {
     }
 
     public static record CommentResponse(long id, UserResponse author, String content, long createdAt) {
@@ -59,7 +68,16 @@ public class TicketResource {
     }
 
     private static final TicketResponse toResponse(Ticket ticket) {
-        return new TicketResponse(ticket.id);
+        return new TicketResponse(
+            ticket.id,
+            ticket.title,
+            ticket.description,
+            ticket.category != null ? ticket.category.id : null,
+            ticket.author != null ? ticket.author.id : null,
+            ticket.assignee != null ? ticket.assignee.id : null,
+            ticket.project != null ? ticket.project.id : null,
+            ticket.workflowStage != null ? ticket.workflowStage.id : null
+        );
     }
 
     private static final CommentResponse toResponse(Comment comment) {
@@ -95,33 +113,26 @@ public class TicketResource {
 
     @POST
     @Transactional
-    public Response create(CreateTicketRequest request) {
+    @ResponseStatus(201)
+    public TicketResponse create(CreateTicketRequest request) {
         if (request.title() == null || request.description() == null || request.categoryId() == null || request.authorId() == null
                 || request.projectId() == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Campos obrigatórios não podem ser nulos").build();
+            throw new BadRequestException("Campos obrigatórios não podem ser nulos");
         }
         Project project = Project.findById(request.projectId());
         if (project == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Projeto não encontrado").build();
-        }
-        Workflow workflow = Workflow.find("project = ?1 and defaultWorkflow = true", project).firstResult();
-        if (workflow == null) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Workflow padrão não definido para o projeto").build();
-        }
-        WorkflowStage firstStage = WorkflowStage.find("workflow = ?1 order by position asc", workflow).firstResult();
-        if (firstStage == null) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Workflow padrão do projeto não possui etapas").build();
-        }
+            throw new BadRequestException("Projeto não encontrado");
+        }        
         Ticket ticket = new Ticket();
         ticket.title = request.title();
         ticket.description = request.description();
         ticket.category = Category.findById(request.categoryId());
-        ticket.workflowStage = firstStage;
+        ticket.workflowStage = project.workflow.start;
         ticket.project = project;
         ticket.author = User.findById(request.authorId());
         ticket.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
         repository.persist(ticket);
-        return Response.status(Response.Status.CREATED).entity(ticket).build();
+        return toResponse(ticket);
     }
 
     @PUT
@@ -139,7 +150,7 @@ public class TicketResource {
         entity.description = request.description();
         entity.category = Category.findById(request.categoryId());
         entity.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
-        entity.updatedAt = java.time.LocalDateTime.now();
+        entity.updatedAt = LocalDateTime.now();
         return toResponse(entity);
     }
 

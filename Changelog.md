@@ -36,3 +36,7 @@
 1. Separação de pacotes para os domínios Ticket, Project e Workflow.
 2. Validação de arquitetura pelo ArchUnit
 3. Implementação dos serviços essenciais para criação do Ticket. CRUD de Projeto e Workflow.
+
+## Video 007
+
+1. Criação da página Kanban `/kanban`.

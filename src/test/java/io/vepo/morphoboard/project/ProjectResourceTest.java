@@ -3,7 +3,6 @@ package io.vepo.morphoboard.project;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
