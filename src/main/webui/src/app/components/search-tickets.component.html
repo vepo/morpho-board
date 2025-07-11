@@ -1,0 +1,13 @@
+<div class="search-tickets-container">
+  <h2>Resultados da busca por: "{{ term }}"</h2>
+  <div *ngIf="loading" class="loading">Carregando...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+  <div *ngIf="!loading && !error && tickets.length === 0" class="no-results">Nenhum ticket encontrado.</div>
+  <div class="tickets-list">
+    <div *ngFor="let ticket of tickets" class="ticket-card">
+      <div class="ticket-title">{{ ticket.title }}</div>
+      <div class="ticket-desc">{{ ticket.description }}</div>
+      <div class="ticket-meta">ID: {{ ticket.id }} | Projeto: {{ ticket.project }}</div>
+    </div>
+  </div>
+</div> 

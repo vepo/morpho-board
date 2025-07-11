@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface ProjectStage {
   id: number;
   name: string;
+  moveable?: number[]; // ids de estágios para os quais é permitido mover
 }
 
 @Injectable({

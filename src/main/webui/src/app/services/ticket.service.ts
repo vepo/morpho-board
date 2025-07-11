@@ -24,4 +24,12 @@ export class TicketService {
   findByProjectId(projectId: number): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`/api/projects/${projectId}/tickets`);
   }
+
+  search(term: string): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets?search=${encodeURIComponent(term)}`);
+  }
+
+  moveTicket(ticketId: number, toStageId: number) {
+    return this.http.patch(`/api/tickets/${ticketId}/move`, { toStageId });
+  }
 }

@@ -5,6 +5,20 @@ import { Observable } from 'rxjs';
 export interface Project {
   id: string;
   name: string;
+  description: string;
+}
+
+export interface WorkflowTransition {
+  from: string;
+  to: string;
+}
+
+export interface Workflow {
+  id: number;
+  name: string;
+  stages: string[];
+  start: string;
+  transitions: WorkflowTransition[];
 }
 
 @Injectable({
@@ -17,5 +31,13 @@ export class ProjectsService {
 
   findById(projectId: number): Observable<Project> {
     return this.http.get<Project>(`${this.API_URL}/${projectId}`);
+  }
+
+  findAll(): Observable<Project[]> {
+    return this.http.get<Project[]>(`${this.API_URL}`);
+  }
+
+  findWorkflowByProjectId(projectId: number) {
+    return this.http.get<Workflow>(`${this.API_URL}/${projectId}/workflow`);
   }
 }

@@ -1,11 +1,10 @@
 .main-header {
   background: #f8f9fa;
-  padding: 1rem 2rem;
+  padding: 0;
   border-bottom: 1px solid #e9ecef;
   
   nav {
     display: flex;
-    gap: 1rem;
     
     a {
       color: #495057;
@@ -22,6 +21,10 @@
         background-color: #007bff;
         color: white;
       }
+    }
+
+    a:not(:last-child) {
+      border-right: 1px solid #e9ecef;
     }
   }
 }

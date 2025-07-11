@@ -39,7 +39,7 @@ public class WorkflowResource {
                                           List<TransitionResponse> transitions) {
     }
 
-    private static WorkflowResponse toResponse(Workflow workflow) {
+    public static WorkflowResponse toResponse(Workflow workflow) {
         return new WorkflowResponse(workflow.id,
                                     workflow.name,
                                     workflow.stages.stream()

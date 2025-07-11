@@ -55,23 +55,26 @@ public class DatabaseDevSetup {
         Project.persist(new Project("Projeto 1", "Descrição do projeto 1", Workflow.findByName("Kanban")
                                                                                    .orElseThrow()));
 
+        Project.persist(new Project("Projeto 2", "Descrição do projeto 2", Workflow.findByName("Kanban")
+                                                                                   .orElseThrow()));
+
         // Categoria para os tickets
         var categoria = new io.vepo.morphoboard.ticket.Category();
         categoria.name = "Bug";
         categoria.persist();
 
         // Buscar usuários
-        var author = (io.vepo.morphoboard.user.User) io.vepo.morphoboard.user.User.find("email", "user@demo.com").firstResult();
-        var assignee = (io.vepo.morphoboard.user.User) io.vepo.morphoboard.user.User.find("email", "dev@demo.com").firstResult();
+        var author = User.<User>find("email", "user@demo.com").firstResult();
+        var assignee = User.<User>find("email", "dev@demo.com").firstResult();
 
         // Buscar projeto
-        var projeto = (io.vepo.morphoboard.project.Project) io.vepo.morphoboard.project.Project.find("name", "Projeto 1").firstResult();
+        var projeto = Project.<Project>find("name", "Projeto 1").firstResult();
 
         // Buscar estágios do workflow
-        var todo = io.vepo.morphoboard.workflow.WorkflowStage.findByName("TODO").orElseThrow();
-        var inProgress = io.vepo.morphoboard.workflow.WorkflowStage.findByName("IN_PROGRESS").orElseThrow();
-        var blocked = io.vepo.morphoboard.workflow.WorkflowStage.findByName("BLOCKED").orElseThrow();
-        var done = io.vepo.morphoboard.workflow.WorkflowStage.findByName("DONE").orElseThrow();
+        var todo = WorkflowStage.findByName("TODO").orElseThrow();
+        var inProgress = WorkflowStage.findByName("IN_PROGRESS").orElseThrow();
+        var blocked = WorkflowStage.findByName("BLOCKED").orElseThrow();
+        var done = WorkflowStage.findByName("DONE").orElseThrow();
 
         // Criar tickets de teste
         Ticket.persist(new Ticket("Corrigir bug na tela de login",
@@ -89,8 +92,6 @@ public class DatabaseDevSetup {
                                   assignee,
                                   projeto,
                                   inProgress));
-
-
 
         Ticket.persist(new Ticket("Importar dados por CSV",
                                   "A aplicação deve ser capaz de importar dados via CSV.",

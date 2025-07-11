@@ -2,12 +2,14 @@
   <div class="home-content">
     <h1>MorphoBoard</h1>
     <p>Bem-vindo ao sistema de gerenciamento de tickets</p>
-    
-    <div class="navigation-cards">
-      <div class="nav-card" (click)="navigateToKanban()">
-        <div class="nav-card-icon">📋</div>
-        <h3>Kanban Board</h3>
-        <p>Visualize e gerencie seus tickets em um quadro Kanban</p>
+
+    <input type="text" placeholder="Buscar tickets..." [(ngModel)]="searchTerm" (keydown)="onSearchKeydown($event)" class="search-input" />
+
+    <div class="projects-list">
+      <div *ngFor="let project of projects" class="project-card" (click)="navigateToKanban(project.id)">
+        <div class="project-title">{{ project.name }}</div>
+        <div class="project-desc">{{ project.description }}</div>
+        <button class="kanban-btn">Acessar Kanban</button>
       </div>
     </div>
   </div>

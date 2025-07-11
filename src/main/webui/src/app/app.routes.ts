@@ -4,6 +4,7 @@ import { KanbanComponent } from './components/kanban/kanban.component';
 import { projectResolver } from './resolvers/project-resolver';
 import { stagesResolver } from './resolvers/stages-resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
+import { SearchTicketsComponent } from './components/search-tickets.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -16,6 +17,7 @@ export const routes: Routes = [
       tickets: ticketsResolver
     }
   },
+  { path: 'search', component: SearchTicketsComponent },
   { path: '', redirectTo: '/', pathMatch: 'full' },
   { path: '**', redirectTo: '/' }
 ];

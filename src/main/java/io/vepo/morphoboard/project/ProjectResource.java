@@ -5,6 +5,7 @@ import java.util.List;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import io.vepo.morphoboard.workflow.Workflow;
+import io.vepo.morphoboard.workflow.WorkflowResource;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
@@ -68,5 +69,15 @@ public class ProjectResource {
             throw new NotFoundException("Project with ID " + id + " does not exist"); 
         }
         return toResponse(project);
+    }
+
+    @GET
+    @Path("{id}/workflow")
+    public WorkflowResource.WorkflowResponse getWorkflow(long id) {
+        Project project = Project.findById(id);
+        if (project == null) {
+            throw new NotFoundException("Project with ID " + id + " does not exist");
+        }
+        return WorkflowResource.toResponse(project.workflow);
     }
 }
