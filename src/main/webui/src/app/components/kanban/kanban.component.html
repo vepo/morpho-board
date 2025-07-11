@@ -1,0 +1,14 @@
+<h1>{{ project.name }}</h1>
+<div class="kanban-container">
+  <div class="kanban-board">
+    <div class="kanban-column" *ngFor="let stage of stages">
+      <div class="kanban-column-header">{{ stage.name }}</div>
+      <div class="kanban-tickets">
+        <div class="kanban-ticket" *ngFor="let ticket of ticketsOf(stage.id)">
+          <div class="kanban-ticket-title">{{ ticket.title }}</div>
+          <div class="kanban-ticket-desc">{{ ticket.description }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

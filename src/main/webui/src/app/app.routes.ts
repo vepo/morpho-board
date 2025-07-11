@@ -1,9 +1,21 @@
 import { Routes } from '@angular/router';
-import { KanbanComponent } from './kanban/kanban.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent } from './components/home/home.component';
+import { KanbanComponent } from './components/kanban/kanban.component';
+import { projectResolver } from './resolvers/project-resolver';
+import { stagesResolver } from './resolvers/stages-resolver';
+import { ticketsResolver } from './resolvers/tickets-resolver';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'kanban', component: KanbanComponent },
-  { path: '**', redirectTo: '' },
+  {
+    path: 'kanban/:projectId',
+    component: KanbanComponent,
+    resolve: {
+      project: projectResolver,
+      stages: stagesResolver,
+      tickets: ticketsResolver
+    }
+  },
+  { path: '', redirectTo: '/', pathMatch: 'full' },
+  { path: '**', redirectTo: '/' }
 ];

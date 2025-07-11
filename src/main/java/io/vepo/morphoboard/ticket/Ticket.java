@@ -2,6 +2,7 @@ package io.vepo.morphoboard.ticket;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.vepo.morphoboard.project.Project;
@@ -28,7 +29,7 @@ public class Ticket extends PanacheEntity {
     public Category category;
 
     @ManyToOne
-    public WorkflowStage workflowStage;
+    public WorkflowStage stage;
 
     @ManyToOne
     public User author;
@@ -41,4 +42,21 @@ public class Ticket extends PanacheEntity {
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Comment> comments;
-} 
+
+    public Ticket() {
+    }
+
+    public Ticket(String title, String description, Category category, User author, User assignee, Project project, WorkflowStage stage) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.author = author;
+        this.assignee = assignee;
+        this.project = project;
+        this.stage = stage;
+    }
+
+    public static Stream<Ticket> findByProject(long projectId) {
+        return find("project.id", projectId).stream();
+    }
+}

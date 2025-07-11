@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import io.vepo.morphoboard.project.Project;
+import io.vepo.morphoboard.ticket.Ticket;
 import io.vepo.morphoboard.user.User;
 import io.vepo.morphoboard.workflow.Workflow;
 import io.vepo.morphoboard.workflow.WorkflowStage;
@@ -73,45 +74,47 @@ public class DatabaseDevSetup {
         var done = io.vepo.morphoboard.workflow.WorkflowStage.findByName("DONE").orElseThrow();
 
         // Criar tickets de teste
-        var ticket1 = new io.vepo.morphoboard.ticket.Ticket();
-        ticket1.title = "Corrigir bug na tela de login";
-        ticket1.description = "Usuários não conseguem acessar com senha especial.";
-        ticket1.category = categoria;
-        ticket1.author = author;
-        ticket1.assignee = assignee;
-        ticket1.project = projeto;
-        ticket1.workflowStage = todo;
-        ticket1.persist();
+        Ticket.persist(new Ticket("Corrigir bug na tela de login",
+                                  "Usuários não conseguem acessar com senha especial.",
+                                  categoria,
+                                  author,
+                                  assignee,
+                                  projeto,
+                                  todo));
 
-        var ticket2 = new io.vepo.morphoboard.ticket.Ticket();
-        ticket2.title = "Implementar exportação de relatórios";
-        ticket2.description = "Adicionar opção de exportar relatórios em PDF.";
-        ticket2.category = categoria;
-        ticket2.author = author;
-        ticket2.assignee = assignee;
-        ticket2.project = projeto;
-        ticket2.workflowStage = inProgress;
-        ticket2.persist();
+        Ticket.persist(new Ticket("Implementar exportação de relatórios",
+                                  "Adicionar opção de exportar relatórios em PDF.",
+                                  categoria,
+                                  author,
+                                  assignee,
+                                  projeto,
+                                  inProgress));
 
-        var ticket3 = new io.vepo.morphoboard.ticket.Ticket();
-        ticket3.title = "Ajustar layout mobile";
-        ticket3.description = "Elementos sobrepostos em telas pequenas.";
-        ticket3.category = categoria;
-        ticket3.author = author;
-        ticket3.assignee = assignee;
-        ticket3.project = projeto;
-        ticket3.workflowStage = blocked;
-        ticket3.persist();
 
-        var ticket4 = new io.vepo.morphoboard.ticket.Ticket();
-        ticket4.title = "Atualizar documentação";
-        ticket4.description = "Documentação desatualizada após últimas mudanças.";
-        ticket4.category = categoria;
-        ticket4.author = author;
-        ticket4.assignee = assignee;
-        ticket4.project = projeto;
-        ticket4.workflowStage = done;
-        ticket4.persist();
+
+        Ticket.persist(new Ticket("Importar dados por CSV",
+                                  "A aplicação deve ser capaz de importar dados via CSV.",
+                                  categoria,
+                                  author,
+                                  assignee,
+                                  projeto,
+                                  inProgress));
+
+        Ticket.persist(new Ticket("Ajustar layout mobile",
+                                  "Elementos sobrepostos em telas pequenas.",
+                                  categoria,
+                                  author,
+                                  assignee,
+                                  projeto,
+                                  blocked));
+
+        Ticket.persist(new Ticket("Atualizar documentação",
+                                  "Documentação desatualizada após últimas mudanças.",
+                                  categoria,
+                                  author,
+                                  assignee,
+                                  projeto,
+                                  done));
 
         logger.info("Database populated with initial data for development.");
     }

@@ -37,6 +37,13 @@
 2. Validação de arquitetura pelo ArchUnit
 3. Implementação dos serviços essenciais para criação do Ticket. CRUD de Projeto e Workflow.
 
-## Video 007
+## Video 007 [Commit 6260a76](https://github.com/vepo/morpho-board/commit/6260a76a09c4770d557f8936842aead31e1b4adf)
 
 1. Criação da página Kanban `/kanban`.
+
+## Pós Vídeo 007
+
+1. Melhoria no código de popular base de testes
+2. Criação do endpoint de consultar projeto por id, tickets e status por projeto.
+3. Criação de Services e Resolver no Angular para ler dados enquanto navega, evitando loading
+4. Reomoção do código no compomente do Kanban e implementação da lógica no HTML

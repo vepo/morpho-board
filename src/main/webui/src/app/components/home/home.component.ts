@@ -14,6 +14,6 @@ export class HomeComponent {
   constructor(private router: Router) {}
 
   navigateToKanban() {
-    this.router.navigate(['/kanban']);
+    this.router.navigate(['/kanban/1']);
   }
 } 

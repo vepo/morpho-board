@@ -27,7 +27,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-@Path("/api/tickets")
+@Path("/tickets")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TicketResource {
@@ -54,11 +54,11 @@ public class TicketResource {
     public static record TicketResponse(long id,
                                         String title,
                                         String description,
-                                        Long categoryId,
-                                        Long authorId,
-                                        Long assigneeId,
-                                        Long projectId,
-                                        Long workflowStageId) {
+                                        Long category,
+                                        Long author,
+                                        Long assignee,
+                                        Long project,
+                                        Long stage) {
     }
 
     public static record CommentResponse(long id, UserResponse author, String content, long createdAt) {
@@ -67,17 +67,15 @@ public class TicketResource {
     public static record UserResponse(long id, String email) {
     }
 
-    private static final TicketResponse toResponse(Ticket ticket) {
-        return new TicketResponse(
-            ticket.id,
-            ticket.title,
-            ticket.description,
-            ticket.category != null ? ticket.category.id : null,
-            ticket.author != null ? ticket.author.id : null,
-            ticket.assignee != null ? ticket.assignee.id : null,
-            ticket.project != null ? ticket.project.id : null,
-            ticket.workflowStage != null ? ticket.workflowStage.id : null
-        );
+    public static final TicketResponse toResponse(Ticket ticket) {
+        return new TicketResponse(ticket.id,
+                                  ticket.title,
+                                  ticket.description,
+                                  ticket.category != null ? ticket.category.id : null,
+                                  ticket.author != null ? ticket.author.id : null,
+                                  ticket.assignee != null ? ticket.assignee.id : null,
+                                  ticket.project != null ? ticket.project.id : null,
+                                  ticket.stage != null ? ticket.stage.id : null);
     }
 
     private static final CommentResponse toResponse(Comment comment) {
@@ -122,12 +120,12 @@ public class TicketResource {
         Project project = Project.findById(request.projectId());
         if (project == null) {
             throw new BadRequestException("Projeto não encontrado");
-        }        
+        }
         Ticket ticket = new Ticket();
         ticket.title = request.title();
         ticket.description = request.description();
         ticket.category = Category.findById(request.categoryId());
-        ticket.workflowStage = project.workflow.start;
+        ticket.stage = project.workflow.start;
         ticket.project = project;
         ticket.author = User.findById(request.authorId());
         ticket.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
@@ -199,7 +197,7 @@ public class TicketResource {
             throw new NotFoundException();
         if (request.toStageId() == null)
             throw new BadRequestException("Destino não informado");
-        WorkflowStage fromStage = ticket.workflowStage;
+        WorkflowStage fromStage = ticket.stage;
         WorkflowStage toStage = WorkflowStage.findById(request.toStageId());
         if (toStage == null)
             throw new BadRequestException("Destino inválido");
@@ -209,7 +207,7 @@ public class TicketResource {
                                             .isPresent();
         if (!allowed)
             throw new BadRequestException("Transição não permitida");
-        ticket.workflowStage = toStage;
+        ticket.stage = toStage;
         return Response.ok(ticket).build();
     }
 }
