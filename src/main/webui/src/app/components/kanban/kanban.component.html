@@ -1,10 +1,10 @@
 <h1>{{ project.name }}</h1>
 <div class="kanban-container">
   <div class="kanban-board">
-    <div class="kanban-column" *ngFor="let stage of stages">
-      <div class="kanban-column-header">{{ stage.name }}</div>
-      <div class="kanban-tickets" cdkDropList [cdkDropListData]="ticketsOf(stage.id)" (cdkDropListDropped)="onTicketDrop($event, stage)">
-        <div class="kanban-ticket" *ngFor="let ticket of ticketsOf(stage.id)" cdkDrag>
+    <div class="kanban-column" *ngFor="let status of statuses">
+      <div class="kanban-column-header">{{ status.name }}</div>
+      <div class="kanban-tickets" cdkDropList [cdkDropListData]="ticketsOf(status.id)" (cdkDropListDropped)="onTicketDrop($event, status)">
+        <div class="kanban-ticket" *ngFor="let ticket of ticketsOf(status.id)" cdkDrag>
           <div class="kanban-ticket-title">{{ ticket.title }}</div>
           <div class="kanban-ticket-desc">{{ ticket.description }}</div>
         </div>

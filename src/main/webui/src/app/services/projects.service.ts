@@ -16,7 +16,7 @@ export interface WorkflowTransition {
 export interface Workflow {
   id: number;
   name: string;
-  stages: string[];
+  statuses: string[];
   start: string;
   transitions: WorkflowTransition[];
 }

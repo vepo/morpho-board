@@ -11,16 +11,16 @@ import jakarta.persistence.*;
 public class WorkflowTransition extends PanacheEntity {
     @ManyToOne
     @JoinColumn(name = "from_id", nullable = false)
-    public WorkflowStage from;
+    public WorkflowStatus from;
 
     @ManyToOne
     @JoinColumn(name = "to_id", nullable = false)
-    public WorkflowStage to;
+    public WorkflowStatus to;
 
     public WorkflowTransition() {
     }
 
-    public WorkflowTransition(WorkflowStage from, WorkflowStage to) {
+    public WorkflowTransition(WorkflowStatus from, WorkflowStatus to) {
         this.from = from;
         this.to = to;
     }

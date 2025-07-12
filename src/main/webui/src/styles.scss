@@ -3,6 +3,10 @@ body {
     margin: 0;
 }
 
-input {
+input, select {
     box-sizing: border-box;
+    border: solid 1px #888;
+    border-radius: 0.3rem;
+    background-color: #FFF;
+    padding: 0.2rem 2rem 0.2rem 0.5rem;
 }

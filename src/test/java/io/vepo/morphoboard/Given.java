@@ -28,7 +28,7 @@ public class Given {
                       .body("""
                             {
                                 "name": "Project",
-                                "stages": ["TODO", "In Progress", "Blocked", "Done"],
+                                "statuses": ["TODO", "In Progress", "Blocked", "Done"],
                                 "start": "TODO",
                                 "transitions": [
                                     {"from": "TODO", "to": "In Progress"},

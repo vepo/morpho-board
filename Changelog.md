@@ -47,3 +47,15 @@
 2. Criação do endpoint de consultar projeto por id, tickets e status por projeto.
 3. Criação de Services e Resolver no Angular para ler dados enquanto navega, evitando loading
 4. Reomoção do código no compomente do Kanban e implementação da lógica no HTML
+
+## Vídeo 008 [Commit df60c36](https://github.com/vepo/morpho-board/commit/df60c36ecccfcb2dec5b764f7d720dbc3d5cd3a4)
+
+1. Melhoria visual e implementação do drag-n-drop
+
+## Pós Vídeo 008
+
+1. Renomear Stage para Status
+2. Fazer página de busca funcionar.
+    1. Adicionar Status a busca
+    2. Mecanismo de query não estava funcionando
+

@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.user.User;
-import io.vepo.morphoboard.workflow.WorkflowStage;
+import io.vepo.morphoboard.workflow.WorkflowStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +29,7 @@ public class Ticket extends PanacheEntity {
     public Category category;
 
     @ManyToOne
-    public WorkflowStage stage;
+    public WorkflowStatus status;
 
     @ManyToOne
     public User author;
@@ -46,14 +46,14 @@ public class Ticket extends PanacheEntity {
     public Ticket() {
     }
 
-    public Ticket(String title, String description, Category category, User author, User assignee, Project project, WorkflowStage stage) {
+    public Ticket(String title, String description, Category category, User author, User assignee, Project project, WorkflowStatus status) {
         this.title = title;
         this.description = description;
         this.category = category;
         this.author = author;
         this.assignee = assignee;
         this.project = project;
-        this.stage = stage;
+        this.status = status;
     }
 
     public static Stream<Ticket> findByProject(long projectId) {

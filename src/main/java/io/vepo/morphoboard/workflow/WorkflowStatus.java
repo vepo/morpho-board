@@ -9,19 +9,19 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "tb_workflow_stages", uniqueConstraints = @UniqueConstraint(name = "tb_workflow_stage_UK", columnNames = "name"))
-public class WorkflowStage extends PanacheEntity {
+@Table(name = "tb_workflow_status", uniqueConstraints = @UniqueConstraint(name = "tb_workflow_status_UK", columnNames = "name"))
+public class WorkflowStatus extends PanacheEntity {
     @Column(unique = true, nullable = false)
     public String name;
 
-    public WorkflowStage() {
+    public WorkflowStatus() {
     }
 
-    public WorkflowStage(String name) {
+    public WorkflowStatus(String name) {
         this.name = name;
     }
 
-    public static Optional<WorkflowStage> findByName(String string) {
+    public static Optional<WorkflowStatus> findByName(String string) {
         return find("name", string).firstResultOptional();
     }
 }

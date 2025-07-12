@@ -2,19 +2,24 @@ package io.vepo.morphoboard.ticket;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.user.User;
-import io.vepo.morphoboard.workflow.WorkflowStage;
+import io.vepo.morphoboard.workflow.WorkflowStatus;
 import io.vepo.morphoboard.workflow.WorkflowTransition;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PATCH;
@@ -48,7 +53,7 @@ public class TicketResource {
                                              Long assigneeId) {
     }
 
-    public static record MoveTicketRequest(Long toStageId) {
+    public static record MoveTicketRequest(Long to) {
     }
 
     public static record TicketResponse(long id,
@@ -58,7 +63,7 @@ public class TicketResource {
                                         Long author,
                                         Long assignee,
                                         Long project,
-                                        Long stage) {
+                                        Long status) {
     }
 
     public static record CommentResponse(long id, UserResponse author, String content, long createdAt) {
@@ -75,7 +80,7 @@ public class TicketResource {
                                   ticket.author != null ? ticket.author.id : null,
                                   ticket.assignee != null ? ticket.assignee.id : null,
                                   ticket.project != null ? ticket.project.id : null,
-                                  ticket.stage != null ? ticket.stage.id : null);
+                                  ticket.status != null ? ticket.status.id : null);
     }
 
     private static final CommentResponse toResponse(Comment comment) {
@@ -97,6 +102,21 @@ public class TicketResource {
                              .toList();
         }
         return repository.streamAll()
+                         .map(TicketResource::toResponse)
+                         .toList();
+    }
+
+    @GET
+    @Path("search")
+    public List<TicketResponse> search(@QueryParam("term") String term,
+                                       @QueryParam("statusId") @DefaultValue("-1") long statusId) {
+
+        return repository.search(Optional.ofNullable(term)
+                                         .filter(Predicate.not(String::isBlank))
+                                         .map(String::trim)
+                                         .map(s -> s.split("\\s+"))
+                                         .orElseGet(() -> new String[] {}),
+                                 statusId)
                          .map(TicketResource::toResponse)
                          .toList();
     }
@@ -125,7 +145,7 @@ public class TicketResource {
         ticket.title = request.title();
         ticket.description = request.description();
         ticket.category = Category.findById(request.categoryId());
-        ticket.stage = project.workflow.start;
+        ticket.status = project.workflow.start;
         ticket.project = project;
         ticket.author = User.findById(request.authorId());
         ticket.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
@@ -195,19 +215,18 @@ public class TicketResource {
         Ticket ticket = repository.findById(id);
         if (ticket == null)
             throw new NotFoundException();
-        if (request.toStageId() == null)
+        if (request.to() == null)
             throw new BadRequestException("Destino não informado");
-        WorkflowStage fromStage = ticket.stage;
-        WorkflowStage toStage = WorkflowStage.findById(request.toStageId());
-        if (toStage == null)
+        WorkflowStatus from = ticket.status;
+        WorkflowStatus to = WorkflowStatus.findById(request.to());
+        if (to == null)
             throw new BadRequestException("Destino inválido");
-        boolean allowed = WorkflowTransition
-                                            .find("workflow = ?1 and fromStage = ?2 and toStage = ?3", ticket.project.workflow, fromStage, toStage)
+        boolean allowed = WorkflowTransition.find("workflow = ?1 and from = ?2 and to = ?3", ticket.project.workflow, from, to)
                                             .firstResultOptional()
                                             .isPresent();
         if (!allowed)
             throw new BadRequestException("Transição não permitida");
-        ticket.stage = toStage;
+        ticket.status = to;
         return Response.ok(ticket).build();
     }
 }

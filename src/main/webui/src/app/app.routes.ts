@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { KanbanComponent } from './components/kanban/kanban.component';
+import { SearchTicketsComponent } from './components/search-tickets/search-tickets.component';
 import { projectResolver } from './resolvers/project-resolver';
-import { stagesResolver } from './resolvers/stages-resolver';
+import { statusResolver } from './resolvers/status-resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
-import { SearchTicketsComponent } from './components/search-tickets.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -13,7 +13,7 @@ export const routes: Routes = [
     component: KanbanComponent,
     resolve: {
       project: projectResolver,
-      stages: stagesResolver,
+      statuses: statusResolver,
       tickets: ticketsResolver
     }
   },

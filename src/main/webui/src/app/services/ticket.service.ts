@@ -10,7 +10,7 @@ export interface Ticket {
   author: number;
   assignee?: number;
   project: number;
-  stage: number;
+  status: number;
 }
 
 @Injectable({
@@ -25,11 +25,16 @@ export class TicketService {
     return this.http.get<Ticket[]>(`/api/projects/${projectId}/tickets`);
   }
 
-  search(term: string): Observable<Ticket[]> {
-    return this.http.get<Ticket[]>(`${this.API_URL}/tickets?search=${encodeURIComponent(term)}`);
+  search(term: string, status: number): Observable<Ticket[]> {
+    return this.http.get<Ticket[]>(`${this.API_URL}/tickets/search`, {
+      params: {
+        term: term,
+        statusId: status
+      }
+    });
   }
 
-  moveTicket(ticketId: number, toStageId: number) {
-    return this.http.patch(`/api/tickets/${ticketId}/move`, { toStageId });
+  moveTicket(ticketId: number, toStatus: number) {
+    return this.http.patch(`/api/tickets/${ticketId}/move`, { to: toStatus });
   }
 }

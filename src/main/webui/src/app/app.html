@@ -1,7 +1,19 @@
 <header class="main-header">
-  <nav>
-    <a routerLink="/">Home</a>
-  </nav>
+  <div>
+    <nav>
+      <a routerLink="/">Home</a>
+    </nav>
+  </div>
+  <div>
+    <input type="text" placeholder="Buscar tickets..." [(ngModel)]="searchTerm" (keydown)="onSearchKeydown($event)" class="search-input" />
+  </div>
+  <div>
+    <select [(ngModel)]="selectStatus" (ngModelChange)="onChange($event)">
+      @for(status of statuses; track status.id) {
+        <option [ngValue]="status">{{status.name | normalize }}</option>
+      }
+    </select>
+  </div>
 </header>
 <main>
   <router-outlet />

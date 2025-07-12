@@ -2,7 +2,16 @@
   background: #f8f9fa;
   padding: 0;
   border-bottom: 1px solid #e9ecef;
-  
+  display: flex;
+  div {
+    display: inline;
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+  input, select {
+    margin: 0.3rem 0;
+  }
   nav {
     display: flex;
     

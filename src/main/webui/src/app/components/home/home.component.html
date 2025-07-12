@@ -2,15 +2,14 @@
   <div class="home-content">
     <h1>MorphoBoard</h1>
     <p>Bem-vindo ao sistema de gerenciamento de tickets</p>
-
-    <input type="text" placeholder="Buscar tickets..." [(ngModel)]="searchTerm" (keydown)="onSearchKeydown($event)" class="search-input" />
-
     <div class="projects-list">
-      <div *ngFor="let project of projects" class="project-card" (click)="navigateToKanban(project.id)">
+      @for (project of projects; track project.name) {
+      <div class="project-card" (click)="navigateToKanban(project.id)">
         <div class="project-title">{{ project.name }}</div>
         <div class="project-desc">{{ project.description }}</div>
         <button class="kanban-btn">Acessar Kanban</button>
       </div>
+      }
     </div>
   </div>
 </div> 

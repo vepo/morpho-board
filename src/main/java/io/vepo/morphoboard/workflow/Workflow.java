@@ -20,10 +20,10 @@ public class Workflow extends PanacheEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "start_id")
-    public WorkflowStage start;
+    public WorkflowStatus start;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    public List<WorkflowStage> stages;
+    public List<WorkflowStatus> statuses;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "workflow_id")
@@ -32,9 +32,9 @@ public class Workflow extends PanacheEntity {
     public Workflow() {
     }
 
-    public Workflow(String name, List<WorkflowStage> stages, WorkflowStage start, List<WorkflowTransition> transitions) {
+    public Workflow(String name, List<WorkflowStatus> statuses, WorkflowStatus start, List<WorkflowTransition> transitions) {
         this.name = name;
-        this.stages = stages;
+        this.statuses = statuses;
         this.start = start;
         this.transitions = transitions;
     }

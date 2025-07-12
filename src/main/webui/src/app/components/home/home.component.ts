@@ -14,7 +14,6 @@ import { FormsModule } from '@angular/forms';
 })
 export class HomeComponent implements OnInit {
   projects: Project[] = [];
-  searchTerm: string = '';
 
   constructor(private router: Router, private projectsService: ProjectsService) {}
 
@@ -28,11 +27,5 @@ export class HomeComponent implements OnInit {
 
   navigateToKanban(projectId: string) {
     this.router.navigate(['/kanban', projectId]);
-  }
-
-  onSearchKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && this.searchTerm.trim()) {
-      this.router.navigate(['/search'], { queryParams: { q: this.searchTerm.trim() } });
-    }
   }
 } 
