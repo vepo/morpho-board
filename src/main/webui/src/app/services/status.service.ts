@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 export interface ProjectStatus {
   id: number;
   name: string;
-  moveable?: number[]; // ids de estágios para os quais é permitido mover
+  moveable: number[];
 }
 
 export interface Status {

@@ -211,22 +211,25 @@ public class TicketResource {
     @PATCH
     @Path("/{id}/move")
     @Transactional
-    public Response moveTicket(@PathParam("id") Long id, MoveTicketRequest request) {
+    public TicketResponse moveTicket(@PathParam("id") Long id, MoveTicketRequest request) {
         Ticket ticket = repository.findById(id);
-        if (ticket == null)
-            throw new NotFoundException();
-        if (request.to() == null)
+        if (Objects.isNull(ticket)) {
+            throw new NotFoundException(String.format("Ticket not found! id=%d", id));
+        }
+
+        if (Objects.isNull(request) || Objects.isNull(request.to())) {
             throw new BadRequestException("Destino não informado");
-        WorkflowStatus from = ticket.status;
-        WorkflowStatus to = WorkflowStatus.findById(request.to());
-        if (to == null)
-            throw new BadRequestException("Destino inválido");
-        boolean allowed = WorkflowTransition.find("workflow = ?1 and from = ?2 and to = ?3", ticket.project.workflow, from, to)
-                                            .firstResultOptional()
-                                            .isPresent();
-        if (!allowed)
+        }
+
+        WorkflowStatus to = ticket.project.workflow.statuses.stream()
+                                                            .filter(s -> s.id == request.to())
+                                                            .findFirst()
+                                                            .orElseThrow(() -> new BadRequestException(String.format("Destino inválido! id=%d", request.to())));
+        if (ticket.project.workflow.transitions.stream()
+                                               .noneMatch(t -> t.to.id == request.to() && t.from.id == ticket.status.id)) {
             throw new BadRequestException("Transição não permitida");
+        }
         ticket.status = to;
-        return Response.ok(ticket).build();
+        return toResponse(ticket);
     }
 }

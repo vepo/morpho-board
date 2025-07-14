@@ -14,8 +14,9 @@
 h2 {
   color: #4f8cff;
   font-weight: 600;
-  margin-bottom: 18px;
   font-size: 1.5rem;
+  margin-bottom: 0.2rem;
+  margin-top: 0.2rem;
 }
 
 .loading {
@@ -85,3 +86,22 @@ h2 {
     font-size: 1.1rem;
   }
 } 
+
+
+.search-parameters {
+  display: table;
+  margin: auto;
+  text-align: left;
+  color: #666;
+  .search-parameter {
+    display: table-row;
+    .search-parameter-type {
+      padding-right: 1rem;
+      font-weight: bold;
+    }
+    .search-parameter-type,
+    .search-parameter-value {
+      display: table-cell;
+    }
+  }
+}

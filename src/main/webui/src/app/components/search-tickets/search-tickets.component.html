@@ -1,5 +1,20 @@
 <div class="search-tickets-container">
-  <h2>Resultados da busca por: "{{ term }}"</h2>
+  <h2>Resultados da busca</h2>
+  <div class="search-parameters">
+    @if (term) {
+      <div class="search-parameter">
+        <div class="search-parameter-type">Termos</div>
+        <div class="search-parameter-value">{{ term }}</div>
+      </div>
+    }
+    @let status = statusName(statusId);
+    @if (status) {
+      <div class="search-parameter">
+        <div class="search-parameter-type">Status</div>
+        <div class="search-parameter-value">{{ status }}</div>
+      </div>
+    }
+  </div>
   <div *ngIf="loading" class="loading">Carregando...</div>
   <div *ngIf="error" class="error">{{ error }}</div>
   <div *ngIf="!loading && !error && tickets.length === 0" class="no-results">Nenhum ticket encontrado.</div>
@@ -7,7 +22,7 @@
     <div *ngFor="let ticket of tickets" class="ticket-card">
       <div class="ticket-title">{{ ticket.title }}</div>
       <div class="ticket-desc">{{ ticket.description }}</div>
-      <div class="ticket-meta">ID: {{ ticket.id }} | Projeto: {{ ticket.project }}</div>
+      <div class="ticket-meta">ID: {{ ticket.id }} | Projeto: {{ projectName(ticket.project) }} | Status: {{ statusName(ticket.status) }}</div>
     </div>
   </div>
 </div> 

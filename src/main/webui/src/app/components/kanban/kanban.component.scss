@@ -31,6 +31,15 @@
   padding: 0.75rem;
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
+
+.kanban-ticket.empty {
+  font-style: italic;
+  background-color: #F8F8F8;
+  color: #666;
+  pointer-events: none;
+  user-select: none;
+}
+
 .kanban-ticket-title {
   font-weight: 500;
   margin-bottom: 0.5rem;
@@ -39,3 +48,9 @@
   color: #555;
   font-size: 0.95rem;
 } 
+.cdk-drop-list-receiving {
+  background-color: #D9E8DF;
+}
+.cdk-drag-placeholder {
+  opacity: 0.5;
+}

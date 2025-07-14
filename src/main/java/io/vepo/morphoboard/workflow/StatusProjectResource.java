@@ -12,7 +12,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("projects/{projectId}/status")
 public class StatusProjectResource {
-    public static record ProjectStatusResponse(long id, String name, boolean start, List<Long> moveable) {
+    public static record ProjectStatusResponse(long id, String name, boolean start, List<Long> moveable, List<Long> accepts) {
     }
 
     @GET
@@ -20,14 +20,18 @@ public class StatusProjectResource {
     public List<ProjectStatusResponse> getStatus(@PathParam("projectId") long projectId) {
         return Project.<Project>findByIdOptional(projectId)
                       .map(project -> project.workflow.statuses.stream()
-                                                             .map(status -> new ProjectStatusResponse(status.id,
-                                                                                                      status.name,
-                                                                                                      project.workflow.start.id == status.id,
-                                                                                                      project.workflow.transitions.stream()
-                                                                                                                                  .filter(t -> t.from.id == status.id)
-                                                                                                                                  .map(s -> s.to.id)
-                                                                                                                                  .toList()))
-                                                             .toList())
+                                                               .map(status -> new ProjectStatusResponse(status.id,
+                                                                                                        status.name,
+                                                                                                        project.workflow.start.id == status.id,
+                                                                                                        project.workflow.transitions.stream()
+                                                                                                                                    .filter(t -> t.from.id == status.id)
+                                                                                                                                    .map(s -> s.to.id)
+                                                                                                                                    .toList(),
+                                                                                                        project.workflow.transitions.stream()
+                                                                                                                                    .filter(t -> t.to.id == status.id)
+                                                                                                                                    .map(s -> s.from.id)
+                                                                                                                                    .toList()))
+                                                               .toList())
                       .orElseThrow(() -> new NotFoundException("Project not found: " + projectId));
     }
 }

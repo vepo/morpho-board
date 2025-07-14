@@ -1,14 +1,26 @@
 <h1>{{ project.name }}</h1>
 <div class="kanban-container">
   <div class="kanban-board">
-    <div class="kanban-column" *ngFor="let status of statuses">
+    @for (status of statuses; track $index) {
+    <div class="kanban-column" cdkDropList [id]="toColumnId(status)" [cdkDropListData]="ticketsOf(status.id)"
+      [cdkDropListConnectedTo]="connectedTo(status)" (cdkDropListDropped)="drop($event)">
       <div class="kanban-column-header">{{ status.name }}</div>
-      <div class="kanban-tickets" cdkDropList [cdkDropListData]="ticketsOf(status.id)" (cdkDropListDropped)="onTicketDrop($event, status)">
-        <div class="kanban-ticket" *ngFor="let ticket of ticketsOf(status.id)" cdkDrag>
+      <div class="kanban-tickets">
+        @let statusTicket = ticketsOf(status.id);
+        @if (statusTicket.length == 0) {
+          <div class="kanban-ticket empty">
+            Nenhum ticket...
+          </div>
+        }
+
+        @for (ticket of statusTicket; track $index) {
+        <div class="kanban-ticket" cdkDrag>
           <div class="kanban-ticket-title">{{ ticket.title }}</div>
           <div class="kanban-ticket-desc">{{ ticket.description }}</div>
         </div>
+        }
       </div>
     </div>
+    }
   </div>
-</div> 
+</div>
