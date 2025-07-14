@@ -13,6 +13,15 @@ export interface Ticket {
   status: number;
 }
 
+export interface CreateTicketRequest {
+  title: string;
+  description: string;
+  categoryId: number;
+  authorId: number;
+  assigneeId?: number;
+  projectId: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -36,5 +45,9 @@ export class TicketService {
 
   move(ticketId: number, toStatus: number) :Observable<Ticket> {
     return this.http.patch<Ticket>(`/api/tickets/${ticketId}/move`, { to: toStatus });
+  }
+
+  createTicket(request: CreateTicketRequest): Observable<Ticket> {
+    return this.http.post<Ticket>(`${this.API_URL}/tickets`, request);
   }
 }

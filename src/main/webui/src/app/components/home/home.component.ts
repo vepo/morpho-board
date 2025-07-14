@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  navigateToKanban(projectId: string) {
+  navigateToKanban(projectId: number) {
     this.router.navigate(['/kanban', projectId]);
   }
 } 

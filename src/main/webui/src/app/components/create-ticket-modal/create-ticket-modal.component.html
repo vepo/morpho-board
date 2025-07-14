@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Criar Ticket</h2>
+<form (ngSubmit)="createTicket()" #ticketForm="ngForm">
+  <mat-form-field appearance="fill">
+    <mat-label>Projeto</mat-label>
+    <mat-select [(ngModel)]="projectId" name="projectId" required>
+      <mat-option [value]="null" disabled>Selecione...</mat-option>
+      @for (proj of projects; track proj.id) {
+      <mat-option [value]="proj.id">{{proj.name}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Título</mat-label>
+    <input matInput [(ngModel)]="title" name="title" required />
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Descrição</mat-label>
+    <textarea matInput [(ngModel)]="description" name="description" rows="4" required></textarea>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Categoria</mat-label>
+    <mat-select [(ngModel)]="categoryId" name="categoryId" required>
+      <mat-option [value]="null" disabled>Selecione...</mat-option>
+      @for (cat of categories; track cat.id) {
+        <mat-option [value]="cat.id">{{cat.name}}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <div *ngIf="error" class="error-message">{{error}}</div>
+  <div *ngIf="loading" class="loading-message">Enviando...</div>
+  <div class="form-actions">
+    <button mat-button type="button" (click)="close()" [disabled]="loading">Cancelar</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="!title || !description || !categoryId || !projectId || loading">Criar</button>
+  </div>
+</form> 

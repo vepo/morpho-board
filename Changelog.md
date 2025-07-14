@@ -58,4 +58,5 @@
 2. Fazer página de busca funcionar.
     1. Adicionar Status a busca
     2. Mecanismo de query não estava funcionando
+3. Fazer funcionar a página de Kanban
 

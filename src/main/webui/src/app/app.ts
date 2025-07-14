@@ -5,10 +5,16 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Status, StatusService } from './services/status.service';
 import { NormalizePipe } from './components/pipes/normalize.pipe';
 import { map } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialog } from '@angular/material/dialog';
+import { CreateTicketModalComponent } from './components/create-ticket-modal/create-ticket-modal.component';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe],
+  imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule, CreateTicketModalComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -19,7 +25,7 @@ export class AppComponent implements OnInit {
   statuses: Status[] = [this.anyStatus];
   selectStatus: Status = this.anyStatus;
 
-  constructor(private router: Router, private statusService: StatusService) { }
+  constructor(private router: Router, private statusService: StatusService, private dialog: MatDialog, private route: ActivatedRoute) { }
 
   onSearchKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' && this.searchTerm.trim()) {
@@ -43,5 +49,20 @@ export class AppComponent implements OnInit {
 
   onChange(event: Status) {
     this.goToSearch(this.searchTerm.trim(), this.selectStatus);
+  }
+
+  openCreateTicketDialog() {
+    let projectId: number | undefined;
+    // Tenta extrair projectId da rota se estiver em /kanban/:projectId
+    const match = this.router.url.match(/kanban\/(\d+)/);
+    if (match) {
+      projectId = Number(match[1]);
+    }
+    const authorId = 1; // TODO: trocar para usuário autenticado
+    this.dialog.open(CreateTicketModalComponent, {
+      width: '500px',
+      disableClose: true,
+      data: { projectId, authorId }
+    });
   }
 }
