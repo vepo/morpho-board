@@ -28,23 +28,34 @@ export class AppComponent implements OnInit {
   constructor(private router: Router, private statusService: StatusService, private dialog: MatDialog, private route: ActivatedRoute) { }
 
   onSearchKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && this.searchTerm.trim()) {
-      this.goToSearch(this.searchTerm.trim(), this.selectStatus);
-    }
+    this.goToSearch(this.searchTerm.trim(), this.selectStatus); 
   }
   
   goToSearch(term: string, status: Status) {
+    let params: any = {};
+
     if (status != this.anyStatus) {
-      this.router.navigate(['/search'], { queryParams: { q: term, status: status.id } });
-    } else {
-      this.router.navigate(['/search'], { queryParams: { q: term } }); 
+      params['status'] = status.id;
     }
+
+    if (term && term.trim().length > 0) {
+      params['q'] = term;
+    }
+
+    this.router.navigate(['/search'], { queryParams: params });
   }
 
   ngOnInit(): void {
-    this.statusService.findAll()
-                     .pipe(map(statuses => [this.anyStatus, ...statuses])) 
-                     .subscribe(statuses => this.statuses = statuses)
+    this.route.queryParams.subscribe(params => {
+      this.searchTerm = params['q'] || this.searchTerm;
+      let statusId = Number(params['status'] || this.selectStatus.id);
+      this.statusService.findAll()
+                        .pipe(map(statuses => [this.anyStatus, ...statuses]))
+                        .subscribe(statuses => {
+                                       this.statuses = statuses;
+                                       this.selectStatus = this.statuses.find(s => s.id == statusId) || this.anyStatus;
+                                   });
+    });
   }
 
   onChange(event: Status) {

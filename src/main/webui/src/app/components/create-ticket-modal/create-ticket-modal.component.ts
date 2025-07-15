@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { ProjectsService, Project } from '../../services/projects.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { Category, CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-create-ticket-modal',
@@ -22,11 +23,11 @@ export class CreateTicketModalComponent implements OnInit {
   // @Input() authorId!: number;
   projectId: number|null = null;
   authorId!: number;
-
+  emptyCategory: Category = { id: -1, name: "Escolha..." };
   title: string = '';
   description: string = '';
-  categoryId: number|null = null;
-  categories: { id: number, name: string }[] = [];
+  category: Category = this.emptyCategory;
+  categories: Category[] = [];
   loading = false;
   error = '';
   projects: Project[] = [];
@@ -34,22 +35,18 @@ export class CreateTicketModalComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<CreateTicketModalComponent>,
     private ticketService: TicketService,
-    private http: HttpClient,
+    private categoryService: CategoryService,
     private projectsService: ProjectsService,
     @Inject(MAT_DIALOG_DATA) public data: { authorId: number }
   ) {
-    this.authorId = data.authorId;
+    this.authorId = 1;//data.authorId;
   }
 
   ngOnInit() {
-    this.http.get<{ id: number, name: string }[]>('/api/categories').subscribe({
-      next: (cats) => this.categories = cats,
-      error: () => this.error = 'Erro ao carregar categorias'
-    });
-    this.projectsService.findAll().subscribe({
-      next: (projs) => this.projects = projs,
-      error: () => this.error = 'Erro ao carregar projetos'
-    });
+    this.categoryService.findAll()
+                        .subscribe(categories => this.categories = categories);
+    this.projectsService.findAll()
+                        .subscribe(projs => this.projects = projs);
   }
 
   close() {
@@ -57,7 +54,7 @@ export class CreateTicketModalComponent implements OnInit {
   }
 
   createTicket() {
-    if (!this.title || !this.description || !this.categoryId || !this.projectId || !this.authorId) {
+    if (!this.title || !this.description || !this.category || !this.projectId || !this.authorId) {
       this.error = 'Preencha todos os campos obrigatórios';
       return;
     }
@@ -65,8 +62,8 @@ export class CreateTicketModalComponent implements OnInit {
     const req: CreateTicketRequest = {
       title: this.title,
       description: this.description,
-      categoryId: this.categoryId,
-      authorId: this.authorId,
+      categoryId: this.category.id,
+      authorId: 1,
       projectId: this.projectId
     };
     this.ticketService.createTicket(req).subscribe({

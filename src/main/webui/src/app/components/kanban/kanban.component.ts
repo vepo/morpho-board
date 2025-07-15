@@ -5,12 +5,13 @@ import { ActivatedRoute } from '@angular/router';
 import { Project, ProjectsService, Workflow } from '../../services/projects.service';
 import { ProjectStatus } from '../../services/status.service';
 import { Ticket, TicketService } from '../../services/ticket.service';
+import { NormalizePipe } from '../pipes/normalize.pipe';
 
 @Component({
   selector: 'app-kanban',
   templateUrl: './kanban.component.html',
   styleUrls: ['./kanban.component.scss'],
-  imports: [CommonModule, DragDropModule],
+  imports: [CommonModule, DragDropModule, NormalizePipe],
   standalone: true
 })
 export class KanbanComponent implements OnInit {
@@ -23,12 +24,24 @@ export class KanbanComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ statuses, project, tickets }) => {
       this.project = project;
-      this.tickets = tickets;
+      this.tickets = (tickets as Ticket[]).map(t => this.fixLineBreak(t));
       this.statuses = statuses;
-      this.projectsService.findWorkflowByProjectId(Number(project.id)).subscribe(workflow => {
-        this.workflow = workflow;
-      });
+      this.projectsService.findWorkflowByProjectId(Number(project.id))
+                          .subscribe(workflow => this.workflow = workflow);
     });
+  }
+
+  fixLineBreak(ticket: Ticket): Ticket {
+    return {
+      id: ticket.id,
+      title: ticket.title,
+      description: ticket.description.replaceAll('\n', '<br/>'),
+      author: ticket.author,
+      project: ticket.project,
+      status: ticket.status,
+      assignee: ticket.assignee,
+      category:ticket.category
+    };
   }
 
   ticketsOf(statusId: number): Ticket[] {
@@ -52,7 +65,7 @@ export class KanbanComponent implements OnInit {
     var statusId = this.fromColumnId(evnt.container.id);
     if (ticket.status != statusId) {
       this.ticketService.move(ticket.id, statusId)
-                        .subscribe(ticket => this.tickets[this.tickets.findIndex(t => t.id == ticket.id)] = ticket);
+                        .subscribe(ticket => this.tickets[this.tickets.findIndex(t => t.id == ticket.id)] =  this.fixLineBreak(ticket));
     }
   }
 } 

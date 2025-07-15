@@ -30,9 +30,7 @@ export class SearchTicketsComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.term = params['q'] || '';
       this.statusId = Number(params['status'] || '-1');
-      if (this.term || this.statusId != -1) {
-        this.searchTickets();
-      }
+      this.searchTickets();
     });
     this.statusService.findAll()
                       .subscribe(statuses => this.statuses = statuses);
@@ -59,17 +57,7 @@ export class SearchTicketsComponent implements OnInit {
   }
 
   searchTickets() {
-    this.loading = true;
-    this.error = '';
-    this.ticketService.search(this.term, this.statusId).subscribe({
-      next: (tickets) => {
-        this.tickets = tickets;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.error = 'Erro ao buscar tickets';
-        this.loading = false;
-      }
-    });
+    this.ticketService.search(this.term, this.statusId)
+                      .subscribe(tickets => this.tickets = tickets);
   }
 } 

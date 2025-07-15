@@ -1,26 +1,25 @@
 <h1>{{ project.name }}</h1>
-<div class="kanban-container">
-  <div class="kanban-board">
-    @for (status of statuses; track $index) {
-    <div class="kanban-column" cdkDropList [id]="toColumnId(status)" [cdkDropListData]="ticketsOf(status.id)"
-      [cdkDropListConnectedTo]="connectedTo(status)" (cdkDropListDropped)="drop($event)">
-      <div class="kanban-column-header">{{ status.name }}</div>
-      <div class="kanban-tickets">
-        @let statusTicket = ticketsOf(status.id);
-        @if (statusTicket.length == 0) {
-          <div class="kanban-ticket empty">
-            Nenhum ticket...
-          </div>
-        }
-
-        @for (ticket of statusTicket; track $index) {
-        <div class="kanban-ticket" cdkDrag>
-          <div class="kanban-ticket-title">{{ ticket.title }}</div>
-          <div class="kanban-ticket-desc">{{ ticket.description }}</div>
+<div class="board">
+  @for (status of statuses; track $index) {
+  <div class="column" cdkDropList [id]="toColumnId(status)" [cdkDropListData]="ticketsOf(status.id)"
+    [cdkDropListConnectedTo]="connectedTo(status)" (cdkDropListDropped)="drop($event)">
+    <div class="header">{{ status.name | normalize }}</div>
+    <div class="card-container">
+      @let statusTicket = ticketsOf(status.id);
+      @if (statusTicket.length == 0) {
+        <div class="card empty">
+          Nenhum ticket...
         </div>
-        }
+      }
+
+      @for (ticket of statusTicket; track $index) {
+      <div class="card" cdkDrag>
+        <div class="identifier">{{ ticket.id }}</div>
+        <div class="title">{{ ticket.title }}</div>
+        <div class="description" [innerHTML]="ticket.description"></div>
       </div>
+      }
     </div>
-    }
   </div>
+  }
 </div>

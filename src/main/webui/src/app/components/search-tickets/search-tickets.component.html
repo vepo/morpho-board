@@ -1,28 +1,33 @@
-<div class="search-tickets-container">
-  <h2>Resultados da busca</h2>
-  <div class="search-parameters">
+<div class="centered">
+  <h1>Resultados da busca</h1>
+  <div class="parameters-box">
     @if (term) {
-      <div class="search-parameter">
-        <div class="search-parameter-type">Termos</div>
-        <div class="search-parameter-value">{{ term }}</div>
+      <div class="card">
+        <div class="type">Termos</div>
+        <div class="value">{{ term }}</div>
       </div>
     }
     @let status = statusName(statusId);
     @if (status) {
-      <div class="search-parameter">
-        <div class="search-parameter-type">Status</div>
-        <div class="search-parameter-value">{{ status }}</div>
+      <div class="card">
+        <div class="type">Status</div>
+        <div class="value">{{ status }}</div>
       </div>
     }
   </div>
-  <div *ngIf="loading" class="loading">Carregando...</div>
-  <div *ngIf="error" class="error">{{ error }}</div>
-  <div *ngIf="!loading && !error && tickets.length === 0" class="no-results">Nenhum ticket encontrado.</div>
-  <div class="tickets-list">
-    <div *ngFor="let ticket of tickets" class="ticket-card">
-      <div class="ticket-title">{{ ticket.title }}</div>
-      <div class="ticket-desc">{{ ticket.description }}</div>
-      <div class="ticket-meta">ID: {{ ticket.id }} | Projeto: {{ projectName(ticket.project) }} | Status: {{ statusName(ticket.status) }}</div>
+  <div class="box">
+    @if (tickets.length == 0) {
+      <div class="card empty">
+        Nenhum ticket encontrado!
+      </div>
+    }
+    @for (ticket of tickets; track ticket.id) {
+    <div class="card">
+      <div class="identifier">{{ticket.id}}</div>
+      <div class="title">{{ ticket.title }}</div>
+      <div class="description">{{ ticket.description }}</div>
+      <div class="metadata">Projeto: {{ projectName(ticket.project) }} | Status: {{ statusName(ticket.status) }}</div>
     </div>
+  }
   </div>
 </div> 

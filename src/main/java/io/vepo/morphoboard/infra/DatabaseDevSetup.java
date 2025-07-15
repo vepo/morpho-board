@@ -1,6 +1,7 @@
 package io.vepo.morphoboard.infra;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
 import io.vepo.morphoboard.project.Project;
+import io.vepo.morphoboard.ticket.Category;
 import io.vepo.morphoboard.ticket.Ticket;
 import io.vepo.morphoboard.user.User;
 import io.vepo.morphoboard.workflow.Workflow;
@@ -22,6 +24,10 @@ import jakarta.transaction.Transactional;
 public class DatabaseDevSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
+
+    private String loremIpsum() {
+        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
+    }
 
     @Transactional
     void onStart(@Observes StartupEvent ev) {
@@ -52,16 +58,15 @@ public class DatabaseDevSetup {
                                               new WorkflowTransition(WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
                                                                      WorkflowStatus.findByName("DONE").orElseThrow()))));
 
-        Project.persist(new Project("Projeto 1", "Descrição do projeto 1", Workflow.findByName("Kanban")
-                                                                                   .orElseThrow()));
-
-        Project.persist(new Project("Projeto 2", "Descrição do projeto 2", Workflow.findByName("Kanban")
-                                                                                   .orElseThrow()));
+        IntStream.range(1, 31)
+                 .forEach(index -> Project.persist(new Project("Projeto " + index,
+                                                               "Descrição do projeto " + index + " " + loremIpsum(), Workflow.findByName("Kanban").orElseThrow())));
 
         // Categoria para os tickets
-        var categoria = new io.vepo.morphoboard.ticket.Category();
-        categoria.name = "Bug";
+        var categoria = new Category("Bug");
         categoria.persist();
+        new Category("Melhoria").persist();
+        new Category("Integração").persist();
 
         // Buscar usuários
         var author = User.<User>find("email", "user@demo.com").firstResult();

@@ -1,13 +1,13 @@
-<div class="home-container">
+<div class="centered">
   <div class="home-content">
     <h1>MorphoBoard</h1>
     <p>Bem-vindo ao sistema de gerenciamento de tickets</p>
-    <div class="projects-list">
+    <div class="box">
       @for (project of projects; track project.name) {
-      <div class="project-card" (click)="navigateToKanban(project.id)">
-        <div class="project-title">{{ project.name }}</div>
-        <div class="project-desc">{{ project.description }}</div>
-        <button class="kanban-btn">Acessar Kanban</button>
+      <div class="card">
+        <div class="title">{{ project.name }}</div>
+        <div class="description">{{ project.description }}</div>
+        <button (click)="navigateToKanban(project.id)">Kanban</button>
       </div>
       }
     </div>

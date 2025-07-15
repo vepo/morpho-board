@@ -11,11 +11,11 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/categories")
 @Produces(MediaType.APPLICATION_JSON)
 public class CategoryResource {
-    public static record CategoryResponse(String name) {
+    public static record CategoryResponse(long id, String name) {
     }
 
     private static final CategoryResponse toResponse(Category category) {
-        return new CategoryResponse(category.name);
+        return new CategoryResponse(category.id, category.name);
     }
 
     @Inject

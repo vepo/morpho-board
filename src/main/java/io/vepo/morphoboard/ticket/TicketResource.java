@@ -2,7 +2,6 @@ package io.vepo.morphoboard.ticket;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -13,7 +12,6 @@ import org.jboss.resteasy.reactive.ResponseStatus;
 import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.user.User;
 import io.vepo.morphoboard.workflow.WorkflowStatus;
-import io.vepo.morphoboard.workflow.WorkflowTransition;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;

@@ -37,7 +37,7 @@ export class ProjectsService {
     return this.http.get<Project[]>(`${this.API_URL}`);
   }
 
-  findWorkflowByProjectId(projectId: number) {
+  findWorkflowByProjectId(projectId: number): Observable<Workflow> {
     return this.http.get<Workflow>(`${this.API_URL}/${projectId}/workflow`);
   }
 }
