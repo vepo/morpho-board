@@ -14,6 +14,7 @@ public class Project extends PanacheEntity {
     @Column(name = "name", nullable = false, unique = true)
     public String name;
 
+    @Column(columnDefinition = "text")
     public String description;
     
     @ManyToOne

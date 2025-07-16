@@ -6,7 +6,7 @@
       @for (project of projects; track project.name) {
       <div class="card">
         <div class="title">{{ project.name }}</div>
-        <div class="description">{{ project.description }}</div>
+        <div title="{{ project.description }}" class="description">{{ project.description | trim:100 }}</div>
         <button (click)="navigateToKanban(project.id)">Kanban</button>
       </div>
       }

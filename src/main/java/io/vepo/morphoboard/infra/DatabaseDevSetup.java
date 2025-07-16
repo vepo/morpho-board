@@ -1,10 +1,19 @@
 package io.vepo.morphoboard.infra;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.IntStream;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
@@ -58,19 +67,20 @@ public class DatabaseDevSetup {
                                               new WorkflowTransition(WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
                                                                      WorkflowStatus.findByName("DONE").orElseThrow()))));
 
-        IntStream.range(1, 31)
-                 .forEach(index -> Project.persist(new Project("Projeto " + index,
-                                                               "Descrição do projeto " + index + " " + loremIpsum(), Workflow.findByName("Kanban").orElseThrow())));
+        
+        // Buscar usuários
+        var author = User.<User>find("email", "user@demo.com").firstResult();
+        var assignee = User.<User>find("email", "dev@demo.com").firstResult();
+        loadCsvs(author);
+
+        Project.persist(new Project("Projeto 1",
+                "Descrição do projeto 1", Workflow.findByName("Kanban").orElseThrow()));
 
         // Categoria para os tickets
         var categoria = new Category("Bug");
         categoria.persist();
         new Category("Melhoria").persist();
         new Category("Integração").persist();
-
-        // Buscar usuários
-        var author = User.<User>find("email", "user@demo.com").firstResult();
-        var assignee = User.<User>find("email", "dev@demo.com").firstResult();
 
         // Buscar projeto
         var projeto = Project.<Project>find("name", "Projeto 1").firstResult();
@@ -123,5 +133,111 @@ public class DatabaseDevSetup {
                                   done));
 
         logger.info("Database populated with initial data for development.");
+    }
+    private void loadCsvs(User author) {
+        var categories = new HashMap<String, Category>();
+        try (Reader reader = new InputStreamReader(
+                DatabaseDevSetup.class.getResourceAsStream("/dev/data/categorias.csv"))) {
+            try (CSVReader csvReader = new CSVReader(reader)) {
+                String[] line;
+                boolean header = false;
+                while ((line = csvReader.readNext()) != null) {
+                    if (!header) {
+                        header = true;
+                        continue;
+                    }
+                    var category = new Category(line[1], line[2]);
+                    category.persist();
+                    categories.put(line[0], category);
+                }
+            }
+        } catch (IOException | CsvValidationException ioe) {
+            throw new IllegalStateException("Cannot reader categories.csv", ioe);
+        }
+
+        var workflows = new HashMap<String, Workflow>();
+        var allStatus = new HashMap<String, WorkflowStatus>();
+        try (Reader reader = new InputStreamReader(DatabaseDevSetup.class.getResourceAsStream("/dev/data/workflows.csv"))) {
+            Map<String, List<String[]>> workflowData = new HashMap<>();
+            Map<String, String> workflowStart = new HashMap<>();
+            try (CSVReader csvReader = new CSVReader(reader)) {
+                String[] line;
+                boolean header = false;
+                while ((line = csvReader.readNext()) != null) {
+                    if (!header) {
+                        header = true;
+                        continue;
+                    }
+                    workflowData.computeIfAbsent(line[0], __ -> new ArrayList<>()).add(line);
+                    workflowStart.putIfAbsent(line[0], line[1]);
+                }
+            }
+            workflowData.forEach((workflowName, data) -> {
+                List<WorkflowStatus> statuses = Stream.concat(data.stream()
+                                                                  .map(line -> line[1]),
+                                                              data.stream()
+                                                                  .map(line -> line[2]))
+                                                      .distinct()
+                                                      .map(status -> WorkflowStatus.findByName(status)
+                                                                                   .orElseGet(() -> {
+                                                                                        WorkflowStatus dbStatus = new WorkflowStatus(status);
+                                                                                        dbStatus.persist();
+                                                                                        allStatus.put(status, dbStatus);
+                                                                                        return dbStatus;
+                                                                                    })).toList();
+                WorkflowStatus start = statuses.stream()
+                                               .filter(s -> s.name.equals(workflowStart.get(workflowName)))
+                                               .findFirst()
+                                               .orElseThrow(() -> new IllegalStateException("Status inicial não encontrado"));                                               ;
+                List<WorkflowTransition> transitions = data.stream()
+                                                           .map(line -> new WorkflowTransition(WorkflowStatus.findByName(line[1]).orElseThrow(),
+                                                                                               WorkflowStatus.findByName(line[2]).orElseThrow()))
+                                                           .toList();
+                Workflow workflow = new Workflow(workflowName, statuses, start, transitions);
+                workflow.persist();
+                workflows.put(workflowName, workflow);
+            });
+        } catch(IOException | CsvValidationException ioe) {
+            throw new IllegalStateException("Cannot reader categories.csv", ioe);
+        }
+
+
+        var projetos = new HashMap<String, Project>();
+        try (Reader reader = new InputStreamReader(DatabaseDevSetup.class.getResourceAsStream("/dev/data/projetos.csv"))) {
+            try (CSVReader csvReader = new CSVReader(reader)) {
+                String[] line;
+                boolean header = false;
+                while ((line = csvReader.readNext()) != null) {
+                    if (!header) {
+                        header = true;
+                        continue;
+                    }
+                    var workflowName = line[3];
+                    var project = new Project(line[1], line[2], Workflow.findByName(workflowName)
+                            .orElseThrow(() -> new IllegalStateException("Workflow not found! " + workflowName)));
+                   project .persist();
+                   projetos.put(line[0], project);
+                }
+            }
+        } catch(IOException | CsvValidationException ioe) {
+            throw new IllegalStateException("Cannot reader categories.csv", ioe);
+        }
+
+        try (Reader reader = new InputStreamReader(DatabaseDevSetup.class.getResourceAsStream("/dev/data/tickets.csv"))) {
+            try (CSVReader csvReader = new CSVReader(reader)) {
+                String[] line;
+                boolean header = false;
+                while ((line = csvReader.readNext()) != null) {
+                    if (!header) {
+                        header = true;
+                        continue;
+                    }
+                    var ticket = new Ticket(line[0], line[1], categories.get(line[4]), author, null, projetos.get(line[2]), allStatus.get(line[3]));
+                    ticket.persist();
+                }
+            }
+        } catch(IOException | CsvValidationException ioe) {
+            throw new IllegalStateException("Cannot reader categories.csv", ioe);
+        }
     }
 }

@@ -72,6 +72,9 @@ h1, h2, h3, h4, h5, h6 {
   input, select {
     margin: 0.5rem 0;
   }
+  button {
+    margin: 0.4rem 0;
+  }
   nav {
     display: flex;
     
@@ -123,42 +126,6 @@ main {
         /* Garante que os cards não fiquem muito estreitos */
         transition: transform 0.3s ease;
         /* Efeito hover suave */
-
-        .title {
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-
-        .description {
-            margin-bottom: 0.5rem;
-            color: #444444;
-        }
-
-        .identifier {
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .metadata {
-            color: #666666;
-        }
-
-        &:hover {
-            transform: translateY(-5px);
-            /* Efeito de levantar ao passar o mouse */
-            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-            /* Sombra sutil */
-        }
-
-        &.empty {
-            background-color: #D0D0D0;
-
-
-            &:hover {
-                transform: none;
-                box-shadow: none;
-            }
-        }
     }
 }
 
@@ -189,24 +156,66 @@ main {
 }
 
 .card {
-    background: #FFFFFF;    
+    background: #FFFFFF;
     border: solid 1px #AAAAAA;
+    min-width: 250px;
+    word-break: break-word;
+
     &:not(:last-child) {
         border-bottom-style: none;
     }
+
     padding: 0.75rem 1rem;
     border-radius: 0;
+
     &.cdk-drag-preview {
         box-sizing: border-box;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         background: white;
         opacity: 0.9;
         cursor: grabbing;
+        border-bottom-style: solid;
     }
+
     &.cdk-drag-placeholder {
         opacity: 0.5;
         background: #c1c1c1;
         box-shadow: none;
+    }
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        border-bottom-style: solid;
+    }
+
+    .title {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .description {
+        margin-bottom: 0.5rem;
+        color: #444444;
+    }
+
+    .identifier {
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .metadata {
+        color: #666666;
+    }
+
+    &.empty {
+        background-color: #D0D0D0;
+
+
+        &:hover {
+            transform: none;
+            box-shadow: none;
+        }
     }
 }
 
@@ -272,29 +281,6 @@ main {
                     text-align: center;
                     border: 1px dashed #e0e0e0;
                 }
-
-                .identifier {
-                    text-align: left;
-                    font-weight: bold;
-                }
-
-                .title {
-                    font-weight: 500;
-                    margin-bottom: 0.5rem;
-                    font-size: 0.95rem;
-                }
-
-                .description {
-                    color: #666;
-                    font-size: 0.85rem;
-                    line-height: 1.4;
-                }
-
-                &:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
-                    border-bottom-style: solid;
-                }
             }
 
         }
@@ -337,8 +323,16 @@ form {
     border-radius: 4px;
 }
 
-.cdk-overlay-pane {
-    background-color: #FFFFFF;;
+.cdk-overlay-pane .mat-mdc-tooltip-show,
+.cdk-overlay-pane .mat-mdc-select-panel {
+    background-color: #FFFFFF;
+    opacity: 0.8;
+    padding: 0.2rem 2rem;
+    border: solid 1px #666666;
+}
+
+.mat-mdc-tooltip-surface {
+    overflow: auto;
 }
 
 .mdc-text-field {

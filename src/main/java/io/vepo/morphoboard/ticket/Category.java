@@ -8,12 +8,18 @@ import jakarta.persistence.Table;
 @Table(name = "tb_categories")
 public class Category extends PanacheEntity {
     public String name;
+    public String color;
 
     public Category() {
 
     }
 
-    public Category(String name) {
+    public Category(String name, String color) {
         this.name = name;
+        this.color = color;
     }
-} 
+
+    public Category(String name) {
+        this(name, "none");
+    }
+}

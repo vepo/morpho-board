@@ -4,12 +4,13 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProjectsService, Project } from '../../services/projects.service';
 import { FormsModule } from '@angular/forms';
+import { TrimPipe } from '../pipes/trim.pipe';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, TrimPipe],
   standalone: true
 })
 export class HomeComponent implements OnInit {
