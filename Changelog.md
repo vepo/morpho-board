@@ -60,3 +60,17 @@
     2. Mecanismo de query não estava funcionando
 3. Fazer funcionar a página de Kanban
 
+
+## Video 009 [Commit 346240b](https://github.com/vepo/morpho-board/commit/346240b4bfc711019a878109673490fd1204cf6d)
+
+1. Implementar formulário de criação de ticket
+
+## Pós Vídeo 009
+
+1. Mudança de identidade visual [Commit 6ba9901](https://github.com/vepo/morpho-board/commit/6ba99017c6660b09705481688b2a5e378e30d797)
+2. Criar carga de dados para desenvolvimento [Commit fb59f1a](https://github.com/vepo/morpho-board/commit/fb59f1a5eab213d3ccdfa0641ab26a285b7e0b29)
+
+## Vídeo 010 
+
+1. Criação do mecanismo de autenticação
+
