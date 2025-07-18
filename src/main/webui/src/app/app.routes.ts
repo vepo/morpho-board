@@ -5,9 +5,16 @@ import { SearchTicketsComponent } from './components/search-tickets/search-ticke
 import { projectResolver } from './resolvers/project-resolver';
 import { statusResolver } from './resolvers/status-resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
+import { LoginComponent } from './components/login/login.component';
+import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: 'login', component: LoginComponent },
+  { 
+    path: '', 
+    component: HomeComponent ,
+    canActivate: [authGuard],
+  },
   {
     path: 'kanban/:projectId',
     component: KanbanComponent,
@@ -15,9 +22,19 @@ export const routes: Routes = [
       project: projectResolver,
       statuses: statusResolver,
       tickets: ticketsResolver
-    }
+    },
+    canActivate: [authGuard],
   },
-  { path: 'search', component: SearchTicketsComponent },
-  { path: '', redirectTo: '/', pathMatch: 'full' },
+  {
+    path: 'search',
+    component: SearchTicketsComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: '',
+    redirectTo: '/',
+    pathMatch: 'full'
+  },
+
   { path: '**', redirectTo: '/' }
 ];

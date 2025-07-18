@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap } from 'rxjs';
 
+
+export interface AuthResponse {
+  token: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokenKey = 'jwt_token';
@@ -9,7 +14,7 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string) {
-    return this.http.post<{ token: string }>('/api/auth/login', { email, password }).pipe(
+    return this.http.post<AuthResponse>('/api/auth/login', { email, password }).pipe(
       tap(res => {
         if (res.token) this.saveToken(res.token);
       })
