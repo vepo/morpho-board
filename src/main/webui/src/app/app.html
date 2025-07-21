@@ -19,6 +19,13 @@
       Novo
     </button>
   </div>
+  <div class="user-menu">
+    <button matButton [matMenuTriggerFor]="menu"><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="person"></mat-icon></button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="logout()">Logout</button>
+    </mat-menu>    
+  </div>
+  {{ getRoles()}}
 </header>
 <main class="container">
   <router-outlet />

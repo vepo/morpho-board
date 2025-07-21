@@ -14,3 +14,5 @@
 * Vibe Coding VIII: Implementando um sistema de Gestão de Mudanças https://youtu.be/PN7CFqyPG_c
 * Vibe Coding IX: Implementando um sistema de Gestão de Mudanças https://youtu.be/fu9SM0xXwLs
 * Vibe Coding X: Implementando um sistema de Gestão de Mudanças https://youtu.be/XHgOGLK3ZXg
+* Deploy de Sexta: Criando página de autenticação no Quarkus + Angular https://youtube.com/live/1wWcOmFH3GI
+* Vibe Coding XI: Implementando um sistema de Gestão de Mudanças https://youtu.be/d69aThqDj1Q

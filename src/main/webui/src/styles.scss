@@ -3,6 +3,8 @@
 // https://coolors.co/01172f-d9e8df-00635d-bf0603-446df6
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import './colors.scss';
+
 
 body {
     margin: 0;
@@ -17,7 +19,7 @@ button {
     border: solid 1px #2958F5;
     border-radius: 0.2rem;
     padding: 0.3rem 1.3rem;
-    background-color: #446DF6;
+    background-color: $base-color;
     color: #FFFFFF;
     cursor: pointer;
     &:not(:last-child) {

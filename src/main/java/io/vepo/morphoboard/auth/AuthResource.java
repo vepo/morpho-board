@@ -5,6 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,7 @@ public class AuthResource {
                           .upn(user.email)
                           .claim("id", user.id)
                           .claim("email", user.email)
-                          .groups(Set.of("user"))
+                          .groups(user.roles.stream().map(Enum::name).collect(Collectors.toSet()))
                           .issuedAt(now)
                           .expiresAt(now.plus(1, ChronoUnit.DAYS))
                           .sign();

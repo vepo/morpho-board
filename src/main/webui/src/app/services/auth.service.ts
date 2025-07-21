@@ -10,11 +10,12 @@ export interface AuthResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private tokenKey = 'jwt_token';
+  private readonly API_URL = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
   login(email: string, password: string) {
-    return this.http.post<AuthResponse>('/api/auth/login', { email, password }).pipe(
+    return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password }).pipe(
       tap(res => {
         if (res.token) this.saveToken(res.token);
       })
@@ -27,6 +28,18 @@ export class AuthService {
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
+  }
+
+  getRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload.groups || [];
+  }
+
+  hasRole(role: string): boolean {
+    return this.getRoles()
+               .includes(role);
   }
 
   logout() {

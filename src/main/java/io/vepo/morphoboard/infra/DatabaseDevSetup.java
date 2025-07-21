@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import io.quarkus.runtime.StartupEvent;
 import io.vepo.morphoboard.project.Project;
 import io.vepo.morphoboard.ticket.Category;
 import io.vepo.morphoboard.ticket.Ticket;
+import io.vepo.morphoboard.user.Role;
 import io.vepo.morphoboard.user.User;
 import io.vepo.morphoboard.workflow.Workflow;
 import io.vepo.morphoboard.workflow.WorkflowStatus;
@@ -34,18 +36,14 @@ public class DatabaseDevSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
 
-    private String loremIpsum() {
-        return "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
-    }
-
     @Transactional
     void onStart(@Observes StartupEvent ev) {
         logger.info("Populating database with initial data for development...");
-        User.persist(new User("Gestor", "gestor@demo.com", "123", "MANAGER"));
-        User.persist(new User("Desenvolvedor", "dev@demo.com", "123", "DEV"));
-        User.persist(new User("Administrador", "admin@demo.com", "123", "ADMIN"));
-        User.persist(new User("Super Admin", "superadmin@demo.com", "123", "SUPER_ADMIN"));
-        User.persist(new User("Usuário", "user@demo.com", "123", "USER"));
+        User.persist(new User("Gestor", "gestor@demo.com", "123", Set.of(Role.PROJECT_MANAGER)));
+        User.persist(new User("Desenvolvedor", "dev@demo.com", "123", Set.of(Role.USER)));
+        User.persist(new User("Administrador", "admin@demo.com", "123", Set.of(Role.ADMIN)));
+        User.persist(new User("Super Admin", "superadmin@demo.com", "123", Set.of(Role.ADMIN, Role.PROJECT_MANAGER)));
+        User.persist(new User("Usuário", "user@demo.com", "123", Set.of(Role.USER)));
 
         WorkflowStatus.persist(new WorkflowStatus("TO_DO"));
         WorkflowStatus.persist(new WorkflowStatus("IN_PROGRESS"));

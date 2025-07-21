@@ -11,10 +11,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialog } from '@angular/material/dialog';
 import { CreateTicketModalComponent } from './components/create-ticket-modal/create-ticket-modal.component';
 import { ActivatedRoute } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { AuthService } from './services/auth.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule, CreateTicketModalComponent],
+  imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule, CreateTicketModalComponent,
+    MatIconModule, MatMenuModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -25,7 +30,11 @@ export class AppComponent implements OnInit {
   statuses: Status[] = [this.anyStatus];
   selectStatus: Status = this.anyStatus;
 
-  constructor(private router: Router, private statusService: StatusService, private dialog: MatDialog, private route: ActivatedRoute) { }
+  constructor(private router: Router, 
+              private statusService: StatusService, 
+              private dialog: MatDialog, 
+              private route: ActivatedRoute,
+              private authService: AuthService) { }
 
   onSearchKeydown(event: KeyboardEvent) {
     this.goToSearch(this.searchTerm.trim(), this.selectStatus); 
@@ -75,5 +84,14 @@ export class AppComponent implements OnInit {
       disableClose: true,
       data: { projectId, authorId }
     });
+  }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
+  getRoles(): string {
+    return this.authService.getRoles().join(', ');
   }
 }

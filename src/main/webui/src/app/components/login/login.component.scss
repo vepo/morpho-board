@@ -1,0 +1,15 @@
+@import '../../../colors.scss';
+
+div.main {
+    h2 {
+        background-color: $base-color;
+        color: #FFF;
+    }
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0.5rem 2rem;
+
+    mat-form-field {
+        width: 100%;
+    }
+}
