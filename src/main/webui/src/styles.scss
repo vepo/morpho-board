@@ -62,6 +62,13 @@ input, select {
     border-radius: 0.2rem;
     background-color: #FFF;
     padding: 0.2rem 2rem 0.2rem 0.5rem;
+
+    &:focus:not(.mat-mdc-input-element),
+    &:focus-visible:not(.mat-mdc-input-element) {
+        outline: none;
+        border-color: colors.$base-contrast-color;
+        box-shadow: 0 0 2px 2px colors.$base-contrast-color;
+    }
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -103,9 +110,12 @@ main {
   background-color: colors.$base-background-color;
   color: #FFFFFF;
   padding: 0;
-  border-bottom: 1px solid #e9ecef;
   display: flex;
   flex-grow: 0;
+  button.btn {
+    height: auto;
+    padding: 0.2rem 1.3rem;
+  }
   div {
     flex-grow: 0;
     &.grow-space {
@@ -433,3 +443,46 @@ form {
         }
     }
 }
+
+@media only screen and (max-width: 750px) {
+    .main-header {
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0.5rem 2rem;
+        max-width: 100%;
+        align-items: start;
+        div:not(.grow-space) {
+            flex: 1 1 0;
+            width: 100%;
+            max-width: 250px;
+            margin: auto;
+            select, input, button {
+                width: 100%;
+                margin: 0.2rem 0;
+            }
+        }
+        div.grow-space {
+            flex-grow: 0;
+        }
+    }
+    .box .card,
+    .card {
+        min-width: 100px;
+
+        button {
+            margin: 0 auto 0.3rem auto !important;
+            width: 100%;
+        }
+    }
+
+    .main-footer {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 2rem;
+    }
+    
+    main {
+        margin: auto 4rem;
+    }
+} 

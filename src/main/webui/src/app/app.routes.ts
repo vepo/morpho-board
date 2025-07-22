@@ -15,7 +15,7 @@ export const routes: Routes = [
     component: HomeComponent
   },
   {
-    path: 'kanban/:projectId',
+    path: 'project/:projectId/kanban',
     component: KanbanComponent,
     resolve: {
       project: projectResolver,

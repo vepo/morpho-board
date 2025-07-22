@@ -8,8 +8,8 @@
       <div class="card">
         <div class="title">{{ project.name }}</div>
         <div title="{{ project.description }}" class="description">{{ project.description | trim:100 }}</div>
-        <button class="btn" matButton (click)="navigateToKanban(project.id)"><mat-icon fontIcon="view_kanban"></mat-icon>Kanban</button>
-        <button class="btn" matButton (click)="navigateToKanban(project.id)"><mat-icon fontIcon="query_stats"></mat-icon>Dasboard</button>
+        <button class="btn" matButton [routerLink]="['/project', project.id, 'kanban']"><mat-icon fontIcon="view_kanban"></mat-icon>Kanban</button>
+        <button class="btn" matButton [routerLink]="['/project', project.id, 'dashboard']"><mat-icon fontIcon="query_stats"></mat-icon>Dasboard</button>
       </div>
       }
     </div>

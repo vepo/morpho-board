@@ -32,8 +32,4 @@ export class HomeComponent implements OnInit {
   isAuthenticated(): boolean {
     return this.authService.isLoggedIn();
   }
-
-  navigateToKanban(projectId: number) {
-    this.router.navigate(['/kanban', projectId]);
-  }
 } 

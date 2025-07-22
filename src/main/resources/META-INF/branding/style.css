@@ -1,0 +1,13 @@
+body {
+    margin: 0;
+}
+
+.swagger-ui .topbar {
+    background-color: #BF0603;
+}
+
+#footer {
+    background-color: #BF0603;
+    color: #FFFFFF;
+    padding: 0.5rem 1rem;
+}

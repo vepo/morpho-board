@@ -16,23 +16,33 @@
     </select>
   </div>
   <div>
-    <button (click)="openCreateTicketDialog()">
-      Novo
+    <button class="btn" matButton (click)="openCreateTicketDialog()">
+      <mat-icon fontIcon="assignment"></mat-icon>Novo
     </button>
   </div>
   }
   <div class="grow-space"></div>
   @if (isAuthenticated()) {
   <div class="user-menu">
-    <button matButton [matMenuTriggerFor]="menu"><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="menu"></mat-icon> Menu</button>
+    <button matButton [matMenuTriggerFor]="menu"><mat-icon fontIcon="menu"></mat-icon>Menu</button>
     <mat-menu #menu="matMenu" class="user-menu-panel">
-      <button mat-menu-item [routerLink]="'/account/settings'"><mat-icon fontIcon="person"></mat-icon>Conta</button>
-      <button mat-menu-item *role="'ADMIN'" [routerLink]="'/account/settings'"><mat-icon fontIcon="group"></mat-icon>Usuários</button>
-      <div class="divider" *role="'PROJECT_MANAGER'"></div>
-      <button mat-menu-item *role="'PROJECT_MANAGER'" [routerLink]="'/account/settings'"><mat-icon fontIcon="view_kanban"></mat-icon>Processos</button>
-      <button mat-menu-item *role="'PROJECT_MANAGER'" [routerLink]="'/account/settings'"><mat-icon fontIcon="work"></mat-icon>Projetos</button>
+      <button mat-menu-item [routerLink]="'/account/settings'">
+        <mat-icon fontIcon="person"></mat-icon>Conta
+      </button>
+      <button mat-menu-item *role="'ADMIN'" [routerLink]="'/users'">
+        <mat-icon fontIcon="group"></mat-icon>Usuários
+      </button>
+      <div class="divider"  *role="'PROJECT_MANAGER'"></div>
+      <button mat-menu-item *role="'PROJECT_MANAGER'" [routerLink]="'/workflows'">
+        <mat-icon fontIcon="handyman"></mat-icon>Processos
+      </button>
+      <button mat-menu-item *role="'PROJECT_MANAGER'" [routerLink]="'/projects'">
+        <mat-icon fontIcon="work"></mat-icon>Projetos
+      </button>
       <div class="divider"></div>
-      <button mat-menu-item (click)="logout()"><mat-icon fontIcon="logout"></mat-icon>Sair</button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon fontIcon="logout"></mat-icon>Sair
+      </button>
     </mat-menu>    
   </div>
   } @else {
@@ -48,6 +58,7 @@
   <div>
     © 2025 MorphoBoard. Todos os direitos reservados.
   </div>
+  <div><a href="/openapi" target="_blank">API Docs</a></div>
   <div class="grow-space"></div>
   <div>
     Desenvolvido por <a href="https://vepo.dev" target="_blank">Victor Osório</a>
