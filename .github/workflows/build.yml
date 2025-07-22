@@ -36,3 +36,12 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vepo_morpho-board
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        with:
+          projectBaseDir: src/main/webui
+          args: >
+            -Dsonar.organization=vepo-github
+            -Dsonar.projectKey=vepo_morpho-board
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
