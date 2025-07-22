@@ -1,7 +1,7 @@
-package io.vepo.morphoboard.project;
+package dev.vepo.morphoboard.project;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.vepo.morphoboard.workflow.Workflow;
+import dev.vepo.morphoboard.workflow.Workflow;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;

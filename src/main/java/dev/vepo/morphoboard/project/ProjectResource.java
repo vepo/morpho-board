@@ -1,11 +1,11 @@
-package io.vepo.morphoboard.project;
+package dev.vepo.morphoboard.project;
 
 import java.util.List;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
 
-import io.vepo.morphoboard.workflow.Workflow;
-import io.vepo.morphoboard.workflow.WorkflowResource;
+import dev.vepo.morphoboard.workflow.Workflow;
+import dev.vepo.morphoboard.workflow.WorkflowResource;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;

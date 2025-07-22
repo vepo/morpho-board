@@ -12,8 +12,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { 
     path: '', 
-    component: HomeComponent ,
-    canActivate: [authGuard],
+    component: HomeComponent
   },
   {
     path: 'kanban/:projectId',

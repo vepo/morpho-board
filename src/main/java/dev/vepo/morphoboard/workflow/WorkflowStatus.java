@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.workflow;
+package dev.vepo.morphoboard.workflow;
 
 import java.util.Optional;
 

@@ -1,25 +1,21 @@
-import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { Status, StatusService } from './services/status.service';
-import { NormalizePipe } from './components/pipes/normalize.pipe';
-import { map } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatDialog } from '@angular/material/dialog';
-import { CreateTicketModalComponent } from './components/create-ticket-modal/create-ticket-modal.component';
-import { ActivatedRoute } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { map } from 'rxjs';
+import { CreateTicketModalComponent } from './components/create-ticket-modal/create-ticket-modal.component';
+import { NormalizePipe } from './components/pipes/normalize.pipe';
 import { AuthService } from './services/auth.service';
-import { JwtHelperService } from '@auth0/angular-jwt';
+import { Status, StatusService } from './services/status.service';
+import { RoleDirective } from './directives/role.directive';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule, CreateTicketModalComponent,
-    MatIconModule, MatMenuModule],
+  imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule,
+    MatIconModule, MatMenuModule, RoleDirective],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
@@ -86,12 +82,12 @@ export class AppComponent implements OnInit {
     });
   }
 
+  isAuthenticated(): boolean {
+    return this.authService.isLoggedIn();
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
-  }
-
-  getRoles(): string {
-    return this.authService.getRoles().join(', ');
   }
 }

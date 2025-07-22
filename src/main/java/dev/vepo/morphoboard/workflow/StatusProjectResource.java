@@ -1,8 +1,8 @@
-package io.vepo.morphoboard.workflow;
+package dev.vepo.morphoboard.workflow;
 
 import java.util.List;
 
-import io.vepo.morphoboard.project.Project;
+import dev.vepo.morphoboard.project.Project;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.Path;

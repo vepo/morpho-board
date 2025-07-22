@@ -1,15 +1,11 @@
-@import '../../../colors.scss';
+@use "../../../colors";
 
-div.main {
-    h2 {
-        background-color: $base-color;
-        color: #FFF;
-    }
+.main {
     max-width: 960px;
-    margin: 0 auto;
-    padding: 0.5rem 2rem;
-
-    mat-form-field {
-        width: 100%;
-    }
+    margin: auto;
+    padding: 0 2rem;
+}
+form {
+    border: solid 1px colors.$base-background-color;
+    padding: 0 2rem 2rem 2rem;
 }

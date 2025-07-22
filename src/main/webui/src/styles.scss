@@ -2,8 +2,9 @@
 
 // https://coolors.co/01172f-d9e8df-00635d-bf0603-446df6
 
+@use "./colors";
+
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-@import './colors.scss';
 
 
 body {
@@ -15,15 +16,24 @@ body {
     background-color: #EFEFEF;
 }
 
+button.btn.mdc-button,
 button {
     border: solid 1px #2958F5;
     border-radius: 0.2rem;
     padding: 0.3rem 1.3rem;
-    background-color: $base-color;
+    background-color: colors.$base-active-color;
     color: #FFFFFF;
+    .mdc-button__label, .mat-icon {
+        color: #FFFFFF;
+    }
     cursor: pointer;
     &:not(:last-child) {
         margin-right: 0.5rem;
+    }
+    &.mat-mdc-menu-trigger {
+        &:hover {
+            background-color: colors.$base-background-color-light;
+        }    
     }
     &:hover {
         background-color: #1549F4;
@@ -59,13 +69,48 @@ h1, h2, h3, h4, h5, h6 {
     margin: 1rem 0;
 }
 
+.main-footer {
+    div {
+        padding: 0.8rem 1rem;
+        color: #FFFFFF;
+    }
+    a {
+        &:visited {
+            color: #FFFFFF;
+        }
+        color: #FFFFFF;
+        text-decoration: none;
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+app-root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    margin: auto 2rem;
+    padding-bottom: 2rem;
+    overflow: auto;
+}
+.main-footer,
 .main-header {
-  background-color: #023164;
+  background-color: colors.$base-background-color;
   color: #FFFFFF;
   padding: 0;
   border-bottom: 1px solid #e9ecef;
   display: flex;
+  flex-grow: 0;
   div {
+    flex-grow: 0;
+    &.grow-space {
+        flex-grow: 1;
+    }
     display: inline;
     &:not(:last-child) {
       margin-right: 1rem;
@@ -102,12 +147,6 @@ h1, h2, h3, h4, h5, h6 {
     }
   }
 }
-
-main {
-  min-height: calc(100vh - 80px);  
-  margin: auto 2rem;
-}
-
 
 .centered {
     text-align: center;
@@ -325,11 +364,18 @@ form {
     border-radius: 4px;
 }
 
-.cdk-overlay-pane .mat-mdc-tooltip-show,
-.cdk-overlay-pane .mat-mdc-select-panel {
-    background-color: #FFFFFF;
-    padding: 0.2rem 2rem;
-    border: solid 1px #666666;
+.cdk-overlay-pane  {
+    .mat-mdc-tooltip-show,
+    .mat-mdc-menu-panel,
+    .mat-mdc-select-panel {
+        background-color: #FFFFFF;
+        border: solid 1px #666666;
+    }
+
+    .mat-mdc-tooltip-show,
+    .mat-mdc-select-panel {
+        padding: 0.2rem 2rem;
+    }
 }
 
 .mat-mdc-tooltip-surface {
@@ -338,4 +384,52 @@ form {
 
 .mdc-text-field {
     padding: 0;
+}
+
+.form-header {
+    margin: 2rem auto 0 auto;
+    padding: 0.5rem 2rem;
+    background-color: colors.$base-background-color;
+    color: #FFF;
+    h1, h2, h3, h4, h5, h6 {
+        color: #FFF;
+    }
+
+    mat-form-field {
+        width: 100%;
+    }
+}
+
+.error {
+    font-style: italic;
+    color: colors.$base-error-color;
+    margin: 1rem auto;
+}
+
+.user-menu {
+    button {
+        margin: 0;
+    }
+}
+
+.user-menu-panel {
+    
+    .divider {
+        border-bottom: solid 0.5px #DDDDDD;
+    }
+    .mat-mdc-menu-content {
+        padding: 0;
+        font-size: 0.9rem;
+        .mat-mdc-menu-item {
+            margin: 0;
+            padding: 0 2rem;
+            min-height: 2.4rem;
+            font-size: 0.8rem;
+            border-radius: 0;
+            &:hover {
+                background-color: colors.$base-background-color-light;
+                color: #FFFFFF;
+            }
+        }
+    }
 }

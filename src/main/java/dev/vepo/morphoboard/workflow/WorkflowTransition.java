@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.workflow;
+package dev.vepo.morphoboard.workflow;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;

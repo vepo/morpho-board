@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.workflow;
+package dev.vepo.morphoboard.workflow;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;

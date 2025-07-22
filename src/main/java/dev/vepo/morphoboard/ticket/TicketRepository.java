@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.joining;

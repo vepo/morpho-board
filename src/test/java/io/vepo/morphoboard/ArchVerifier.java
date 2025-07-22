@@ -1,4 +1,4 @@
-package io.vepo.morphoboard;
+package dev.vepo.morphoboard;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -75,7 +75,7 @@ class ArchVerifier {
         };
     }
 
-    private final JavaClasses importedClasses = new ClassFileImporter().importPackages("io.vepo.morphoboard");
+    private final JavaClasses importedClasses = new ClassFileImporter().importPackages("dev.vepo.morphoboard");
 
     @Test
     void verifyAllBodyClassIsNamedRequest() {

@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.infra;
+package dev.vepo.morphoboard.infra;
 
 import java.util.function.Predicate;
 import java.util.regex.Pattern;

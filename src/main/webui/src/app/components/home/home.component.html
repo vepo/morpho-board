@@ -2,14 +2,17 @@
   <div class="home-content">
     <h1>MorphoBoard</h1>
     <p>Bem-vindo ao sistema de gerenciamento de tickets</p>
+    @if (isAuthenticated()) {
     <div class="box">
       @for (project of projects; track project.name) {
       <div class="card">
         <div class="title">{{ project.name }}</div>
         <div title="{{ project.description }}" class="description">{{ project.description | trim:100 }}</div>
-        <button (click)="navigateToKanban(project.id)">Kanban</button>
+        <button class="btn" matButton (click)="navigateToKanban(project.id)"><mat-icon fontIcon="view_kanban"></mat-icon>Kanban</button>
+        <button class="btn" matButton (click)="navigateToKanban(project.id)"><mat-icon fontIcon="query_stats"></mat-icon>Dasboard</button>
       </div>
       }
     </div>
+    }
   </div>
 </div> 

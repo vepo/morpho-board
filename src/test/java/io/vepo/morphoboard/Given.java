@@ -1,10 +1,10 @@
-package io.vepo.morphoboard;
+package dev.vepo.morphoboard;
 
 import static io.restassured.RestAssured.given;
 
 import java.util.stream.Stream;
 
-import io.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
+import dev.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
 
 public class Given {
     public static WorkflowResponse simpleWorkflow() {

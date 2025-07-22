@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.auth;
+package dev.vepo.morphoboard.auth;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.smallrye.jwt.build.Jwt;
-import io.vepo.morphoboard.user.User;
+import dev.vepo.morphoboard.user.User;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;

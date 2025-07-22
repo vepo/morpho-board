@@ -4,12 +4,13 @@
       <a routerLink="/">Home</a>
     </nav>
   </div>
+  @if (isAuthenticated()) {
   <div>
     <input type="text" placeholder="Buscar tickets..." [(ngModel)]="searchTerm" (keydown)="onSearchKeydown($event)" class="search-input" />
   </div>
   <div>
     <select [(ngModel)]="selectStatus" (ngModelChange)="onChange($event)">
-      @for(status of statuses; track status.id) {
+      @for(status of statuses; track status.name) {
         <option [ngValue]="status">{{status.name | normalize }}</option>
       }
     </select>
@@ -19,14 +20,36 @@
       Novo
     </button>
   </div>
+  }
+  <div class="grow-space"></div>
+  @if (isAuthenticated()) {
   <div class="user-menu">
-    <button matButton [matMenuTriggerFor]="menu"><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="person"></mat-icon></button>
-    <mat-menu #menu="matMenu">
-      <button mat-menu-item (click)="logout()">Logout</button>
+    <button matButton [matMenuTriggerFor]="menu"><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="menu"></mat-icon> Menu</button>
+    <mat-menu #menu="matMenu" class="user-menu-panel">
+      <button mat-menu-item [routerLink]="'/account/settings'"><mat-icon fontIcon="person"></mat-icon>Conta</button>
+      <button mat-menu-item *role="'ADMIN'" [routerLink]="'/account/settings'"><mat-icon fontIcon="group"></mat-icon>Usuários</button>
+      <div class="divider" *role="'PROJECT_MANAGER'"></div>
+      <button mat-menu-item *role="'PROJECT_MANAGER'" [routerLink]="'/account/settings'"><mat-icon fontIcon="view_kanban"></mat-icon>Processos</button>
+      <button mat-menu-item *role="'PROJECT_MANAGER'" [routerLink]="'/account/settings'"><mat-icon fontIcon="work"></mat-icon>Projetos</button>
+      <div class="divider"></div>
+      <button mat-menu-item (click)="logout()"><mat-icon fontIcon="logout"></mat-icon>Sair</button>
     </mat-menu>    
   </div>
-  {{ getRoles()}}
+  } @else {
+  <div class="user-menu">
+    <button matButton [routerLink]="'/login'"><mat-icon aria-hidden="false" aria-label="Example home icon" fontIcon="login"></mat-icon> Login</button>
+  </div>
+  }
 </header>
 <main class="container">
   <router-outlet />
 </main>
+<footer class="main-footer">
+  <div>
+    © 2025 MorphoBoard. Todos os direitos reservados.
+  </div>
+  <div class="grow-space"></div>
+  <div>
+    Desenvolvido por <a href="https://vepo.dev" target="_blank">Victor Osório</a>
+  </div>
+</footer>

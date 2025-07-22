@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket;
 
 import java.util.List;
 

@@ -1,13 +1,13 @@
-package io.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.vepo.morphoboard.project.Project;
-import io.vepo.morphoboard.user.User;
-import io.vepo.morphoboard.workflow.WorkflowStatus;
+import dev.vepo.morphoboard.project.Project;
+import dev.vepo.morphoboard.user.User;
+import dev.vepo.morphoboard.workflow.WorkflowStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

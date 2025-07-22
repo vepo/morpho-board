@@ -6,7 +6,6 @@ import { Pipe, PipeTransform } from "@angular/core";
 export class TrimPipe implements PipeTransform {
     transform(value: string, ...args: any[]) {
         const maxSize = args[0] || 250;
-        console.log("Max SIZE", maxSize);
         if (value.length > maxSize) {
             return value.substring(0, maxSize) + '...';
         } else {

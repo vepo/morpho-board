@@ -1,10 +1,10 @@
-package io.vepo.morphoboard.user;
+package dev.vepo.morphoboard.user;
 
 import java.util.List;
 import java.util.Set;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.vepo.morphoboard.ticket.Ticket;
+import dev.vepo.morphoboard.ticket.Ticket;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

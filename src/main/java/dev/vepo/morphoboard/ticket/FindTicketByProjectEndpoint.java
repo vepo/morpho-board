@@ -1,8 +1,8 @@
-package io.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket;
 
 import java.util.List;
 
-import io.vepo.morphoboard.ticket.TicketResource.TicketResponse;
+import dev.vepo.morphoboard.ticket.TicketResource.TicketResponse;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;

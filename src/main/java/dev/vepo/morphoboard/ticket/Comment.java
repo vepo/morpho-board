@@ -1,9 +1,9 @@
-package io.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket;
 
 import java.time.Instant;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.vepo.morphoboard.user.User;
+import dev.vepo.morphoboard.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;

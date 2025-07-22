@@ -74,3 +74,12 @@
 
 1. Criação do mecanismo de autenticação
 
+## Vídeo 011
+
+1. Criação do menu logout
+
+## Pós Vídeo 011
+
+1. Mudança de pacote `io.vepo` para `dev.vepo`
+2. Revisão da interface
+3. Criação de menus faltantes

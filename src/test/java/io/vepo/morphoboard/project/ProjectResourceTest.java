@@ -1,4 +1,4 @@
-package io.vepo.morphoboard.project;
+package dev.vepo.morphoboard.project;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import io.quarkus.test.junit.QuarkusTest;
-import io.vepo.morphoboard.Given;
-import io.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
+import dev.vepo.morphoboard.Given;
+import dev.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
 
 @QuarkusTest
 @TestMethodOrder(OrderAnnotation.class)
