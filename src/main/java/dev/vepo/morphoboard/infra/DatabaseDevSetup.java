@@ -35,11 +35,14 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 @IfBuildProfile("dev")
 public class DatabaseDevSetup {
-
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
 
+    private PasswordEncoder passwordEncoder;
+
     @Inject
-    PasswordEncoder passwordEncoder;
+    public DatabaseDevSetup(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Transactional
     void onStart(@Observes StartupEvent ev) {

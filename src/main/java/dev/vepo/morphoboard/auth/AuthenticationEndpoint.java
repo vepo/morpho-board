@@ -2,7 +2,6 @@ package dev.vepo.morphoboard.auth;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
@@ -10,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.user.Role;
-import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,15 +25,11 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.SecurityContext;
 
-@Path("/auth") 
-@Produces(MediaType.APPLICATION_JSON) 
+@Path("/auth")
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthenticationEndpoint {
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationEndpoint.class);
-
-
     private PasswordEncoder passwordEncoder;
-
     private UserRepository userRepository;
 
 
@@ -44,7 +38,7 @@ public class AuthenticationEndpoint {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
-    
+
     @POST
     @Path("/login")
     public LoginResponse login(@Valid @Parameter(name = "request") LoginRequest req) {
@@ -56,7 +50,9 @@ public class AuthenticationEndpoint {
                                                                   .upn(user.email)
                                                                   .claim("id", user.id)
                                                                   .claim("email", user.email)
-                                                                  .groups(user.roles.stream().map(Role::role).collect(Collectors.toSet()))
+                                                                  .groups(user.roles.stream()
+                                                                                    .map(Role::role)
+                                                                                    .collect(Collectors.toSet()))
                                                                   .issuedAt(now)
                                                                   .expiresAt(now.plus(1, ChronoUnit.DAYS))
                                                                   .sign());
