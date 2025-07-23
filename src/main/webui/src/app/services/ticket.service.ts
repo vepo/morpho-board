@@ -13,6 +13,35 @@ export interface Ticket {
   status: number;
 }
 
+export interface TicketUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface TicketHistory {
+  description: string;
+  user: TicketUser;
+  timestamp: number;
+}
+
+export interface TicketProject {
+  id: number;
+  name: string;
+}
+
+export interface TicketExpanded {
+  id: number;
+  title: string;
+  description: string;
+  category: string;
+  author: TicketUser;
+  assignee?: TicketUser;
+  project: TicketProject;
+  status: string;
+  history: TicketHistory[];
+}
+
 export interface CreateTicketRequest {
   title: string;
   description: string;
@@ -34,6 +63,14 @@ export class TicketService {
     return this.http.get<Ticket[]>(`/api/projects/${projectId}/tickets`);
   }
 
+  findById(ticketId: number): Observable<Ticket> {
+    return this.http.get<Ticket>(`/api/tickets/${ticketId}`);
+  }
+
+  findExpandedById(ticketId: number): Observable<TicketExpanded> {
+    return this.http.get<TicketExpanded>(`/api/tickets/${ticketId}/expanded`);
+  }
+
   search(term: string, status: number): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`${this.API_URL}/tickets/search`, {
       params: {
@@ -49,5 +86,13 @@ export class TicketService {
 
   createTicket(request: CreateTicketRequest): Observable<Ticket> {
     return this.http.post<Ticket>(`${this.API_URL}/tickets`, request);
+  }
+
+  getTicket(id: string) {
+    return this.http.get<any>(`/api/tickets/${id}`);
+  }
+
+  getTicketHistory(id: string) {
+    return this.http.get<any[]>(`/api/tickets/${id}/history`);
   }
 }

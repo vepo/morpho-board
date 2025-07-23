@@ -14,7 +14,7 @@
 
       @for (ticket of statusTicket; track $index) {
       <div class="card" cdkDrag>
-        <div class="identifier">{{ ticket.id }}</div>
+        <div class="identifier"><a [routerLink]="['/ticket', ticket.id]">{{ ticket.id }}</a></div>
         <div class="title">{{ ticket.title }}</div>
         <div class="description" [innerHTML]="ticket.description"></div>
       </div>

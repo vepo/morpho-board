@@ -56,6 +56,18 @@ button {
     }
 }
 
+a {
+    &:focus-visible {
+        outline: none;
+        border: none;
+    }
+    color: colors.$base-highlight-color;
+    text-decoration: none;
+    &:hover {
+        color: colors.$base-contrast-color;
+    }
+}
+
 input, select {
     box-sizing: border-box;
     border: solid 1px #888;
@@ -82,8 +94,10 @@ h1, h2, h3, h4, h5, h6 {
         color: #FFFFFF;
     }
     a {
-        &:visited {
+        &:visited,
+        &:focus-visible {
             color: #FFFFFF;
+            border: none;
         }
         color: #FFFFFF;
         text-decoration: none;
@@ -160,6 +174,10 @@ main {
 
 .centered {
     text-align: center;
+}
+
+.left-aligned {
+    text-align: left;
 }
 
 .box {
@@ -486,3 +504,55 @@ form {
         margin: auto 4rem;
     }
 } 
+hr {
+    border: 0;
+    border-top: 1px solid #CCCCCC;
+}
+
+div.table {
+    background-color: colors.$base-background-color;
+    color: #FFFFFF;
+    width: 100%;
+
+    &.empty {
+        background-color: #F2F2F2;
+        color: #444444;
+    }
+
+    .header {        
+        font-size: 1.2rem;
+        font-weight: bolder;
+        padding: 0.5rem 2rem;
+        text-align: center;
+    }
+    .body {
+        display: table;
+        width: 100%;
+        .row,
+        .sub-header {
+            display: table-row;
+            div {
+                padding: 0.5rem 2rem;
+                display: table-cell;
+            }
+        }
+        .sub-header {
+            font-weight: bold;;
+        }
+        .row {
+            color: #444444;
+            &.even {
+                background-color: #F2F7F4;
+                &:hover {
+                    background-color: #E0F2E0;
+                }
+            }
+            &.odd {
+                background-color: #FFEBEB;
+                &:hover {
+                    background-color: #FFD6D6;
+                }
+            }
+        }
+    }
+}

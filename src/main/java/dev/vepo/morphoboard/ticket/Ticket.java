@@ -43,6 +43,9 @@ public class Ticket extends PanacheEntity {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     public List<Comment> comments;
 
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    public List<TicketHistory> history;
+
     public Ticket() {
     }
 

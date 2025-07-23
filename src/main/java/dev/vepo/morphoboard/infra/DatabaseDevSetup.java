@@ -18,6 +18,7 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.quarkus.runtime.StartupEvent;
+import dev.vepo.morphoboard.auth.PasswordEncoder;
 import dev.vepo.morphoboard.project.Project;
 import dev.vepo.morphoboard.ticket.Category;
 import dev.vepo.morphoboard.ticket.Ticket;
@@ -28,6 +29,7 @@ import dev.vepo.morphoboard.workflow.WorkflowStatus;
 import dev.vepo.morphoboard.workflow.WorkflowTransition;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
@@ -36,14 +38,18 @@ public class DatabaseDevSetup {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
 
+    @Inject
+    PasswordEncoder passwordEncoder;
+
     @Transactional
     void onStart(@Observes StartupEvent ev) {
+        var encodedDefaultPassword = passwordEncoder.hashPassword("qwas1234");
         logger.info("Populating database with initial data for development...");
-        User.persist(new User("Gestor", "pm@morpho-board.io", "123", Set.of(Role.PROJECT_MANAGER)));
-        User.persist(new User("Desenvolvedor", "dev@morpho-board.io", "123", Set.of(Role.USER)));
-        User.persist(new User("Administrador", "admin@morpho-board.io", "123", Set.of(Role.ADMIN)));
-        User.persist(new User("Super Admin", "sudo@morpho-board.io", "123", Set.of(Role.ADMIN, Role.PROJECT_MANAGER)));
-        User.persist(new User("Usuário", "user@morpho-board.io", "123", Set.of(Role.USER)));
+        User.persist(new User("Gestor", "pm@morpho-board.io", encodedDefaultPassword, Set.of(Role.PROJECT_MANAGER)));
+        User.persist(new User("Desenvolvedor", "dev@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)));
+        User.persist(new User("Administrador", "admin@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN)));
+        User.persist(new User("Super Admin", "sudo@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN, Role.PROJECT_MANAGER)));
+        User.persist(new User("Usuário", "user@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)));
 
         WorkflowStatus.persist(new WorkflowStatus("TO_DO"));
         WorkflowStatus.persist(new WorkflowStatus("IN_PROGRESS"));

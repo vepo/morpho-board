@@ -23,7 +23,7 @@
     }
     @for (ticket of tickets; track ticket.id) {
     <div class="card">
-      <div class="identifier">{{ticket.id}}</div>
+      <div class="identifier"><a [routerLink]="['/ticket', ticket.id]">{{ ticket.id }}</a></div>
       <div class="title">{{ ticket.title }}</div>
       <div class="description">{{ ticket.description }}</div>
       <div class="metadata">Projeto: {{ projectName(ticket.project) }} | Status: {{ statusName(ticket.status) }}</div>

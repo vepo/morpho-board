@@ -1,0 +1,35 @@
+@if (ticket) {
+<div class="centered">
+  <h1>Ticket #{{ ticket.id }} - {{ ticket.title }}</h1>
+  <div class="left-aligned">
+    <p><strong>Projeto:</strong> {{ ticket.project.name }}</p>
+    <p><strong>Categoria:</strong> {{ ticket.category }}</p>
+    <p><strong>Descrição:</strong> {{ ticket.description }}</p>
+    <p><strong>Autor:</strong> {{ ticket.author.name }}</p>
+    <p><strong>Responsável:</strong> {{ ticket.assignee?.name }}</p>
+    <p><strong>Status:</strong> {{ ticket.status | normalize }}</p>
+    <hr>
+    @if (ticket.history && ticket.history.length > 0) {
+      <div class="table">
+        <div class="header">Histórico de Alterações</div>
+        <div class="body">
+          <div class="sub-header">
+            <div>Data</div>
+            <div>Usuário</div>
+            <div>Alteração</div>
+          </div>
+          @for (entry of ticket.history; track entry.timestamp) {
+            <div class="row {{ $even ? 'even' : 'odd' }}">
+              <div>{{ entry.timestamp | date:'medium' }}</div>
+              <div>{{ entry.user.email }}</div>
+              <div>{{ entry.description }}</div>
+            </div>
+          }
+        </div>
+      </div>
+    } @else {
+      <div class="table empty">Nenhuma atividade registrada...</div>
+    }
+  </div>
+</div>
+}

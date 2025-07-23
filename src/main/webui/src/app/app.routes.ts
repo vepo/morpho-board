@@ -7,11 +7,13 @@ import { statusResolver } from './resolvers/status-resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
 import { LoginComponent } from './components/login/login.component';
 import { authGuard } from './services/auth.guard';
+import { TicketViewComponent } from './components/ticket-view/ticket-view.component';
+import { ticketResolver } from './resolvers/ticket.resolver';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { 
-    path: '', 
+  {
+    path: '',
     component: HomeComponent
   },
   {
@@ -28,6 +30,13 @@ export const routes: Routes = [
     path: 'search',
     component: SearchTicketsComponent,
     canActivate: [authGuard],
+  },
+  {
+    path: 'ticket/:ticketId',
+    component: TicketViewComponent,
+    resolve: {
+      ticket: ticketResolver
+    }
   },
   {
     path: '',

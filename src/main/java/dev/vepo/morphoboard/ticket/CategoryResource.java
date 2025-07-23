@@ -14,7 +14,7 @@ public class CategoryResource {
     public static record CategoryResponse(long id, String name) {
     }
 
-    private static final CategoryResponse toResponse(Category category) {
+    public static final CategoryResponse toResponse(Category category) {
         return new CategoryResponse(category.id, category.name);
     }
 

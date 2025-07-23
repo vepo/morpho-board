@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Project, ProjectsService } from '../../services/projects.service';
 import { Status, StatusService } from '../../services/status.service';
 import { Ticket, TicketService } from '../../services/ticket.service';
@@ -10,7 +10,7 @@ import { Ticket, TicketService } from '../../services/ticket.service';
   templateUrl: './search-tickets.component.html',
   styleUrls: ['./search-tickets.component.scss'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, RouterLink]
 })
 export class SearchTicketsComponent implements OnInit {
   tickets: Ticket[] = [];

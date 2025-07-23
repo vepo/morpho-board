@@ -10,8 +10,11 @@ import java.util.function.Predicate;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import dev.vepo.morphoboard.project.Project;
+import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
@@ -27,85 +30,41 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
 
 @Path("/tickets")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class TicketResource {
-    public static record CreateTicketRequest(String title,
-                                             String description,
-                                             Long categoryId,
-                                             Long authorId,
-                                             Long assigneeId,
-                                             Long projectId) {
-    }
-
-    public static record CommentRequest(String content, Long authorId) {
-    }
-
-    public static record UpdateTicketRequest(String title,
-                                             String description,
-                                             Long categoryId,
-                                             Long assigneeId) {
-    }
-
-    public static record MoveTicketRequest(Long to) {
-    }
-
-    public static record TicketResponse(long id,
-                                        String title,
-                                        String description,
-                                        Long category,
-                                        Long author,
-                                        Long assignee,
-                                        Long project,
-                                        Long status) {
-    }
-
-    public static record CommentResponse(long id, UserResponse author, String content, long createdAt) {
-    }
-
-    public static record UserResponse(long id, String email) {
-    }
-
-    public static final TicketResponse toResponse(Ticket ticket) {
-        return new TicketResponse(ticket.id,
-                                  ticket.title,
-                                  ticket.description,
-                                  ticket.category != null ? ticket.category.id : null,
-                                  ticket.author != null ? ticket.author.id : null,
-                                  ticket.assignee != null ? ticket.assignee.id : null,
-                                  ticket.project != null ? ticket.project.id : null,
-                                  ticket.status != null ? ticket.status.id : null);
-    }
-
-    private static final CommentResponse toResponse(Comment comment) {
-        return new CommentResponse(comment.id, toResponse(comment.author), comment.content, comment.createdAt.toEpochMilli());
-    }
-
-    private static UserResponse toResponse(User user) {
-        return new UserResponse(user.id, user.email);
-    }
+@DenyAll
+public class TicketEndpoint {
 
     @Inject
     TicketRepository repository;
 
+    @Inject
+    TicketHistoryRepository historyRepository;
+
+    @Context
+    SecurityContext securityContext;
+
     @GET
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<TicketResponse> listAll(@QueryParam("status") Long statusId) {
         if (statusId != null) {
             return repository.stream("status.id", statusId)
-                             .map(TicketResource::toResponse)
+                             .map(TicketResponse::load)
                              .toList();
         }
         return repository.streamAll()
-                         .map(TicketResource::toResponse)
+                         .map(TicketResponse::load)
                          .toList();
     }
 
     @GET
     @Path("search")
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<TicketResponse> search(@QueryParam("term") String term,
                                        @QueryParam("statusId") @DefaultValue("-1") long statusId) {
 
@@ -115,24 +74,35 @@ public class TicketResource {
                                          .map(s -> s.split("\\s+"))
                                          .orElseGet(() -> new String[] {}),
                                  statusId)
-                         .map(TicketResource::toResponse)
+                         .map(TicketResponse::load)
                          .toList();
     }
 
     @GET
     @Path("/{id}")
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse findById(@PathParam("id") Long id) {
         return repository.findByIdOptional(id)
-                         .map(TicketResource::toResponse)
+                         .map(TicketResponse::load)
+                         .orElseThrow(() -> new NotFoundException(String.format("Ticket does not found! ticketId=%d", id)));
+    }
+
+    @GET
+    @Path("/{id}/expanded")
+    @Transactional
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public TicketExpandedResponse findExpandedById(@PathParam("id") Long id) {
+        return repository.findByIdOptional(id)
+                         .map(TicketExpandedResponse::load)
                          .orElseThrow(() -> new NotFoundException(String.format("Ticket does not found! ticketId=%d", id)));
     }
 
     @POST
     @Transactional
     @ResponseStatus(201)
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse create(CreateTicketRequest request) {
-        if (request.title() == null || request.description() == null || request.categoryId() == null || request.authorId() == null
-                || request.projectId() == null) {
+        if (request.title() == null || request.description() == null || request.categoryId() == null || request.projectId() == null) {
             throw new BadRequestException("Campos obrigatórios não podem ser nulos");
         }
         Project project = Project.findById(request.projectId());
@@ -145,15 +115,22 @@ public class TicketResource {
         ticket.category = Category.findById(request.categoryId());
         ticket.status = project.workflow.start;
         ticket.project = project;
-        ticket.author = User.findById(request.authorId());
+        // Pega usuário autenticado via JWT
+        String email = securityContext.getUserPrincipal().getName();
+        User user = User.find("email", email).firstResult();
+        ticket.author = user;
         ticket.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
         repository.persist(ticket);
-        return toResponse(ticket);
+        // Registrar histórico de criação
+        var history = new TicketHistory(ticket, user, "Ticket criado", Instant.now());
+        historyRepository.persist(history);
+        return TicketResponse.load(ticket);
     }
 
     @PUT
     @Path("/{id}")
     @Transactional
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse update(@PathParam("id") Long id, UpdateTicketRequest request) {
         if (request.title() == null || request.description() == null || request.categoryId() == null) {
             throw new BadRequestException("Campos obrigatórios não podem ser nulos");
@@ -167,43 +144,58 @@ public class TicketResource {
         entity.category = Category.findById(request.categoryId());
         entity.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
         entity.updatedAt = LocalDateTime.now();
-        return toResponse(entity);
+        // Pega usuário autenticado via JWT
+        String email = securityContext.getUserPrincipal().getName();
+        User user = User.find("email", email).firstResult();
+        // Registrar histórico de edição
+        var history = new TicketHistory(entity, user, "Ticket editado", Instant.now());
+        historyRepository.persist(history);
+        return TicketResponse.load(entity);
     }
 
     @DELETE
     @Path("/{id}")
     @Transactional
+    @RolesAllowed({ Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public void delete(@PathParam("id") Long id) {
         repository.deleteById(id);
     }
 
     @GET
     @Path("/{id}/comments")
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<CommentResponse> listComments(@PathParam("id") Long id) {
         Ticket ticket = repository.findById(id);
         if (ticket == null) {
             throw new NotFoundException();
         }
         return ticket.comments.stream()
-                              .map(TicketResource::toResponse)
+                              .map(CommentResponse::load)
                               .toList();
     }
 
     @POST
     @Path("/{id}/comments")
     @Transactional
-    public Response addComment(@PathParam("id") Long id, CommentRequest request) {
+    @ResponseStatus(201)
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public CommentResponse addComment(@PathParam("id") Long id, CommentRequest request) {
         Ticket ticket = repository.findById(id);
         if (ticket == null) {
             throw new NotFoundException();
         }
+        // Pega usuário autenticado via JWT
+        String email = securityContext.getUserPrincipal().getName();
+        User user = User.find("email", email).firstResult();
         var comment = new Comment();
         comment.ticket = ticket;
-        comment.author = User.findById(request.authorId());
+        comment.author = user;
         comment.createdAt = Instant.now();
         ticket.comments.add(comment);
-
-        return Response.status(Response.Status.CREATED).entity(comment).build();
+        // Registrar histórico de comentário
+        var history = new TicketHistory(ticket, user, "Comentário adicionado", Instant.now());
+        historyRepository.persist(history);
+        return CommentResponse.load(comment);
     }
 
     @PATCH
@@ -228,6 +220,24 @@ public class TicketResource {
             throw new BadRequestException("Transição não permitida");
         }
         ticket.status = to;
-        return toResponse(ticket);
+        // Pega usuário autenticado via JWT
+        String email = securityContext.getUserPrincipal().getName();
+        User user = User.find("email", email).firstResult();
+        // Registrar histórico de movimentação
+        var history = new TicketHistory(ticket, user, "Ticket movido para status: " + to.name, Instant.now());
+        historyRepository.persist(history);
+        return TicketResponse.load(ticket);
+    }
+
+    @GET
+    @Path("/{id}/history")
+    public List<TicketHistoryResponse> getHistory(@PathParam("id") Long id) {
+        Ticket ticket = repository.findById(id);
+        if (ticket == null) {
+            throw new NotFoundException();
+        }
+        return ticket.history.stream()
+                             .map(TicketHistoryResponse::load)
+                             .toList();
     }
 }
