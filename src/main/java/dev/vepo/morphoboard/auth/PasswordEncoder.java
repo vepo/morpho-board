@@ -18,21 +18,24 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class PasswordEncoder {
 
-    @Inject
-    @ConfigProperty(name = "password.iterations")
-    int passwordIterations;
+    private int passwordIterations;
+
+    private int passwordKeyLength;
+
+    private String algorithm;
+
+    private String salt;
 
     @Inject
-    @ConfigProperty(name = "password.key.length")
-    int passwordKeyLength;
-
-    @Inject
-    @ConfigProperty(name = "password.algorithm")
-    String algorithm;
-
-    @Inject
-    @ConfigProperty(name = "password.salt")
-    String salt;
+    public PasswordEncoder(@ConfigProperty(name = "password.iterations") int passwordIterations,
+            @ConfigProperty(name = "password.key.length") int passwordKeyLength,
+            @ConfigProperty(name = "password.algorithm") String algorithm,
+            @ConfigProperty(name = "password.salt") String salt) {
+        this.passwordIterations = passwordIterations;
+        this.passwordKeyLength = passwordKeyLength;
+        this.algorithm = algorithm;
+        this.salt = salt;
+    }
 
     public String hashPassword(String password) {
         char[] chars = password.toCharArray();

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
+import dev.vepo.morphoboard.user.UserRepository;
 import io.smallrye.jwt.build.Jwt;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -33,37 +34,43 @@ public class AuthenticationEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationEndpoint.class);
 
 
-    @Inject
-    PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
+    private UserRepository userRepository;
+
+
+    @Inject
+    public AuthenticationEndpoint(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
+    
     @POST
     @Path("/login")
     public LoginResponse login(@Valid @Parameter(name = "request") LoginRequest req) {
-        var user = User.<User>find("email", req.email()).firstResult();
-        if (user == null || !passwordEncoder.matches(req.password(), user.encodedPassword) ) {
-            throw new NotAuthorizedException("Invalid credentials!", req);
-        }
-        Instant now = Instant.now();
-        return new LoginResponse(Jwt.issuer("https://morpho-board.vepo.dev")
-                                    .upn(user.email)
-                                    .claim("id", user.id)
-                                    .claim("email", user.email)
-                                    .groups(user.roles.stream().map(Role::role).collect(Collectors.toSet()))
-                                    .issuedAt(now)
-                                    .expiresAt(now.plus(1, ChronoUnit.DAYS))
-                                    .sign());
+        return this.userRepository.findByEmail(req.email())
+                                  .filter(u -> passwordEncoder.matches(req.password(), u.encodedPassword))
+                                  .map(user -> {
+                                      Instant now = Instant.now();
+                                      return new LoginResponse(Jwt.issuer("https://morpho-board.vepo.dev")
+                                                                  .upn(user.email)
+                                                                  .claim("id", user.id)
+                                                                  .claim("email", user.email)
+                                                                  .groups(user.roles.stream().map(Role::role).collect(Collectors.toSet()))
+                                                                  .issuedAt(now)
+                                                                  .expiresAt(now.plus(1, ChronoUnit.DAYS))
+                                                                  .sign());
+
+                                  })
+                                  .orElseThrow(() -> new NotAuthorizedException("Invalid credentials!", req));
     }
 
     @GET
     @Path("/me")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public AuthResponse me(@Context SecurityContext ctx) {
-        logger.info("Resquting user information! {}", ctx);
-        String email = ctx.getUserPrincipal().getName();
-        var user = User.<User>find("email", email).firstResult();
-        if (Objects.isNull(user)) {
-            throw new NotFoundException("User not found!");
-        }
-        return AuthResponse.load(user);
+        return userRepository.findByEmail(ctx.getUserPrincipal().getName())
+                             .map(AuthResponse::load)
+                             .orElseThrow(() -> new NotFoundException("User not found!"));
     }
 }
