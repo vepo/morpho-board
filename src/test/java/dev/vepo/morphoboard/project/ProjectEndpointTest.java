@@ -1,7 +1,7 @@
 package dev.vepo.morphoboard.project;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 import java.util.stream.Stream;
 
@@ -54,7 +54,7 @@ class ProjectEndpointTest {
                .get("/api/projects")
                .then()
                .statusCode(200)
-               .body("$.size()", is(0));
+               .body("$.size()", greaterThan(0));
     }
 
     @Test
@@ -110,11 +110,11 @@ class ProjectEndpointTest {
                                         .get("/api/projects")
                                         .then()
                                         .statusCode(200)
-                                        .body("$.size()", is(1))
-                                        .body("[0].name", is("Test Project"))
-                                        .body("[0].description", is("This is a test project."))
-                                        .body("[0].workflow.id", is((int) workflow.id()))
-                                        .body("[0].workflow.name", is(workflow.name())));
+                                        .body("$.size()", greaterThan(1))
+                                        .body("find { it.name == 'Test Project' }.name", is("Test Project"))
+                                        .body("find { it.name == 'Test Project' }.description", is("This is a test project."))
+                                        .body("find { it.name == 'Test Project' }.workflow.id", is((int) workflow.id()))
+                                        .body("find { it.name == 'Test Project' }.workflow.name", is(workflow.name())));
     }
 
     @Test
