@@ -34,7 +34,7 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Run Angular tests
         working-directory: src/main/webui
-        run: npm install && ng test --no-watch --code-coverage
+        run: npm install -g @angular/cli && npm install && ng test --no-watch --code-coverage
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
