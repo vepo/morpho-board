@@ -33,9 +33,15 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - uses: browser-actions/setup-chrome@v2
+      - name: Setup Angular CLI
+        working-directory: src/main/webui
+        run: npm install -g @angular/cli
+      - name: Install Frontend packages
+        working-directory: src/main/webui
+        run: npm install
       - name: Run Angular tests
         working-directory: src/main/webui
-        run: npm install -g @angular/cli && npm install && ng test --no-watch --code-coverage
+        run: ng test --no-watch --code-coverage --browsers=ChromeHeadless
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
