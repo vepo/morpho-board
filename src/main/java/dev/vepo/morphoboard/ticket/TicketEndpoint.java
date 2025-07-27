@@ -114,14 +114,14 @@ public class TicketEndpoint {
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse create(@Valid @Parameter(name = "request") CreateTicketRequest request) {
         var project = Project.<Project>findByIdOptional(request.projectId())
-                             .orElseThrow(() -> new BadRequestException("Projeto não encontrado"));
+                             .orElseThrow(() -> new NotFoundException("Projeto não encontrado"));
         var author = User.<User>find("email", securityContext.getUserPrincipal().getName())
                          .firstResultOptional()
-                         .orElseThrow(() -> new BadRequestException("Usuário não encontrado"));
+                         .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
         var ticket = new Ticket(request.title(),
                                 request.description(),
                                 Category.<Category>findByIdOptional(request.categoryId())
-                                        .orElseThrow(() -> new BadRequestException("Categoria não encontrada")),
+                                        .orElseThrow(() -> new NotFoundException("Categoria não encontrada")),
                                 author, 
                                 null,
                                 project,

@@ -159,5 +159,26 @@ class TicketEndpointTest {
                                                           .filter(status -> status.name().equals("TODO"))
                                                           .findFirst()
                                                           .orElseThrow(() -> new IllegalStateException("TODO status not found")).id()));
-    } 
+    }
+
+    @Test
+    @Order(7)
+    @DisplayName("It should not be possible to create a ticket with an invalid project ID")
+    void shouldNotCreateTicketWithInvalidProjectIdTest() {
+        given().header(pmAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body(String.format("""
+                                   {
+                                       "title": "Invalid Project Ticket",
+                                       "description": "This ticket has an invalid project ID.",
+                                       "projectId": 9999,
+                                       "categoryId": 1
+                                   }"""))
+               .post("/api/tickets")
+               .then()
+               .statusCode(404)
+               .body("message", equalTo("Projeto não encontrado"));   
+    }
 }
