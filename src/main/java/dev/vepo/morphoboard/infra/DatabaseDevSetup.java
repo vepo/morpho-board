@@ -33,7 +33,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
-@IfBuildProfile("dev")
+@IfBuildProfile(anyOf = { "dev", "test" })
 public class DatabaseDevSetup {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
 
@@ -45,7 +45,7 @@ public class DatabaseDevSetup {
     }
 
     @Transactional
-    void onStart(@Observes StartupEvent ev) {
+    public void onStart(@Observes StartupEvent ev) {
         var encodedDefaultPassword = passwordEncoder.hashPassword("qwas1234");
         logger.info("Populating database with initial data for development...");
         User.persist(new User("Gestor", "pm@morpho-board.io", encodedDefaultPassword, Set.of(Role.PROJECT_MANAGER)));

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
 
@@ -49,17 +50,25 @@ public class TicketEndpoint {
     @Context
     SecurityContext securityContext;
 
+    private static final String NUMBER_REGEX = "\\d+";
+    private static final Predicate<String> IS_NUMBER = Pattern.compile(NUMBER_REGEX).asMatchPredicate();
+
     @GET
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public List<TicketResponse> listAll(@QueryParam("status") Long statusId) {
-        if (statusId != null) {
-            return repository.stream("status.id", statusId)
+    public List<TicketResponse> listAll(@QueryParam("status") String status) {
+        if (Objects.nonNull(status) && IS_NUMBER.test(status)) {
+            return repository.findByStatusId(Long.parseLong(status))
+                             .map(TicketResponse::load)
+                             .toList();
+        } else if (Objects.nonNull(status) && !status.isBlank()) {
+            return repository.findByStatusName(status)
+                             .map(TicketResponse::load)
+                             .toList();
+        } else {
+            return repository.streamAll()
                              .map(TicketResponse::load)
                              .toList();
         }
-        return repository.streamAll()
-                         .map(TicketResponse::load)
-                         .toList();
     }
 
     @GET
@@ -105,24 +114,22 @@ public class TicketEndpoint {
         if (request.title() == null || request.description() == null || request.categoryId() == null || request.projectId() == null) {
             throw new BadRequestException("Campos obrigatórios não podem ser nulos");
         }
-        Project project = Project.findById(request.projectId());
-        if (project == null) {
-            throw new BadRequestException("Projeto não encontrado");
-        }
-        Ticket ticket = new Ticket();
-        ticket.title = request.title();
-        ticket.description = request.description();
-        ticket.category = Category.findById(request.categoryId());
-        ticket.status = project.workflow.start;
-        ticket.project = project;
-        // Pega usuário autenticado via JWT
-        String email = securityContext.getUserPrincipal().getName();
-        User user = User.find("email", email).firstResult();
-        ticket.author = user;
-        ticket.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
+        var project = Project.<Project>findByIdOptional(request.projectId())
+                             .orElseThrow(() -> new BadRequestException("Projeto não encontrado"));
+        var author = User.<User>find("email", securityContext.getUserPrincipal().getName())
+                         .firstResultOptional()
+                         .orElseThrow(() -> new BadRequestException("Usuário não encontrado"));
+        var ticket = new Ticket(request.title(),
+                                request.description(),
+                                Category.<Category>findByIdOptional(request.categoryId())
+                                        .orElseThrow(() -> new BadRequestException("Categoria não encontrada")),
+                                author, 
+                                null,
+                                project,
+                                project.workflow.start);
         repository.persist(ticket);
         // Registrar histórico de criação
-        var history = new TicketHistory(ticket, user, "Ticket criado", Instant.now());
+        var history = new TicketHistory(ticket, author, "Ticket criado", Instant.now());
         historyRepository.persist(history);
         return TicketResponse.load(ticket);
     }

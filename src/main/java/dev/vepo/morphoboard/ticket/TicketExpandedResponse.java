@@ -8,7 +8,7 @@ public record TicketExpandedResponse(long id,
                                      String category,
                                      TicketUserResponse author,
                                      TicketUserResponse assignee,
-                                     ProjectResponse project,
+                                     TicketProjectResponse project,
                                      String status,
                                      List<TicketHistoryResponse> history) {
 
@@ -19,7 +19,7 @@ public record TicketExpandedResponse(long id,
                                           ticket.category.name,
                                           TicketUserResponse.load(ticket.author),
                                           TicketUserResponse.load(ticket.assignee),
-                                          ProjectResponse.load(ticket.project),
+                                          TicketProjectResponse.load(ticket.project),
                                           ticket.status.name,
                                           ticket.history.stream()
                                                         .map(TicketHistoryResponse::load)

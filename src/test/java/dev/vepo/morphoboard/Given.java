@@ -3,13 +3,18 @@ package dev.vepo.morphoboard;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import dev.vepo.morphoboard.auth.LoginResponse;
 import dev.vepo.morphoboard.auth.PasswordEncoder;
+import dev.vepo.morphoboard.project.ProjectResponse;
+import dev.vepo.morphoboard.ticket.TicketResponse;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
+import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
 import dev.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.restassured.http.Header;
@@ -60,14 +65,79 @@ public class Given {
         return new Header("Authorization", "Bearer " + response.token());
     }
 
+    public static TicketResponse simpleTicket(Long projectId) {
+        var categoryId = 1L; // Assuming category ID 1 exists
+        var existingTickets = given().when()
+                                     .header(authenticatedProjectManager())
+                                     .get("/api/tickets")
+                                     .then()
+                                     .statusCode(200)
+                                     .extract()
+                                     .as(TicketResponse[].class);
+        if (existingTickets.length > 0 && Stream.of(existingTickets)
+                                                 .anyMatch(t -> "Test Ticket".equals(t.title()))) {
+            return Stream.of(existingTickets)
+                         .filter(t -> "Test Ticket".equals(t.title()))
+                         .findFirst()
+                         .orElseThrow();
+        }
+        return given().when()
+                      .contentType("application/json")
+                      .header(authenticatedProjectManager())
+                      .body(String.format("""
+                                          {
+                                              "title": "Test Ticket",
+                                              "description": "This is a test ticket.",
+                                              "projectId": %d,
+                                              "categoryId": %d
+                                          }""", projectId, categoryId))
+                      .post("/api/tickets")
+                      .then()
+                      .statusCode(201)
+                      .extract()
+                      .as(TicketResponse.class);
+    }
+
+    public static ProjectResponse simpleProject() {
+        var workflow = simpleWorkflow();
+        var existingProjects = given().when()
+                                      .header(authenticatedProjectManager())
+                                      .get("/api/projects")
+                                      .then()
+                                      .statusCode(200)
+                                      .extract()
+                                      .as(ProjectResponse[].class);
+        if (existingProjects.length > 0 && Stream.of(existingProjects)
+                                                 .anyMatch(p -> "Test Project".equals(p.name()))) {
+            return Stream.of(existingProjects)
+                         .filter(p -> "Test Project".equals(p.name()))
+                         .findFirst()
+                         .orElseThrow();
+        }
+        return given().when()
+                      .contentType("application/json")
+                      .header(authenticatedProjectManager())
+                      .body(String.format("""
+                                          {
+                                              "name": "Test Project",
+                                              "description": "This is a test project.",
+                                              "workflowId": %d
+                                          }""", workflow.id()))
+                      .post("/api/projects")
+                      .then()
+                      .statusCode(201)
+                      .extract()
+                      .as(ProjectResponse.class);
+    }
+
     public static WorkflowResponse simpleWorkflow() {
         // try get the value before creating it
-        WorkflowResponse[] existingWorkflow = given().when()
-                                                     .get("/api/workflows")
-                                                     .then()
-                                                     .statusCode(200)
-                                                     .extract()
-                                                     .as(WorkflowResponse[].class);
+        var existingWorkflow = given().when()
+                                      .get("/api/workflows")
+                                      .then()
+                                      .statusCode(200)
+                                      .extract()
+                                      .as(WorkflowResponse[].class);
         if (existingWorkflow.length > 0 && Stream.of(existingWorkflow)
                                                  .anyMatch(w -> "Project".equals(w.name()))) {
             return Stream.of(existingWorkflow)
@@ -112,5 +182,15 @@ public class Given {
                 fail("Fail to create user!");
             }
         }
+    }
+
+    public static List<StatusResponse> allStatuses() {
+        return Arrays.asList(given().header(authenticatedProjectManager())
+                                    .when()
+                                    .get("/api/status")
+                                    .then()
+                                    .statusCode(200)
+                                    .extract()
+                                    .as(StatusResponse[].class));
     }
 }

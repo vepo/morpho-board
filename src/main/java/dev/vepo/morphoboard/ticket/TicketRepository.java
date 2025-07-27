@@ -26,7 +26,7 @@ public class TicketRepository implements PanacheRepository<Ticket> {
         if (terms.length > 0) {
             statements.add(rangeClosed(1, terms.length)
                                 .mapToObj(index -> format("(LOWER(t.title) LIKE LOWER(?%d) OR LOWER(t.description) LIKE LOWER(?%d))", index, index))
-                                .collect(joining(" OR ", " (", ") ")));
+                                .collect(joining(" AND ", " (", ") ")));
             params.addAll(Stream.of(terms)
                                 .map(v -> format("%%%s%%", v))
                                 .toList());
@@ -52,5 +52,13 @@ public class TicketRepository implements PanacheRepository<Ticket> {
         return find(format("FROM Ticket t WHERE %s", statements.stream()
                                                                       .collect(joining(" AND "))),
                     params.toArray()).stream();
+    }
+
+    public Stream<Ticket> findByStatusId(long statusId) {
+        return stream("status.id", statusId);
+    }
+
+    public Stream<Ticket> findByStatusName(String status) {
+        return stream("status.name", status);
     }
 }
