@@ -3,11 +3,11 @@ package dev.vepo.morphoboard.ticket;
 public record TicketResponse(long id,
                              String title,
                              String description,
-                             Long category,
-                             Long author,
+                             long category,
+                             long author,
                              Long assignee,
-                             Long project,
-                             Long status) {
+                             long project,
+                             long status) {
     public static TicketResponse load(Ticket ticket) {
         return new TicketResponse(ticket.id,
                                   ticket.title,

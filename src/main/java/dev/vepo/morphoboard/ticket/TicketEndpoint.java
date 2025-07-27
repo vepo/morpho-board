@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import dev.vepo.morphoboard.project.Project;
@@ -18,6 +19,7 @@ import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
@@ -110,10 +112,7 @@ public class TicketEndpoint {
     @Transactional
     @ResponseStatus(201)
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public TicketResponse create(CreateTicketRequest request) {
-        if (request.title() == null || request.description() == null || request.categoryId() == null || request.projectId() == null) {
-            throw new BadRequestException("Campos obrigatórios não podem ser nulos");
-        }
+    public TicketResponse create(@Valid @Parameter(name = "request") CreateTicketRequest request) {
         var project = Project.<Project>findByIdOptional(request.projectId())
                              .orElseThrow(() -> new BadRequestException("Projeto não encontrado"));
         var author = User.<User>find("email", securityContext.getUserPrincipal().getName())

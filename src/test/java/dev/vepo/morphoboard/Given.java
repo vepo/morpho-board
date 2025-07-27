@@ -168,6 +168,16 @@ public class Given {
 
     }
 
+
+
+    public static int userIdByEmail(String string) {
+        return User.<User>find("email", string)
+                  .firstResultOptional()
+                  .map(u -> u.id)
+                  .orElseThrow(() -> new IllegalStateException("User not found with email: " + string))
+                  .intValue();
+    }
+
     private static void ensureUser(String name, String email, Set<Role> roles) {
         if (!User.find("email", email)
                  .firstResultOptional()

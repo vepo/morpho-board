@@ -122,12 +122,42 @@ class TicketEndpointTest {
                .get("/api/tickets/{id}", ticket.id())
                .then()
                .statusCode(200)
-               .body("id", equalTo((int)ticket.id()))
+               .body("id", equalTo((int) ticket.id()))
                .body("title", equalTo(ticket.title()))
                .body("description", equalTo(ticket.description()))
-               .body("status", equalTo(ticket.status().intValue()))
-               .body("project", equalTo(ticket.project().intValue()))
-               .body("category", equalTo(ticket.category().intValue()))
-               .body("author", equalTo(ticket.author().intValue()));
+               .body("status", equalTo((int) ticket.status()))
+               .body("project", equalTo((int) ticket.project()))
+               .body("category", equalTo((int) ticket.category()))
+               .body("author", equalTo((int) ticket.author()));
     }
+
+    @Test
+    @Order(6)
+    @DisplayName("It should be possible to create a new ticket")
+    void shouldCreateNewTicketTest() throws UnsupportedEncodingException {
+        given().header(pmAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body(String.format("""
+                                   {
+                                       "title": "New Ticket",
+                                       "description": "This is a new ticket.",
+                                       "projectId": %d,
+                                       "categoryId": %d
+                                   }""",
+                                   project.id(), 1))
+               .post("/api/tickets")
+               .then()
+               .statusCode(201)
+               .body("title", equalTo("New Ticket"))
+               .body("description", equalTo("This is a new ticket."))
+               .body("project", equalTo((int) project.id()))
+               .body("category", equalTo(1))
+               .body("author", equalTo((int) Given.userIdByEmail("pm@morpho-board.vepo.dev")))
+               .body("status", equalTo((int) allStatuses.stream()
+                                                          .filter(status -> status.name().equals("TODO"))
+                                                          .findFirst()
+                                                          .orElseThrow(() -> new IllegalStateException("TODO status not found")).id()));
+    } 
 }
