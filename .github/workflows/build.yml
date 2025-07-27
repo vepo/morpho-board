@@ -11,7 +11,7 @@ jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
-    steps:
+    steps:      
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
@@ -32,6 +32,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - uses: browser-actions/setup-chrome@v2
       - name: Run Angular tests
         working-directory: src/main/webui
         run: npm install -g @angular/cli && npm install && ng test --no-watch --code-coverage
