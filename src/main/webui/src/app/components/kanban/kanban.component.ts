@@ -19,7 +19,9 @@ export class KanbanComponent implements OnInit {
   project: Project = { id: -1, name: '', description: '' };
   tickets: Ticket[] = [];
   workflow?: Workflow;
-  constructor(private activatedRoute: ActivatedRoute, private projectsService: ProjectsService, private ticketService: TicketService) { }
+  constructor(private readonly activatedRoute: ActivatedRoute, 
+              private readonly projectsService: ProjectsService, 
+              private readonly ticketService: TicketService) { }
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ statuses, project, tickets }) => {
