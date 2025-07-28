@@ -32,8 +32,9 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-@ApplicationScoped
-@IfBuildProfile(anyOf = { "dev", "test" })
+@ApplicationScoped @IfBuildProfile(anyOf = {
+    "dev",
+    "test" })
 public class DatabaseDevSetup {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
 
@@ -48,40 +49,40 @@ public class DatabaseDevSetup {
     public void onStart(@Observes StartupEvent ev) {
         var encodedDefaultPassword = passwordEncoder.hashPassword("qwas1234");
         logger.info("Populating database with initial data for development...");
-        User.persist(new User("Gestor", "pm@morpho-board.io", encodedDefaultPassword, Set.of(Role.PROJECT_MANAGER)));
-        User.persist(new User("Desenvolvedor", "dev@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)));
-        User.persist(new User("Administrador", "admin@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN)));
-        User.persist(new User("Super Admin", "sudo@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN, Role.PROJECT_MANAGER)));
-        User.persist(new User("Usuário", "user@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)));
+        new User("Gestor", "pm@morpho-board.io", encodedDefaultPassword, Set.of(Role.PROJECT_MANAGER)).persist();
+        new User("Desenvolvedor", "dev@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)).persist();
+        new User("Administrador", "admin@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN)).persist();
+        new User("Super Admin", "sudo@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN, Role.PROJECT_MANAGER)).persist();
+        new User("Usuário", "user@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)).persist();
 
-        WorkflowStatus.persist(new WorkflowStatus("TO_DO"));
-        WorkflowStatus.persist(new WorkflowStatus("IN_PROGRESS"));
-        WorkflowStatus.persist(new WorkflowStatus("BLOCKED"));
-        WorkflowStatus.persist(new WorkflowStatus("DONE"));
+        new WorkflowStatus("TO_DO").persist();
+        new WorkflowStatus("IN_PROGRESS").persist();
+        new WorkflowStatus("BLOCKED").persist();
+        new WorkflowStatus("DONE").persist();
 
-        Workflow.persist(new Workflow("Kanban",
-                                      List.of(WorkflowStatus.findByName("TO_DO").orElseThrow(),
-                                              WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
-                                              WorkflowStatus.findByName("BLOCKED").orElseThrow(),
-                                              WorkflowStatus.findByName("DONE").orElseThrow()),
-                                      WorkflowStatus.findByName("TO_DO").orElseThrow(),
-                                      List.of(new WorkflowTransition(WorkflowStatus.findByName("TO_DO").orElseThrow(),
-                                                                     WorkflowStatus.findByName("IN_PROGRESS").orElseThrow()),
-                                              new WorkflowTransition(WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
-                                                                     WorkflowStatus.findByName("BLOCKED").orElseThrow()),
-                                              new WorkflowTransition(WorkflowStatus.findByName("BLOCKED").orElseThrow(),
-                                                                     WorkflowStatus.findByName("IN_PROGRESS").orElseThrow()),
-                                              new WorkflowTransition(WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
-                                                                     WorkflowStatus.findByName("DONE").orElseThrow()))));
+        new Workflow("Kanban",
+                     List.of(WorkflowStatus.findByName("TO_DO").orElseThrow(),
+                             WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
+                             WorkflowStatus.findByName("BLOCKED").orElseThrow(),
+                             WorkflowStatus.findByName("DONE").orElseThrow()),
+                     WorkflowStatus.findByName("TO_DO").orElseThrow(),
+                     List.of(new WorkflowTransition(WorkflowStatus.findByName("TO_DO").orElseThrow(),
+                                                    WorkflowStatus.findByName("IN_PROGRESS").orElseThrow()),
+                             new WorkflowTransition(WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
+                                                    WorkflowStatus.findByName("BLOCKED").orElseThrow()),
+                             new WorkflowTransition(WorkflowStatus.findByName("BLOCKED").orElseThrow(),
+                                                    WorkflowStatus.findByName("IN_PROGRESS").orElseThrow()),
+                             new WorkflowTransition(WorkflowStatus.findByName("IN_PROGRESS").orElseThrow(),
+                                                    WorkflowStatus.findByName("DONE").orElseThrow())))
+                                                                                                      .persist();
 
-        
         // Buscar usuários
         var author = User.<User>find("email", "user@morpho-board.io").firstResult();
         var assignee = User.<User>find("email", "dev@morpho-board.io").firstResult();
         loadCsvs(author);
 
-        Project.persist(new Project("Projeto 1",
-                "Descrição do projeto 1", Workflow.findByName("Kanban").orElseThrow()));
+        new Project("Projeto 1",
+                    "Descrição do projeto 1", Workflow.findByName("Kanban").orElseThrow()).persist();
 
         // Categoria para os tickets
         var categoria = new Category("Bug");
@@ -99,52 +100,53 @@ public class DatabaseDevSetup {
         var done = WorkflowStatus.findByName("DONE").orElseThrow();
 
         // Criar tickets de teste
-        Ticket.persist(new Ticket("Corrigir bug na tela de login",
-                                  "Usuários não conseguem acessar com senha especial.",
-                                  categoria,
-                                  author,
-                                  assignee,
-                                  projeto,
-                                  todo));
+        new Ticket("Corrigir bug na tela de login",
+                   "Usuários não conseguem acessar com senha especial.",
+                   categoria,
+                   author,
+                   assignee,
+                   projeto,
+                   todo).persist();
 
-        Ticket.persist(new Ticket("Implementar exportação de relatórios",
-                                  "Adicionar opção de exportar relatórios em PDF.",
-                                  categoria,
-                                  author,
-                                  assignee,
-                                  projeto,
-                                  inProgress));
+        new Ticket("Implementar exportação de relatórios",
+                   "Adicionar opção de exportar relatórios em PDF.",
+                   categoria,
+                   author,
+                   assignee,
+                   projeto,
+                   inProgress).persist();
 
-        Ticket.persist(new Ticket("Importar dados por CSV",
-                                  "A aplicação deve ser capaz de importar dados via CSV.",
-                                  categoria,
-                                  author,
-                                  assignee,
-                                  projeto,
-                                  inProgress));
+        new Ticket("Importar dados por CSV",
+                   "A aplicação deve ser capaz de importar dados via CSV.",
+                   categoria,
+                   author,
+                   assignee,
+                   projeto,
+                   inProgress).persist();
 
-        Ticket.persist(new Ticket("Ajustar layout mobile",
-                                  "Elementos sobrepostos em telas pequenas.",
-                                  categoria,
-                                  author,
-                                  assignee,
-                                  projeto,
-                                  blocked));
+        new Ticket("Ajustar layout mobile",
+                   "Elementos sobrepostos em telas pequenas.",
+                   categoria,
+                   author,
+                   assignee,
+                   projeto,
+                   blocked).persist();
 
-        Ticket.persist(new Ticket("Atualizar documentação",
-                                  "Documentação desatualizada após últimas mudanças.",
-                                  categoria,
-                                  author,
-                                  assignee,
-                                  projeto,
-                                  done));
+        new Ticket("Atualizar documentação",
+                   "Documentação desatualizada após últimas mudanças.",
+                   categoria,
+                   author,
+                   assignee,
+                   projeto,
+                   done).persist();
 
         logger.info("Database populated with initial data for development.");
     }
+
     private void loadCsvs(User author) {
         var categories = new HashMap<String, Category>();
         try (Reader reader = new InputStreamReader(
-                DatabaseDevSetup.class.getResourceAsStream("/dev/data/categorias.csv"))) {
+                                                   DatabaseDevSetup.class.getResourceAsStream("/dev/data/categorias.csv"))) {
             try (CSVReader csvReader = new CSVReader(reader)) {
                 String[] line;
                 boolean header = false;
@@ -187,15 +189,17 @@ public class DatabaseDevSetup {
                                                       .distinct()
                                                       .map(status -> WorkflowStatus.findByName(status)
                                                                                    .orElseGet(() -> {
-                                                                                        WorkflowStatus dbStatus = new WorkflowStatus(status);
-                                                                                        dbStatus.persist();
-                                                                                        allStatus.put(status, dbStatus);
-                                                                                        return dbStatus;
-                                                                                    })).toList();
+                                                                                       WorkflowStatus dbStatus = new WorkflowStatus(status);
+                                                                                       dbStatus.persist();
+                                                                                       allStatus.put(status, dbStatus);
+                                                                                       return dbStatus;
+                                                                                   }))
+                                                      .toList();
                 WorkflowStatus start = statuses.stream()
                                                .filter(s -> s.name.equals(workflowStart.get(workflowName)))
                                                .findFirst()
-                                               .orElseThrow(() -> new IllegalStateException("Status inicial não encontrado"));                                               ;
+                                               .orElseThrow(() -> new IllegalStateException("Status inicial não encontrado"));
+                ;
                 List<WorkflowTransition> transitions = data.stream()
                                                            .map(line -> new WorkflowTransition(WorkflowStatus.findByName(line[1]).orElseThrow(),
                                                                                                WorkflowStatus.findByName(line[2]).orElseThrow()))
@@ -204,10 +208,9 @@ public class DatabaseDevSetup {
                 workflow.persist();
                 workflows.put(workflowName, workflow);
             });
-        } catch(IOException | CsvValidationException ioe) {
+        } catch (IOException | CsvValidationException ioe) {
             throw new IllegalStateException("Cannot reader categories.csv", ioe);
         }
-
 
         var projetos = new HashMap<String, Project>();
         try (Reader reader = new InputStreamReader(DatabaseDevSetup.class.getResourceAsStream("/dev/data/projetos.csv"))) {
@@ -221,12 +224,12 @@ public class DatabaseDevSetup {
                     }
                     var workflowName = line[3];
                     var project = new Project(line[1], line[2], Workflow.findByName(workflowName)
-                            .orElseThrow(() -> new IllegalStateException("Workflow not found! " + workflowName)));
-                   project .persist();
-                   projetos.put(line[0], project);
+                                                                        .orElseThrow(() -> new IllegalStateException("Workflow not found! " + workflowName)));
+                    project.persist();
+                    projetos.put(line[0], project);
                 }
             }
-        } catch(IOException | CsvValidationException ioe) {
+        } catch (IOException | CsvValidationException ioe) {
             throw new IllegalStateException("Cannot reader categories.csv", ioe);
         }
 
@@ -243,7 +246,7 @@ public class DatabaseDevSetup {
                     ticket.persist();
                 }
             }
-        } catch(IOException | CsvValidationException ioe) {
+        } catch (IOException | CsvValidationException ioe) {
             throw new IllegalStateException("Cannot reader categories.csv", ioe);
         }
     }

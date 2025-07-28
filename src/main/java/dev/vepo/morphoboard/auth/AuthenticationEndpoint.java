@@ -5,8 +5,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.UserRepository;
