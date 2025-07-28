@@ -15,5 +15,5 @@ public class MorphoBoardException extends RuntimeException {
     public MorphoBoardException(Throwable cause) {
         super(cause);
     }
-    
+
 }

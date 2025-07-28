@@ -5,5 +5,4 @@ import java.util.List;
 public record ProjectStatusResponse(long id,
                                     String name,
                                     boolean start,
-                                    List<Long> moveable) {
-}
+                                    List<Long> moveable) {}

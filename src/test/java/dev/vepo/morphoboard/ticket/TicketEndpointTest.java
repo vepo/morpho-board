@@ -25,7 +25,7 @@ import io.restassured.http.Header;
 @QuarkusTest
 @TestMethodOrder(OrderAnnotation.class)
 class TicketEndpointTest {
-    private ProjectResponse project;  
+    private ProjectResponse project;
     private Header userAuthenticatedHeader;
     private Header pmAuthenticatedHeader;
     private TicketResponse ticket;
@@ -61,7 +61,7 @@ class TicketEndpointTest {
                .get("/api/tickets")
                .then()
                .statusCode(200)
-               .body("$.size()", greaterThan(0));    
+               .body("$.size()", greaterThan(0));
     }
 
     @Test
@@ -156,9 +156,9 @@ class TicketEndpointTest {
                .body("category", equalTo(1))
                .body("author", equalTo((int) Given.userIdByEmail("pm@morpho-board.vepo.dev")))
                .body("status", equalTo((int) allStatuses.stream()
-                                                          .filter(status -> status.name().equals("TODO"))
-                                                          .findFirst()
-                                                          .orElseThrow(() -> new IllegalStateException("TODO status not found")).id()));
+                                                        .filter(status -> status.name().equals("TODO"))
+                                                        .findFirst()
+                                                        .orElseThrow(() -> new IllegalStateException("TODO status not found")).id()));
     }
 
     @Test
@@ -179,6 +179,6 @@ class TicketEndpointTest {
                .post("/api/tickets")
                .then()
                .statusCode(404)
-               .body("message", equalTo("Projeto não encontrado"));   
+               .body("message", equalTo("Projeto não encontrado"));
     }
 }

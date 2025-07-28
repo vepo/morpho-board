@@ -14,8 +14,7 @@ public class WorkflowStatus extends PanacheEntity {
     @Column(unique = true, nullable = false)
     public String name;
 
-    public WorkflowStatus() {
-    }
+    public WorkflowStatus() {}
 
     public WorkflowStatus(String name) {
         this.name = name;

@@ -1,4 +1,3 @@
 package dev.vepo.morphoboard.ticket;
 
-public record MoveTicketRequest(Long to) {
-}
+public record MoveTicketRequest(Long to) {}

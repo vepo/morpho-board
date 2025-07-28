@@ -35,8 +35,8 @@ class ProjectEndpointTest {
 
     @Test
     @Order(1)
-    @DisplayName("No authenticated user should be able to list projects")
-    void noAuthenticatedUserShouldListProjectsTest() {
+    @DisplayName("Non authenticated user should not be able to list projects")
+    void nonAuthenticatedUserShouldNotListProjectsTest() {
         given().when()
                .accept(ContentType.JSON)
                .get("/api/projects")

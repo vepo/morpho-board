@@ -15,6 +15,7 @@ import jakarta.ws.rs.ext.Provider;
 public class MorphoBoardWebExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
     private static final Logger logger = LoggerFactory.getLogger(MorphoBoardWebExceptionMapper.class);
+
     @Override
     public Response toResponse(WebApplicationException exception) {
         logger.error("An error occurred: {}", exception);

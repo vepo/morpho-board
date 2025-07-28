@@ -122,7 +122,7 @@ public class TicketEndpoint {
                                 request.description(),
                                 Category.<Category>findByIdOptional(request.categoryId())
                                         .orElseThrow(() -> new NotFoundException("Categoria não encontrada")),
-                                author, 
+                                author,
                                 null,
                                 project,
                                 project.workflow.start);

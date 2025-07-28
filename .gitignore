@@ -6,3 +6,9 @@
 /.vscode/
 
 .quinoa
+
+## Eclipse
+.project
+.settings
+.classpath
+**/pom.xml.versionsBackup

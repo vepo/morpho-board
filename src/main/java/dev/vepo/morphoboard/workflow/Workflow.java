@@ -29,8 +29,7 @@ public class Workflow extends PanacheEntity {
     @JoinColumn(name = "workflow_id")
     public List<WorkflowTransition> transitions;
 
-    public Workflow() {
-    }
+    public Workflow() {}
 
     public Workflow(String name, List<WorkflowStatus> statuses, WorkflowStatus start, List<WorkflowTransition> transitions) {
         this.name = name;

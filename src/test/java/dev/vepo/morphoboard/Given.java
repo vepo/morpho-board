@@ -75,7 +75,7 @@ public class Given {
                                      .extract()
                                      .as(TicketResponse[].class);
         if (existingTickets.length > 0 && Stream.of(existingTickets)
-                                                 .anyMatch(t -> "Test Ticket".equals(t.title()))) {
+                                                .anyMatch(t -> "Test Ticket".equals(t.title()))) {
             return Stream.of(existingTickets)
                          .filter(t -> "Test Ticket".equals(t.title()))
                          .findFirst()
@@ -144,7 +144,6 @@ public class Given {
                          .filter(w -> "Project".equals(w.name()))
                          .findFirst()
                          .orElseThrow();
-
         }
         return given().when()
                       .contentType("application/json")
@@ -168,14 +167,12 @@ public class Given {
 
     }
 
-
-
     public static int userIdByEmail(String string) {
         return User.<User>find("email", string)
-                  .firstResultOptional()
-                  .map(u -> u.id)
-                  .orElseThrow(() -> new IllegalStateException("User not found with email: " + string))
-                  .intValue();
+                   .firstResultOptional()
+                   .map(u -> u.id)
+                   .orElseThrow(() -> new IllegalStateException("User not found with email: " + string))
+                   .intValue();
     }
 
     private static void ensureUser(String name, String email, Set<Role> roles) {

@@ -19,14 +19,14 @@ public class User extends PanacheEntity {
     public String name;
 
     public String email;
-    
+
     @Column(name = "encoded_password")
     public String encodedPassword;
-    
+
     @Enumerated(EnumType.STRING)
     public Set<Role> roles;
-    
-    // all assigned tickets    
+
+    // all assigned tickets
     @OneToMany(mappedBy = "assignee", fetch = FetchType.LAZY)
     public List<Ticket> assignedTickets;
 
@@ -34,7 +34,7 @@ public class User extends PanacheEntity {
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
     public List<Ticket> createdTickets;
 
-    public User(){}
+    public User() {}
 
     public User(String name, String email, String encodedPassword, Set<Role> roles) {
         this.name = name;
@@ -42,4 +42,4 @@ public class User extends PanacheEntity {
         this.encodedPassword = encodedPassword;
         this.roles = roles;
     }
-} 
+}

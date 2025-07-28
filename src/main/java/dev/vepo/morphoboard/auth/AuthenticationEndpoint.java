@@ -30,9 +30,9 @@ public class AuthenticationEndpoint {
     private PasswordEncoder passwordEncoder;
     private UserRepository userRepository;
 
-
     @Inject
-    public AuthenticationEndpoint(PasswordEncoder passwordEncoder, UserRepository userRepository) {
+    public AuthenticationEndpoint(PasswordEncoder passwordEncoder,
+                                  UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
@@ -54,7 +54,6 @@ public class AuthenticationEndpoint {
                                                                   .issuedAt(now)
                                                                   .expiresAt(now.plus(1, ChronoUnit.DAYS))
                                                                   .sign());
-
                                   })
                                   .orElseThrow(() -> new NotAuthorizedException("Invalid credentials!", req));
     }

@@ -32,9 +32,8 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-@ApplicationScoped @IfBuildProfile(anyOf = {
-    "dev",
-    "test" })
+@ApplicationScoped
+@IfBuildProfile(anyOf = { "dev", "test" })
 public class DatabaseDevSetup {
     private static final Logger logger = LoggerFactory.getLogger(DatabaseDevSetup.class);
 

@@ -21,4 +21,4 @@ public class Comment extends PanacheEntity {
 
     @ManyToOne
     public User author;
-} 
+}

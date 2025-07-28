@@ -16,13 +16,12 @@ public class Project extends PanacheEntity {
 
     @Column(columnDefinition = "text")
     public String description;
-    
+
     @ManyToOne
     @JoinColumn(name = "workflow_id", nullable = false)
     public Workflow workflow;
 
-    public Project() {
-    }
+    public Project() {}
 
     public Project(String name, String description, Workflow workflow) {
         this.name = name;

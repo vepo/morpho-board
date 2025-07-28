@@ -14,7 +14,8 @@ import dev.vepo.morphoboard.Given;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 
-@QuarkusTest @TestMethodOrder(OrderAnnotation.class)
+@QuarkusTest
+@TestMethodOrder(OrderAnnotation.class)
 class AuthenticationEndpointTest {
     @Test
     @Order(1)
@@ -97,8 +98,6 @@ class AuthenticationEndpointTest {
                .body("roles.size()", is(1))
                .body("roles[0]", is("user"));
     }
-
-
 
     @Test
     @Order(5)

@@ -11,8 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 public class StatusResource {
 
-    public static final record StatusResponse(long id, String name) {
-    }
+    public static final record StatusResponse(long id, String name) {}
 
     @GET
     public List<StatusResponse> listAll() {

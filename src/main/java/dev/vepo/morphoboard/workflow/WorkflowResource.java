@@ -21,24 +21,20 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class WorkflowResource {
 
-    public static record TransitionResponse(String from, String to) {
-    }
+    public static record TransitionResponse(String from, String to) {}
 
-    public static record TransitionRequest(String from, String to) {
-    }
+    public static record TransitionRequest(String from, String to) {}
 
     public static record CreateWorkflowRequest(String name,
                                                List<String> statuses,
                                                String start,
-                                               List<TransitionRequest> transitions) {
-    }
+                                               List<TransitionRequest> transitions) {}
 
     public static record WorkflowResponse(long id,
                                           String name,
                                           List<String> statuses,
                                           String start,
-                                          List<TransitionResponse> transitions) {
-    }
+                                          List<TransitionResponse> transitions) {}
 
     public static WorkflowResponse toResponse(Workflow workflow) {
         return new WorkflowResponse(workflow.id,

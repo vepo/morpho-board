@@ -29,10 +29,7 @@ import jakarta.ws.rs.core.MediaType;
 public class ProjectEndpoint {
     @GET
     @Transactional
-    @RolesAllowed({
-        Role.PROJECT_MANAGER_ROLE,
-        Role.ADMIN_ROLE,
-        Role.USER_ROLE })
+    @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public List<ProjectResponse> listAllProjects() {
         return Project.<Project>streamAll()
                       .map(ProjectResponse::load)
@@ -44,10 +41,8 @@ public class ProjectEndpoint {
     @ResponseStatus(201)
     @RolesAllowed(Role.PROJECT_MANAGER_ROLE)
     public ProjectResponse createProject(@Valid @Parameter(name = "request") CreateProjectRequest request) {
-        var workflow = Workflow.<Workflow>findById(request.workflowId());
-        if (workflow == null) {
-            throw new BadRequestException("Workflow with ID " + request.workflowId() + " does not exist");
-        }
+        var workflow = Workflow.<Workflow>findByIdOptional(request.workflowId())
+                               .orElseThrow(() -> new BadRequestException("Workflow with ID " + request.workflowId() + " does not exist"));
 
         Project project = new Project(request.name(), request.description(), workflow);
         project.persist();

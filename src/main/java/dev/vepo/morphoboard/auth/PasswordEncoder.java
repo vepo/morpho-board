@@ -28,9 +28,9 @@ public class PasswordEncoder {
 
     @Inject
     public PasswordEncoder(@ConfigProperty(name = "password.iterations") int passwordIterations,
-            @ConfigProperty(name = "password.key.length") int passwordKeyLength,
-            @ConfigProperty(name = "password.algorithm") String algorithm,
-            @ConfigProperty(name = "password.salt") String salt) {
+                           @ConfigProperty(name = "password.key.length") int passwordKeyLength,
+                           @ConfigProperty(name = "password.algorithm") String algorithm,
+                           @ConfigProperty(name = "password.salt") String salt) {
         this.passwordIterations = passwordIterations;
         this.passwordKeyLength = passwordKeyLength;
         this.algorithm = algorithm;

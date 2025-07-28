@@ -36,4 +36,4 @@ public class TicketHistory {
         this.description = description;
         this.timestamp = timestamp;
     }
-} 
+}
