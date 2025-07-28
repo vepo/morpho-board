@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>dev.vepo</groupId>
     <artifactId>morpho-board</artifactId>
@@ -12,12 +14,26 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.version>3.24.0</quarkus.platform.version>
         <quarkus.java.version>21</quarkus.java.version>
+        
+        <sonar.organization>vepo-github</sonar.organization>
+        <sonar.projectKey>vepo_morpho-board</sonar.projectKey>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        
         <sonar.coverage.jacoco.xmlReportPaths>
             target/jacoco-report/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-
-        <sonar.organization>vepo-github</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.sources>
+            pom.xml,
+            src/main/java,
+            src/main/webui/src
+        </sonar.sources>
+        <sonar.typescript.lcov.reportPaths>src/main/webui/coverage/lcov.info</sonar.typescript.lcov.reportPaths>
+        <sonar.typescript.exclusions>
+            **/node_modules/**,
+            **/dist/**,
+            **/*.spec.ts,
+            **/typings.d.ts
+        </sonar.typescript.exclusions>        
     </properties>
 
     <dependencyManagement>
@@ -82,7 +98,6 @@
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
-            <version>5.5.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
