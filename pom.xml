@@ -18,7 +18,7 @@
         <sonar.organization>vepo-github</sonar.organization>
         <sonar.projectKey>vepo_morpho-board</sonar.projectKey>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        
+
         <sonar.coverage.jacoco.xmlReportPaths>
             target/jacoco-report/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
@@ -170,6 +170,14 @@
                 <configuration>
                     <configFile>formatter.xml</configFile>
                 </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
