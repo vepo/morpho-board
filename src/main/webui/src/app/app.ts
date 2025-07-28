@@ -26,11 +26,11 @@ export class AppComponent implements OnInit {
   statuses: Status[] = [this.anyStatus];
   selectStatus: Status = this.anyStatus;
 
-  constructor(private router: Router, 
-              private statusService: StatusService, 
-              private dialog: MatDialog, 
-              private route: ActivatedRoute,
-              private authService: AuthService) { }
+  constructor(private readonly router: Router, 
+              private readonly statusService: StatusService, 
+              private readonly dialog: MatDialog, 
+              private readonly route: ActivatedRoute,
+              private readonly authService: AuthService) { }
 
   onSearchKeydown(event: KeyboardEvent) {
     this.goToSearch(this.searchTerm.trim(), this.selectStatus); 
@@ -68,17 +68,9 @@ export class AppComponent implements OnInit {
   }
 
   openCreateTicketDialog() {
-    let projectId: number | undefined;
-    // Tenta extrair projectId da rota se estiver em /kanban/:projectId
-    const match = this.router.url.match(/kanban\/(\d+)/);
-    if (match) {
-      projectId = Number(match[1]);
-    }
-    const authorId = 1; // TODO: trocar para usuário autenticado
     this.dialog.open(CreateTicketModalComponent, {
       width: '500px',
-      disableClose: true,
-      data: { projectId, authorId }
+      disableClose: true
     });
   }
 
