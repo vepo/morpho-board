@@ -1,16 +1,15 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatOptionModule } from '@angular/material/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { TicketService, CreateTicketRequest } from '../../services/ticket.service';
-import { HttpClient } from '@angular/common/http';
-import { ProjectsService, Project } from '../../services/projects.service';
 import { MatSelectModule } from '@angular/material/select';
-import { MatOptionModule } from '@angular/material/core';
-import { Category, CategoryService } from '../../services/category.service';
 import { AuthService } from '../../services/auth.service';
+import { Category, CategoryService } from '../../services/category.service';
+import { Project, ProjectsService } from '../../services/projects.service';
+import { CreateTicketRequest, TicketService } from '../../services/ticket.service';
 
 @Component({
   selector: 'app-create-ticket-modal',
