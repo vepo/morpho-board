@@ -12,7 +12,7 @@ export class AuthService {
   private tokenKey = 'jwt_token';
   private readonly API_URL = 'http://localhost:8080/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   login(email: string, password: string) {
     return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password }).pipe(
@@ -30,6 +30,16 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  getAuthUserId(): number {
+    const token = this.getToken();
+    if (!token) throw new Error("Invalid token!");
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!payload.id) {
+      throw new Error("Invalid token!");
+    }
+    return payload.id;
+  }
+
   getRoles(): string[] {
     const token = this.getToken();
     if (!token) return [];
@@ -39,7 +49,7 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     return this.getRoles()
-               .includes(role);
+      .includes(role);
   }
 
   logout() {

@@ -63,8 +63,8 @@ export class KanbanComponent implements OnInit {
   }
 
   drop(evnt: CdkDragDrop<any>) {
-    var ticket = (evnt.previousContainer.data[evnt.previousIndex] as Ticket);
-    var statusId = this.fromColumnId(evnt.container.id);
+    const ticket = (evnt.previousContainer.data[evnt.previousIndex] as Ticket);
+    const statusId = this.fromColumnId(evnt.container.id);
     if (ticket.status != statusId) {
       this.ticketService.move(ticket.id, statusId)
                         .subscribe(ticket => this.tickets[this.tickets.findIndex(t => t.id == ticket.id)] =  this.fixLineBreak(ticket));

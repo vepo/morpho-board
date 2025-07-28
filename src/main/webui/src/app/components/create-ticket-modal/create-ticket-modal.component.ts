@@ -10,6 +10,7 @@ import { ProjectsService, Project } from '../../services/projects.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { Category, CategoryService } from '../../services/category.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-create-ticket-modal',
@@ -19,8 +20,6 @@ import { Category, CategoryService } from '../../services/category.service';
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatOptionModule]
 })
 export class CreateTicketModalComponent implements OnInit {
-  // @Input() projectId!: number;
-  // @Input() authorId!: number;
   projectId: number|null = null;
   authorId!: number;
   emptyCategory: Category = { id: -1, name: "Escolha..." };
@@ -28,18 +27,17 @@ export class CreateTicketModalComponent implements OnInit {
   description: string = '';
   category: Category = this.emptyCategory;
   categories: Category[] = [];
-  loading = false;
   error = '';
   projects: Project[] = [];
 
   constructor(
-    private dialogRef: MatDialogRef<CreateTicketModalComponent>,
-    private ticketService: TicketService,
-    private categoryService: CategoryService,
-    private projectsService: ProjectsService,
-    @Inject(MAT_DIALOG_DATA) public data: { authorId: number }
+    private readonly dialogRef: MatDialogRef<CreateTicketModalComponent>,
+    private readonly ticketService: TicketService,
+    private readonly categoryService: CategoryService,
+    private readonly projectsService: ProjectsService,
+    private readonly authService: AuthService,
   ) {
-    this.authorId = 1;//data.authorId;
+    this.authorId = authService.getAuthUserId();
   }
 
   ngOnInit() {
@@ -58,20 +56,14 @@ export class CreateTicketModalComponent implements OnInit {
       this.error = 'Preencha todos os campos obrigatórios';
       return;
     }
-    this.loading = true;
     const req: CreateTicketRequest = {
       title: this.title,
       description: this.description,
       categoryId: this.category.id,
-      authorId: 1,
+      authorId: this.authorId,
       projectId: this.projectId
     };
-    this.ticketService.createTicket(req).subscribe({
-      next: (ticket) => this.dialogRef.close(ticket),
-      error: () => {
-        this.error = 'Erro ao criar ticket';
-        this.loading = false;
-      }
-    });
+    this.ticketService.createTicket(req)
+                      .subscribe(ticket => this.dialogRef.close(ticket));
   }
 } 

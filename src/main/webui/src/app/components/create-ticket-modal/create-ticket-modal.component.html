@@ -34,7 +34,7 @@
   </div>
   <div class="actions">
     <div class="form-actions">
-      <button [disabled]="!title || !description || !category || !projectId || loading" (click)="createTicket()">Criar</button>
+      <button [disabled]="!title || !description || !category || !projectId" (click)="createTicket()">Criar</button>
       <button class="cancel" (click)="close()">Cancelar</button>
     </div>
   </div>
