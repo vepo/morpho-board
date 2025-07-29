@@ -13,17 +13,18 @@ public record TicketExpandedResponse(long id,
                                      List<TicketHistoryResponse> history) {
 
     public static TicketExpandedResponse load(Ticket ticket) {
-        return new TicketExpandedResponse(ticket.id,
-                                          ticket.title,
-                                          ticket.description,
-                                          ticket.category.name,
-                                          TicketUserResponse.load(ticket.author),
-                                          TicketUserResponse.load(ticket.assignee),
-                                          TicketProjectResponse.load(ticket.project),
-                                          ticket.status.name,
-                                          ticket.history.stream()
-                                                        .map(TicketHistoryResponse::load)
-                                                        .toList());
+        return new TicketExpandedResponse(ticket.getId(),
+                                          ticket.getTitle(),
+                                          ticket.getDescription(),
+                                          ticket.getCategory().getName(),
+                                          TicketUserResponse.load(ticket.getAuthor()),
+                                          TicketUserResponse.load(ticket.getAssignee()),
+                                          TicketProjectResponse.load(ticket.getProject()),
+                                          ticket.getStatus().getName(),
+                                          ticket.getHistory()
+                                                .stream()
+                                                .map(TicketHistoryResponse::load)
+                                                .toList());
     }
 
 }

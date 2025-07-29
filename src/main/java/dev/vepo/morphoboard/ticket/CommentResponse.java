@@ -5,9 +5,9 @@ public record CommentResponse(long id,
                               String content,
                               long createdAt) {
     public static CommentResponse load(Comment comment) {
-        return new CommentResponse(comment.id,
-                                   TicketUserResponse.load(comment.author),
-                                   comment.content,
-                                   comment.createdAt.toEpochMilli());
+        return new CommentResponse(comment.getId(),
+                                   TicketUserResponse.load(comment.getAuthor()),
+                                   comment.getContent(),
+                                   comment.getCreatedAt().toEpochMilli());
     }
 }

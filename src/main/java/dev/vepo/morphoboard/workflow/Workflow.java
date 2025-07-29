@@ -1,12 +1,12 @@
 package dev.vepo.morphoboard.workflow;
 
 import java.util.List;
-import java.util.Optional;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -15,19 +15,23 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_workflows", uniqueConstraints = @jakarta.persistence.UniqueConstraint(name = "tb_workflow_UK", columnNames = "name"))
-public class Workflow extends PanacheEntity {
-    public String name;
+public class Workflow {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "start_id")
-    public WorkflowStatus start;
+    private WorkflowStatus start;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    public List<WorkflowStatus> statuses;
+    private List<WorkflowStatus> statuses;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "workflow_id")
-    public List<WorkflowTransition> transitions;
+    private List<WorkflowTransition> transitions;
 
     public Workflow() {}
 
@@ -38,7 +42,44 @@ public class Workflow extends PanacheEntity {
         this.transitions = transitions;
     }
 
-    public static Optional<Workflow> findByName(String string) {
-        return find("name", string).firstResultOptional();
+    public Long getId() {
+        return id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public WorkflowStatus getStart() {
+        return start;
+    }
+
+    public void setStart(WorkflowStatus start) {
+        this.start = start;
+    }
+
+    public List<WorkflowStatus> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(List<WorkflowStatus> statuses) {
+        this.statuses = statuses;
+    }
+
+    public List<WorkflowTransition> getTransitions() {
+        return transitions;
+    }
+
+    public void setTransitions(List<WorkflowTransition> transitions) {
+        this.transitions = transitions;
+    }
+
 }

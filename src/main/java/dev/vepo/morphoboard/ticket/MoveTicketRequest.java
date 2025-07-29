@@ -1,3 +1,5 @@
 package dev.vepo.morphoboard.ticket;
 
-public record MoveTicketRequest(Long to) {}
+import io.smallrye.common.constraint.NotNull;
+
+public record MoveTicketRequest(@NotNull Long to) {}

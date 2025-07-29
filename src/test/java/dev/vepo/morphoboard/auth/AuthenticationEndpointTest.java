@@ -74,7 +74,7 @@ class AuthenticationEndpointTest {
                          "email": "%s",
                          "password": "password"
                      }
-                     """.formatted(user.email))
+                     """.formatted(user.getEmail()))
                .when()
                .post("/api/auth/login")
                .then()

@@ -6,6 +6,6 @@ public record TicketProjectResponse(long id,
                                     String name) {
 
     public static TicketProjectResponse load(Project project) {
-        return new TicketProjectResponse(project.id, project.name);
+        return new TicketProjectResponse(project.getId(), project.getName());
     }
 }

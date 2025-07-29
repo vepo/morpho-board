@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
 
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
@@ -20,6 +21,9 @@ import jakarta.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class WorkflowResource {
+
+    @Inject
+    private WorkflowRepository repository;
 
     public static record TransitionResponse(String from, String to) {}
 
@@ -37,24 +41,27 @@ public class WorkflowResource {
                                           List<TransitionResponse> transitions) {}
 
     public static WorkflowResponse toResponse(Workflow workflow) {
-        return new WorkflowResponse(workflow.id,
-                                    workflow.name,
-                                    workflow.statuses.stream()
-                                                     .sorted(Comparator.comparing(status -> status.id))
-                                                     .map(status -> status.name)
-                                                     .collect(Collectors.toList()),
-                                    workflow.start.name,
-                                    workflow.transitions.stream()
-                                                        .map(transition -> new TransitionResponse(transition.from.name,
-                                                                                                  transition.to.name))
-                                                        .collect(Collectors.toList()));
+        return new WorkflowResponse(workflow.getId(),
+                                    workflow.getName(),
+                                    workflow.getStatuses()
+                                            .stream()
+                                            .sorted(Comparator.comparing(WorkflowStatus::getId))
+                                            .map(status -> status.getName())
+                                            .collect(Collectors.toList()),
+                                    workflow.getStart()
+                                            .getName(),
+                                    workflow.getTransitions()
+                                            .stream()
+                                            .map(transition -> new TransitionResponse(transition.getFrom().getName(),
+                                                                                      transition.getTo().getName()))
+                                            .collect(Collectors.toList()));
     }
 
     @GET
     public List<WorkflowResponse> listWorkflows() {
-        return Workflow.streamAll()
-                       .map(workflow -> toResponse((Workflow) workflow))
-                       .toList();
+        return repository.findAll()
+                         .map(workflow -> toResponse((Workflow) workflow))
+                         .toList();
     }
 
     @POST
@@ -86,28 +93,25 @@ public class WorkflowResource {
             throw new BadRequestException("Start status must be one of the defined statuses");
         }
 
-        var statuses = request.statuses.stream()
-                                       .map(status -> {
-                                           var statusQuery = WorkflowStatus.find("name", status);
-                                           if (statusQuery.count() == 0) {
-                                               var dbStatus = new WorkflowStatus(status);
-                                               dbStatus.persist();
-                                               return dbStatus;
-                                           } else {
-                                               return statusQuery.firstResult();
-                                           }
-                                       })
-                                       .collect(Collectors.toMap(w -> w.name, Function.identity()));
+        var statuses = request.statuses()
+                              .stream()
+                              .map(status -> repository.findStatusByName(status)
+                                                       .orElseGet(() -> {
+                                                           var dbStatus = new WorkflowStatus(status);
+                                                           repository.save(dbStatus);
+                                                           return dbStatus;
+                                                       }))
+                              .collect(Collectors.toMap(w -> w.getName(), Function.identity()));
 
         Workflow workflow = new Workflow();
-        workflow.name = request.name;
-        workflow.statuses = statuses.values().stream().toList();
-        workflow.start = statuses.get(request.start);
-        workflow.transitions = request.transitions.stream()
-                                                  .map(transition -> new WorkflowTransition(statuses.get(transition.from),
-                                                                                            statuses.get(transition.to)))
-                                                  .collect(Collectors.toList());
-        workflow.persist();
+        workflow.setName(request.name);
+        workflow.setStatuses(statuses.values().stream().toList());
+        workflow.setStart(statuses.get(request.start));
+        workflow.setTransitions(request.transitions.stream()
+                                                   .map(transition -> new WorkflowTransition(statuses.get(transition.from),
+                                                                                             statuses.get(transition.to)))
+                                                   .collect(Collectors.toList()));
+        repository.save(workflow);
         return toResponse(workflow);
     }
 }

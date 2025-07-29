@@ -6,10 +6,11 @@ import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import dev.vepo.morphoboard.user.Role;
-import dev.vepo.morphoboard.workflow.Workflow;
+import dev.vepo.morphoboard.workflow.WorkflowRepository;
 import dev.vepo.morphoboard.workflow.WorkflowResource;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.BadRequestException;
@@ -27,13 +28,20 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @DenyAll
 public class ProjectEndpoint {
+
+    @Inject
+    private ProjectRepository repository;
+
+    @Inject
+    private WorkflowRepository workflowRepository;
+
     @GET
     @Transactional
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public List<ProjectResponse> listAllProjects() {
-        return Project.<Project>streamAll()
-                      .map(ProjectResponse::load)
-                      .toList();
+        return repository.findAll()
+                         .map(ProjectResponse::load)
+                         .toList();
     }
 
     @POST
@@ -41,11 +49,11 @@ public class ProjectEndpoint {
     @ResponseStatus(201)
     @RolesAllowed(Role.PROJECT_MANAGER_ROLE)
     public ProjectResponse createProject(@Valid @Parameter(name = "request") CreateProjectRequest request) {
-        var workflow = Workflow.<Workflow>findByIdOptional(request.workflowId())
-                               .orElseThrow(() -> new BadRequestException("Workflow with ID " + request.workflowId() + " does not exist"));
+        var workflow = workflowRepository.findById(request.workflowId())
+                                         .orElseThrow(() -> new BadRequestException("Workflow with ID " + request.workflowId() + " does not exist"));
 
         Project project = new Project(request.name(), request.description(), workflow);
-        project.persist();
+        repository.save(project);
         return ProjectResponse.load(project);
     }
 
@@ -53,38 +61,29 @@ public class ProjectEndpoint {
     @Path("{projectId}")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public ProjectResponse getProjectById(@PathParam("projectId") long projectId) {
-        Project project = Project.findById(projectId);
-        if (project == null) {
-            throw new NotFoundException("Project with ID " + projectId + " does not exist");
-        }
-        return ProjectResponse.load(project);
+        return ProjectResponse.load(repository.findById(projectId)
+                                              .orElseThrow(() -> new NotFoundException("Project with ID " + projectId + " does not exist")));
     }
 
     @GET
     @Path("{projectId}/workflow")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public WorkflowResource.WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
-        Project project = Project.findById(projectId);
-        if (project == null) {
-            throw new NotFoundException("Project with ID " + projectId + " does not exist");
-        }
-        return WorkflowResource.toResponse(project.workflow);
+        return WorkflowResource.toResponse(repository.findById(projectId)
+                                                     .orElseThrow(() -> new NotFoundException("Project with ID " + projectId + " does not exist"))
+                                                     .getWorkflow());
     }
 
     @GET
     @Path("{projectId}/status")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public List<ProjectStatusResponse> getAllTicketStatusByProject(@PathParam("projectId") long projectId) {
-        return Project.<Project>findByIdOptional(projectId)
-                      .map(project -> project.workflow.statuses.stream()
-                                                               .map(status -> new ProjectStatusResponse(status.id,
-                                                                                                        status.name,
-                                                                                                        project.workflow.start.id == status.id,
-                                                                                                        project.workflow.transitions.stream()
-                                                                                                                                    .filter(t -> t.from.id == status.id)
-                                                                                                                                    .map(s -> s.to.id)
-                                                                                                                                    .toList()))
-                                                               .toList())
-                      .orElseThrow(() -> new NotFoundException("Project not found: " + projectId));
+        return repository.findById(projectId)
+                         .map(project -> project.getWorkflow()
+                                                .getStatuses()
+                                                .stream()
+                                                .map(status -> ProjectStatusResponse.load(status, project.getWorkflow()))
+                                                .toList())
+                         .orElseThrow(() -> new NotFoundException("Project not found: " + projectId));
     }
 }

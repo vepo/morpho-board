@@ -2,9 +2,7 @@ package dev.vepo.morphoboard.ticket;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Stream;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import dev.vepo.morphoboard.project.Project;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
@@ -12,39 +10,44 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_tickets")
-public class Ticket extends PanacheEntity {
-    public String title;
+public class Ticket {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String title;
     @Column(columnDefinition = "TEXT")
-    public String description;
-    public LocalDateTime createdAt;
-    public LocalDateTime updatedAt;
+    private String description;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
-    public Category category;
+    private Category category;
 
     @ManyToOne
-    public WorkflowStatus status;
+    private WorkflowStatus status;
 
     @ManyToOne
-    public User author;
+    private User author;
 
     @ManyToOne
-    public User assignee;
+    private User assignee;
 
     @ManyToOne(optional = false)
-    public Project project;
+    private Project project;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<Comment> comments;
+    private List<Comment> comments;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    public List<TicketHistory> history;
+    private List<TicketHistory> history;
 
     public Ticket() {}
 
@@ -58,7 +61,100 @@ public class Ticket extends PanacheEntity {
         this.status = status;
     }
 
-    public static Stream<Ticket> findByProject(long projectId) {
-        return find("project.id", projectId).stream();
+    public Long getId() {
+        return id;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public WorkflowStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(WorkflowStatus status) {
+        this.status = status;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public User getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(User assignee) {
+        this.assignee = assignee;
+    }
+
+    public Project getProject() {
+        return project;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public List<TicketHistory> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<TicketHistory> history) {
+        this.history = history;
+    }
+
 }

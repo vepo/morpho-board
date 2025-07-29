@@ -11,10 +11,10 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/categories")
 @Produces(MediaType.APPLICATION_JSON)
 public class CategoryResource {
-    public static record CategoryResponse(long id, String name) {}
+    public static record CategoryResponse(long id, String name, String color) {}
 
     public static final CategoryResponse toResponse(Category category) {
-        return new CategoryResponse(category.id, category.name);
+        return new CategoryResponse(category.getId(), category.getName(), category.getColor());
     }
 
     @Inject
@@ -22,7 +22,7 @@ public class CategoryResource {
 
     @GET
     public List<CategoryResponse> listAll() {
-        return repository.streamAll()
+        return repository.findAll()
                          .map(CategoryResource::toResponse)
                          .toList();
     }

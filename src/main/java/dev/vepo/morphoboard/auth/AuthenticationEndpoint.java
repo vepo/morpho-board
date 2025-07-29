@@ -41,16 +41,16 @@ public class AuthenticationEndpoint {
     @Path("/login")
     public LoginResponse login(@Valid @Parameter(name = "request") LoginRequest req) {
         return this.userRepository.findByEmail(req.email())
-                                  .filter(u -> passwordEncoder.matches(req.password(), u.encodedPassword))
+                                  .filter(u -> passwordEncoder.matches(req.password(), u.getEncodedPassword()))
                                   .map(user -> {
                                       Instant now = Instant.now();
                                       return new LoginResponse(Jwt.issuer("https://morpho-board.vepo.dev")
-                                                                  .upn(user.email)
-                                                                  .claim("id", user.id)
-                                                                  .claim("email", user.email)
-                                                                  .groups(user.roles.stream()
-                                                                                    .map(Role::role)
-                                                                                    .collect(Collectors.toSet()))
+                                                                  .upn(user.getEmail())
+                                                                  .claim("id", user.getId())
+                                                                  .claim("email", user.getEmail())
+                                                                  .groups(user.getRoles().stream()
+                                                                              .map(Role::role)
+                                                                              .collect(Collectors.toSet()))
                                                                   .issuedAt(now)
                                                                   .expiresAt(now.plus(1, ChronoUnit.DAYS))
                                                                   .sign());

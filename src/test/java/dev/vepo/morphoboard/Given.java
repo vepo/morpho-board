@@ -14,6 +14,7 @@ import dev.vepo.morphoboard.project.ProjectResponse;
 import dev.vepo.morphoboard.ticket.TicketResponse;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
+import dev.vepo.morphoboard.user.UserRepository;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
 import dev.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
 import io.quarkus.narayana.jta.QuarkusTransaction;
@@ -44,7 +45,8 @@ public class Given {
         var id = System.currentTimeMillis();
         String email = "user" + id + "@morpho-board.vepo.dev";
         ensureUser("Random User " + id, email, Set.of(Role.USER));
-        return User.find("email", email).firstResult();
+        return inject(UserRepository.class).findByEmail(email)
+                                           .orElseThrow(() -> new IllegalStateException("User created!"));
     }
 
     public static Header authenticatedProjectManager() {
@@ -167,28 +169,11 @@ public class Given {
 
     }
 
-    public static int userIdByEmail(String string) {
-        return User.<User>find("email", string)
-                   .firstResultOptional()
-                   .map(u -> u.id)
-                   .orElseThrow(() -> new IllegalStateException("User not found with email: " + string))
-                   .intValue();
-    }
-
-    private static void ensureUser(String name, String email, Set<Role> roles) {
-        if (!User.find("email", email)
-                 .firstResultOptional()
-                 .isPresent()) {
-            try {
-                var encoder = CDI.current().select(PasswordEncoder.class).get();
-                QuarkusTransaction.begin();
-                new User(name, email, encoder.hashPassword("password"), roles).persist();
-                QuarkusTransaction.commit();
-            } catch (Exception e) {
-                QuarkusTransaction.rollback();
-                fail("Fail to create user!");
-            }
-        }
+    public static int userIdByEmail(String email) {
+        return inject(UserRepository.class).findByEmail(email)
+                                           .map(u -> u.getId())
+                                           .orElseThrow(() -> new IllegalStateException("User not found with email: " + email))
+                                           .intValue();
     }
 
     public static List<StatusResponse> allStatuses() {
@@ -199,5 +184,30 @@ public class Given {
                                     .statusCode(200)
                                     .extract()
                                     .as(StatusResponse[].class));
+    }
+
+    private static void ensureUser(String name, String email, Set<Role> roles) {
+        if (!inject(UserRepository.class).findByEmail(email).isPresent()) {
+            transaction(() -> inject(UserRepository.class)
+                                                          .save(new User(name,
+                                                                         email,
+                                                                         inject(PasswordEncoder.class).hashPassword("password"),
+                                                                         roles)));
+        }
+    }
+
+    private static <T> T inject(Class<T> clazz) {
+        return CDI.current().select(clazz).get();
+    }
+
+    private static void transaction(Runnable code) {
+        try {
+            QuarkusTransaction.begin();
+            code.run();
+            QuarkusTransaction.commit();
+        } catch (Exception e) {
+            QuarkusTransaction.rollback();
+            fail("Fail to create user!");
+        }
     }
 }

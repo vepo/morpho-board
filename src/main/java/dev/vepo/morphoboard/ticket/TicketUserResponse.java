@@ -7,6 +7,6 @@ public record TicketUserResponse(long id, String name, String email) {
         if (user == null) {
             return null;
         }
-        return new TicketUserResponse(user.id, user.name, user.email);
+        return new TicketUserResponse(user.getId(), user.getName(), user.getEmail());
     }
 }

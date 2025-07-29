@@ -2,23 +2,68 @@ package dev.vepo.morphoboard.ticket;
 
 import java.time.Instant;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import dev.vepo.morphoboard.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_comments")
-public class Comment extends PanacheEntity {
+public class Comment {
+    @Id
+    @GeneratedValue
+    private Long id;
+
     @Column(columnDefinition = "TEXT")
-    public String content;
-    public Instant createdAt;
+    private String content;
+    private Instant createdAt;
 
     @ManyToOne
-    public Ticket ticket;
+    private Ticket ticket;
 
     @ManyToOne
-    public User author;
+    private User author;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Ticket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
 }

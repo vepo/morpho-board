@@ -9,13 +9,13 @@ public record TicketResponse(long id,
                              long project,
                              long status) {
     public static TicketResponse load(Ticket ticket) {
-        return new TicketResponse(ticket.id,
-                                  ticket.title,
-                                  ticket.description,
-                                  ticket.category.id,
-                                  ticket.author.id,
-                                  ticket.assignee != null ? ticket.assignee.id : null,
-                                  ticket.project.id,
-                                  ticket.status.id);
+        return new TicketResponse(ticket.getId(),
+                                  ticket.getTitle(),
+                                  ticket.getDescription(),
+                                  ticket.getCategory().getId(),
+                                  ticket.getAuthor().getId(),
+                                  ticket.getAssignee() != null ? ticket.getAssignee().getId() : null,
+                                  ticket.getProject().getId(),
+                                  ticket.getStatus().getId());
     }
 }

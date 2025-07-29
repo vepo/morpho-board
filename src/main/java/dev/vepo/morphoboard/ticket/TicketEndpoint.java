@@ -11,10 +11,10 @@ import java.util.regex.Pattern;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
-import dev.vepo.morphoboard.project.Project;
+import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
-import dev.vepo.morphoboard.workflow.WorkflowStatus;
+import dev.vepo.morphoboard.user.UserRepository;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -44,13 +44,22 @@ import jakarta.ws.rs.core.SecurityContext;
 public class TicketEndpoint {
 
     @Inject
-    TicketRepository repository;
+    private TicketRepository repository;
 
     @Inject
-    TicketHistoryRepository historyRepository;
+    private UserRepository userRepository;
+
+    @Inject
+    private TicketHistoryRepository historyRepository;
+
+    @Inject
+    private ProjectRepository projectRepository;
+
+    @Inject
+    private CategoryRepository categoryRepository;
 
     @Context
-    SecurityContext securityContext;
+    private SecurityContext securityContext;
 
     private static final String NUMBER_REGEX = "\\d+";
     private static final Predicate<String> IS_NUMBER = Pattern.compile(NUMBER_REGEX).asMatchPredicate();
@@ -67,7 +76,7 @@ public class TicketEndpoint {
                              .map(TicketResponse::load)
                              .toList();
         } else {
-            return repository.streamAll()
+            return repository.findAll()
                              .map(TicketResponse::load)
                              .toList();
         }
@@ -93,7 +102,7 @@ public class TicketEndpoint {
     @Path("/{id}")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse findById(@PathParam("id") Long id) {
-        return repository.findByIdOptional(id)
+        return repository.findById(id)
                          .map(TicketResponse::load)
                          .orElseThrow(() -> new NotFoundException(String.format("Ticket does not found! ticketId=%d", id)));
     }
@@ -103,7 +112,7 @@ public class TicketEndpoint {
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketExpandedResponse findExpandedById(@PathParam("id") Long id) {
-        return repository.findByIdOptional(id)
+        return repository.findById(id)
                          .map(TicketExpandedResponse::load)
                          .orElseThrow(() -> new NotFoundException(String.format("Ticket does not found! ticketId=%d", id)));
     }
@@ -113,23 +122,22 @@ public class TicketEndpoint {
     @ResponseStatus(201)
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse create(@Valid @Parameter(name = "request") CreateTicketRequest request) {
-        var project = Project.<Project>findByIdOptional(request.projectId())
-                             .orElseThrow(() -> new NotFoundException("Projeto não encontrado"));
-        var author = User.<User>find("email", securityContext.getUserPrincipal().getName())
-                         .firstResultOptional()
-                         .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
+        var project = projectRepository.findById(request.projectId())
+                                       .orElseThrow(() -> new NotFoundException("Projeto não encontrado"));
+        var author = userRepository.findByEmail(securityContext.getUserPrincipal().getName())
+                                   .orElseThrow(() -> new NotFoundException("Usuário não encontrado"));
         var ticket = new Ticket(request.title(),
                                 request.description(),
-                                Category.<Category>findByIdOptional(request.categoryId())
-                                        .orElseThrow(() -> new NotFoundException("Categoria não encontrada")),
+                                categoryRepository.findById(request.categoryId())
+                                                  .orElseThrow(() -> new NotFoundException("Categoria não encontrada")),
                                 author,
                                 null,
                                 project,
-                                project.workflow.start);
-        repository.persist(ticket);
+                                project.getWorkflow().getStart());
+        repository.save(ticket);
         // Registrar histórico de criação
         var history = new TicketHistory(ticket, author, "Ticket criado", Instant.now());
-        historyRepository.persist(history);
+        historyRepository.save(history);
         return TicketResponse.load(ticket);
     }
 
@@ -141,21 +149,19 @@ public class TicketEndpoint {
         if (request.title() == null || request.description() == null || request.categoryId() == null) {
             throw new BadRequestException("Campos obrigatórios não podem ser nulos");
         }
-        Ticket entity = repository.findById(id);
-        if (entity == null) {
-            throw new NotFoundException();
-        }
-        entity.title = request.title();
-        entity.description = request.description();
-        entity.category = Category.findById(request.categoryId());
-        entity.assignee = request.assigneeId() != null ? User.findById(request.assigneeId()) : null;
-        entity.updatedAt = LocalDateTime.now();
+        Ticket entity = repository.findById(id)
+                                  .orElseThrow(() -> new NotFoundException("Ticket not found!"));
+        entity.setTitle(request.title());
+        entity.setDescription(request.description());
+        entity.setCategory(categoryRepository.findById(request.categoryId()).orElseThrow(() -> new NotFoundException()));
+        entity.setAssignee(request.assigneeId() != null ? userRepository.findById(request.assigneeId()).orElseThrow(() -> new NotFoundException()) : null);
+        entity.setUpdatedAt(LocalDateTime.now());
         // Pega usuário autenticado via JWT
         String email = securityContext.getUserPrincipal().getName();
-        User user = User.find("email", email).firstResult();
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException());
         // Registrar histórico de edição
         var history = new TicketHistory(entity, user, "Ticket editado", Instant.now());
-        historyRepository.persist(history);
+        historyRepository.save(history);
         return TicketResponse.load(entity);
     }
 
@@ -164,20 +170,19 @@ public class TicketEndpoint {
     @Transactional
     @RolesAllowed({ Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public void delete(@PathParam("id") Long id) {
-        repository.deleteById(id);
+        repository.delete(id);
     }
 
     @GET
     @Path("/{id}/comments")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<CommentResponse> listComments(@PathParam("id") Long id) {
-        Ticket ticket = repository.findById(id);
-        if (ticket == null) {
-            throw new NotFoundException();
-        }
-        return ticket.comments.stream()
-                              .map(CommentResponse::load)
-                              .toList();
+        return repository.findById(id)
+                         .orElseThrow(() -> new NotFoundException())
+                         .getComments()
+                         .stream()
+                         .map(CommentResponse::load)
+                         .toList();
     }
 
     @POST
@@ -186,64 +191,70 @@ public class TicketEndpoint {
     @ResponseStatus(201)
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public CommentResponse addComment(@PathParam("id") Long id, CommentRequest request) {
-        Ticket ticket = repository.findById(id);
-        if (ticket == null) {
-            throw new NotFoundException();
-        }
+        var ticket = repository.findById(id)
+                               .orElseThrow(() -> new NotFoundException());
         // Pega usuário autenticado via JWT
-        String email = securityContext.getUserPrincipal().getName();
-        User user = User.find("email", email).firstResult();
+        var email = securityContext.getUserPrincipal().getName();
+        var user = userRepository.findByEmail(email)
+                                 .orElseThrow(() -> new NotFoundException());
         var comment = new Comment();
-        comment.ticket = ticket;
-        comment.author = user;
-        comment.createdAt = Instant.now();
-        ticket.comments.add(comment);
+        comment.setTicket(ticket);
+        comment.setAuthor(user);
+        comment.setCreatedAt(Instant.now());
+        ticket.getComments().add(comment);
         // Registrar histórico de comentário
         var history = new TicketHistory(ticket, user, "Comentário adicionado", Instant.now());
-        historyRepository.persist(history);
+        historyRepository.save(history);
         return CommentResponse.load(comment);
     }
 
     @PATCH
     @Path("/{id}/move")
     @Transactional
-    public TicketResponse moveTicket(@PathParam("id") Long id, MoveTicketRequest request) {
-        Ticket ticket = repository.findById(id);
-        if (Objects.isNull(ticket)) {
-            throw new NotFoundException(String.format("Ticket not found! id=%d", id));
-        }
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public TicketResponse moveTicket(@PathParam("id") Long id,
+                                     @Valid @Parameter(name = "request") MoveTicketRequest request) {
+        var ticket = repository.findById(id)
+                               .orElseThrow(() -> new NotFoundException());
 
         if (Objects.isNull(request) || Objects.isNull(request.to())) {
             throw new BadRequestException("Destino não informado");
         }
 
-        WorkflowStatus to = ticket.project.workflow.statuses.stream()
-                                                            .filter(s -> s.id == request.to())
-                                                            .findFirst()
-                                                            .orElseThrow(() -> new BadRequestException(String.format("Destino inválido! id=%d", request.to())));
-        if (ticket.project.workflow.transitions.stream()
-                                               .noneMatch(t -> t.to.id == request.to() && t.from.id == ticket.status.id)) {
+        var to = ticket.getProject()
+                       .getWorkflow()
+                       .getStatuses()
+                       .stream()
+                       .filter(s -> s.getId() == request.to())
+                       .findFirst()
+                       .orElseThrow(() -> new BadRequestException(String.format("Destino inválido! id=%d", request.to())));
+        if (ticket.getProject()
+                  .getWorkflow()
+                  .getTransitions()
+                  .stream()
+                  .noneMatch(t -> t.getTo().getId() == request.to() && t.getFrom().getId() == ticket.getStatus().getId())) {
             throw new BadRequestException("Transição não permitida");
         }
-        ticket.status = to;
+        ticket.setStatus(to);
         // Pega usuário autenticado via JWT
-        String email = securityContext.getUserPrincipal().getName();
-        User user = User.find("email", email).firstResult();
+        var email = securityContext.getUserPrincipal().getName();
+        var user = userRepository.findByEmail(email)
+                                 .orElseThrow(() -> new NotFoundException());
         // Registrar histórico de movimentação
-        var history = new TicketHistory(ticket, user, "Ticket movido para status: " + to.name, Instant.now());
-        historyRepository.persist(history);
+        var history = new TicketHistory(ticket, user, "Ticket movido para status: " + to.getName(), Instant.now());
+        historyRepository.save(history);
         return TicketResponse.load(ticket);
     }
 
     @GET
     @Path("/{id}/history")
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<TicketHistoryResponse> getHistory(@PathParam("id") Long id) {
-        Ticket ticket = repository.findById(id);
-        if (ticket == null) {
-            throw new NotFoundException();
-        }
-        return ticket.history.stream()
-                             .map(TicketHistoryResponse::load)
-                             .toList();
+        return repository.findById(id)
+                         .orElseThrow(() -> new NotFoundException())
+                         .getHistory()
+                         .stream()
+                         .map(TicketHistoryResponse::load)
+                         .toList();
     }
 }

@@ -2,14 +2,30 @@ package dev.vepo.morphoboard.user;
 
 import java.util.Optional;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
-public class UserRepository implements PanacheRepository<User> {
+public class UserRepository {
+    @PersistenceContext
+    private EntityManager em;
 
     public Optional<User> findByEmail(String email) {
-        return find("email", email).firstResultOptional();
+        return em.createQuery("FROM User WHERE email = :email", User.class)
+                 .setParameter("email", email)
+                 .getResultStream()
+                 .findFirst();
     }
 
+    public Optional<User> findById(Long id) {
+        return em.createQuery("FROM User WHERE id = :id", User.class)
+                 .setParameter("id", id)
+                 .getResultStream()
+                 .findFirst();
+    }
+
+    public void save(User user) {
+        em.persist(user);
+    }
 }

@@ -6,17 +6,22 @@ import static java.util.stream.IntStream.rangeClosed;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
-public class TicketRepository implements PanacheRepository<Ticket> {
+public class TicketRepository {
     private static final Logger logger = LoggerFactory.getLogger(TicketRepository.class);
+    @PersistenceContext
+    private EntityManager em;
 
     public Stream<Ticket> search(String[] terms, long statusId) {
         Objects.requireNonNull(terms, "terms cannot be null!");
@@ -40,7 +45,8 @@ public class TicketRepository implements PanacheRepository<Ticket> {
 
         if (statements.isEmpty()) {
             logger.info("Returning all tickets because no filter is defined!");
-            return streamAll();
+            return em.createQuery("FROM Ticket", Ticket.class)
+                     .getResultStream();
         }
 
         logger.atInfo()
@@ -50,16 +56,54 @@ public class TicketRepository implements PanacheRepository<Ticket> {
                                        .map(Object::toString)
                                        .collect(joining(", ", "[", "]")))
               .log();
-        return find(format("FROM Ticket t WHERE %s", statements.stream()
-                                                               .collect(joining(" AND "))),
-                    params.toArray()).stream();
+
+        var query = em.createQuery(format("FROM Ticket t WHERE %s", statements.stream()
+                                                                              .collect(joining(" AND "))),
+                                   Ticket.class);
+        IntStream.rangeClosed(1, params.size())
+                 .forEach(index -> query.setParameter(index, params.get(index - 1)));
+        return query.getResultStream();
+
     }
 
     public Stream<Ticket> findByStatusId(long statusId) {
-        return stream("status.id", statusId);
+        return em.createQuery("FROM Ticket where status.id = :id", Ticket.class)
+                 .setParameter("id", statusId)
+                 .getResultStream();
+    }
+
+    public Optional<Ticket> findById(long id) {
+        return em.createQuery("FROM Ticket where id = :id", Ticket.class)
+                 .setParameter("id", id)
+                 .getResultStream()
+                 .findFirst();
     }
 
     public Stream<Ticket> findByStatusName(String status) {
-        return stream("status.name", status);
+        return em.createQuery("FROM Ticket where status.name = :name", Ticket.class)
+                 .setParameter("name", status)
+                 .getResultStream();
+    }
+
+    public Stream<Ticket> findAll() {
+        return em.createQuery("FROM Ticket", Ticket.class)
+                 .getResultStream();
+    }
+
+    public void save(Ticket ticket) {
+        em.persist(ticket);
+    }
+
+    public void delete(long id) {
+        int deletedItems = em.createQuery("DELETE FROM Ticket WHERE id = :id")
+                             .setParameter("id", id)
+                             .executeUpdate();
+        logger.warn("Deleted tickets! count={}", deletedItems);
+    }
+
+    public Stream<Ticket> findByProjectId(long id) {
+        return em.createQuery("FROM Ticket where project.id = :id", Ticket.class)
+                 .setParameter("id", id)
+                 .getResultStream();
     }
 }

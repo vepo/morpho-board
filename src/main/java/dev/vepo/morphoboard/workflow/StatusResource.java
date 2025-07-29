@@ -2,6 +2,7 @@ package dev.vepo.morphoboard.workflow;
 
 import java.util.List;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -13,14 +14,17 @@ public class StatusResource {
 
     public static final record StatusResponse(long id, String name) {}
 
+    @Inject
+    private WorkflowRepository repository;
+
     @GET
     public List<StatusResponse> listAll() {
-        return WorkflowStatus.<WorkflowStatus>streamAll()
-                             .map(StatusResource::toResponse)
-                             .toList();
+        return repository.findAllStatus()
+                         .map(StatusResource::toResponse)
+                         .toList();
     }
 
     private static final StatusResponse toResponse(WorkflowStatus status) {
-        return new StatusResponse(status.id, status.name);
+        return new StatusResponse(status.getId(), status.getName());
     }
 }
