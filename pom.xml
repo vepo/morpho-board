@@ -22,18 +22,9 @@
         <sonar.coverage.jacoco.xmlReportPaths>
             target/jacoco-report/jacoco.xml
         </sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.sources>
-            pom.xml,
-            src/main/java,
-            src/main/webui/src
-        </sonar.sources>
+        <sonar.sources>pom.xml,src/main/java,src/main/webui/src</sonar.sources>
         <sonar.typescript.lcov.reportPaths>src/main/webui/coverage/lcov.info</sonar.typescript.lcov.reportPaths>
-        <sonar.typescript.exclusions>
-            **/node_modules/**,
-            **/dist/**,
-            **/*.spec.ts,
-            **/typings.d.ts
-        </sonar.typescript.exclusions>        
+        <sonar.typescript.exclusions>**/node_modules/**,**/dist/**,**/*.spec.ts,**/typings.d.ts</sonar.typescript.exclusions>        
     </properties>
 
     <dependencyManagement>

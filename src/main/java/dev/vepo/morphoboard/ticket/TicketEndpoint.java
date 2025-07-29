@@ -87,7 +87,6 @@ public class TicketEndpoint {
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<TicketResponse> search(@QueryParam("term") String term,
                                        @QueryParam("statusId") @DefaultValue("-1") long statusId) {
-
         return repository.search(Optional.ofNullable(term)
                                          .filter(Predicate.not(String::isBlank))
                                          .map(String::trim)
