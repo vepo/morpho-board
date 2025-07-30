@@ -12,7 +12,11 @@ import java.util.regex.Pattern;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
+import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.ProjectRepository;
+import dev.vepo.morphoboard.ticket.comments.Comment;
+import dev.vepo.morphoboard.ticket.comments.CommentRequest;
+import dev.vepo.morphoboard.ticket.comments.CommentResponse;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;

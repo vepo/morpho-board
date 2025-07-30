@@ -1,4 +1,4 @@
-package dev.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.categories;
 
 import java.util.Optional;
 import java.util.stream.Stream;

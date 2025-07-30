@@ -1,7 +1,8 @@
-package dev.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket.comments;
 
 import java.time.Instant;
 
+import dev.vepo.morphoboard.ticket.Ticket;
 import dev.vepo.morphoboard.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

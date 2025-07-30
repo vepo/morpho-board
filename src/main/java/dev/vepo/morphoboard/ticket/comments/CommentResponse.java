@@ -1,4 +1,6 @@
-package dev.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket.comments;
+
+import dev.vepo.morphoboard.ticket.TicketUserResponse;
 
 public record CommentResponse(long id,
                               TicketUserResponse author,

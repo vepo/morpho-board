@@ -1,4 +1,4 @@
-package dev.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.categories;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("/categories")
 @Produces(MediaType.APPLICATION_JSON)
-public class CategoryResource {
+public class CategoryEndpoint {
     public static record CategoryResponse(long id, String name, String color) {}
 
     public static final CategoryResponse toResponse(Category category) {
@@ -23,7 +23,7 @@ public class CategoryResource {
     @GET
     public List<CategoryResponse> listAll() {
         return repository.findAll()
-                         .map(CategoryResource::toResponse)
+                         .map(CategoryEndpoint::toResponse)
                          .toList();
     }
 }

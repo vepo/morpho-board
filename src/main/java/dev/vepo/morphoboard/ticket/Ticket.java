@@ -3,7 +3,9 @@ package dev.vepo.morphoboard.ticket;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.project.Project;
+import dev.vepo.morphoboard.ticket.comments.Comment;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
 import jakarta.persistence.CascadeType;

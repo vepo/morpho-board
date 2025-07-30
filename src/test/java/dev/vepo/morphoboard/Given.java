@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 
 import dev.vepo.morphoboard.auth.LoginResponse;
 import dev.vepo.morphoboard.auth.PasswordEncoder;
+import dev.vepo.morphoboard.categories.Category;
+import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.Project;
 import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.project.ProjectResponse;
-import dev.vepo.morphoboard.ticket.Category;
-import dev.vepo.morphoboard.ticket.CategoryRepository;
 import dev.vepo.morphoboard.ticket.TicketResponse;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;

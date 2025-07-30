@@ -1,4 +1,4 @@
-package dev.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.categories;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
