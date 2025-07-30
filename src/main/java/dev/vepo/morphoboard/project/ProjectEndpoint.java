@@ -29,11 +29,15 @@ import jakarta.ws.rs.core.MediaType;
 @DenyAll
 public class ProjectEndpoint {
 
-    @Inject
-    private ProjectRepository repository;
+    private final ProjectRepository repository;
+    private final WorkflowRepository workflowRepository;
 
     @Inject
-    private WorkflowRepository workflowRepository;
+    public ProjectEndpoint(ProjectRepository repository,
+                           WorkflowRepository workflowRepository) {
+        this.repository = repository;
+        this.workflowRepository = workflowRepository;
+    }
 
     @GET
     @Transactional

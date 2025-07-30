@@ -18,7 +18,7 @@ public class MorphoBoardWebExceptionMapper implements ExceptionMapper<WebApplica
 
     @Override
     public Response toResponse(WebApplicationException exception) {
-        logger.error("An error occurred: {}", exception);
+        logger.error("An error occurred!", exception);
         return Response.status(exception.getResponse().getStatus())
                        .type(MediaType.APPLICATION_JSON)
                        .entity(new ErrorResponse(exception.getResponse().getStatus(), exception.getMessage()))
