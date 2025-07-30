@@ -209,9 +209,15 @@ main {
 
     .card {
         display: table-row;
+        &:hover {
+            transform: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+            background-color: #F8F8F8;
+        }
         .type, .value {
             display: table-cell;
             padding: 0.5rem 2rem;
+            white-space: nowrap;
         }
         .type{
             text-align: left;

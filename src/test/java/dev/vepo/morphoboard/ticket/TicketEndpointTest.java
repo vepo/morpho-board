@@ -181,4 +181,25 @@ class TicketEndpointTest {
                .statusCode(404)
                .body("message", equalTo("Projeto não encontrado"));
     }
+
+    @Test
+    @Order(8)
+    @DisplayName("It should return a expanded entity with ")
+    void shouldReturnExpandedTicketInformationTest() {
+        var category = Given.category(ticket.category());
+        var project = Given.project(ticket.project());
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .get("/api/tickets/{id}/expanded", ticket.id())
+               .then()
+               .statusCode(200)
+               .body("id", equalTo((int) ticket.id()))
+               .body("title", equalTo(ticket.title()))
+               .body("description", equalTo(ticket.description()))
+               .body("category", equalTo(category.getName()))
+               .body("project.id", equalTo(project.getId().intValue()))
+               .body("project.name", equalTo(project.getName()));
+    }
 }

@@ -14,6 +14,6 @@
     - [X] Entity Manager
     - [X] Criteria Builder
 
-
+https://blog.vepo.dev/posts/jakarta-ee-e-microprofile-io
 https://start.jakarta.ee/
 https://code.quarkus.io/
