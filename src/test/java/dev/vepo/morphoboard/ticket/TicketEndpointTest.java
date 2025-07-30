@@ -179,7 +179,7 @@ class TicketEndpointTest {
                .post("/api/tickets")
                .then()
                .statusCode(404)
-               .body("message", equalTo("Projeto não encontrado"));
+               .body("message", equalTo("Project does not found! projectId=9999"));
     }
 
     @Test
