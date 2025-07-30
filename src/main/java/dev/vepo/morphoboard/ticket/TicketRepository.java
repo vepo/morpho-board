@@ -2,6 +2,7 @@ package dev.vepo.morphoboard.ticket;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -9,6 +10,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dev.vepo.morphoboard.ticket.comments.Comment;
+import dev.vepo.morphoboard.ticket.history.TicketHistory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -102,6 +105,18 @@ public class TicketRepository {
 
     public Stream<Ticket> findByProjectId(long id) {
         return em.createQuery("FROM Ticket where project.id = :id", Ticket.class)
+                 .setParameter("id", id)
+                 .getResultStream();
+    }
+
+    public Stream<TicketHistory> findHistoryByTicketId(Long id) {
+        return em.createQuery("FROM TicketHistory where ticket.id = :id", TicketHistory.class)
+                 .setParameter("id", id)
+                 .getResultStream();
+    }
+
+    public Stream<Comment> findCommentsByTicketId(Long id) {
+        return em.createQuery("FROM Comment where ticket.id = :id", Comment.class)
                  .setParameter("id", id)
                  .getResultStream();
     }

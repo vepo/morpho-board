@@ -1,5 +1,7 @@
 package dev.vepo.morphoboard.ticket;
 
+import dev.vepo.morphoboard.ticket.history.TicketHistory;
+
 public final record TicketHistoryResponse(String description,
                                           TicketUserResponse user,
                                           long timestamp) {

@@ -2,6 +2,8 @@ package dev.vepo.morphoboard.ticket;
 
 import java.util.List;
 
+import dev.vepo.morphoboard.ticket.history.TicketHistory;
+
 public record TicketExpandedResponse(long id,
                                      String title,
                                      String description,
@@ -12,7 +14,7 @@ public record TicketExpandedResponse(long id,
                                      String status,
                                      List<TicketHistoryResponse> history) {
 
-    public static TicketExpandedResponse load(Ticket ticket) {
+    public static TicketExpandedResponse load(Ticket ticket, List<TicketHistory> history) {
         return new TicketExpandedResponse(ticket.getId(),
                                           ticket.getTitle(),
                                           ticket.getDescription(),
@@ -21,10 +23,9 @@ public record TicketExpandedResponse(long id,
                                           TicketUserResponse.load(ticket.getAssignee()),
                                           TicketProjectResponse.load(ticket.getProject()),
                                           ticket.getStatus().getName(),
-                                          ticket.getHistory()
-                                                .stream()
-                                                .map(TicketHistoryResponse::load)
-                                                .toList());
+                                          history.stream()
+                                                 .map(TicketHistoryResponse::load)
+                                                 .toList());
     }
 
 }

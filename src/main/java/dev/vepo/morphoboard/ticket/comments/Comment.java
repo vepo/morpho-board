@@ -8,6 +8,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -20,13 +21,24 @@ public class Comment {
 
     @Column(columnDefinition = "TEXT")
     private String content;
+    @Column(name = "created_at")
     private Instant createdAt;
 
     @ManyToOne
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
     @ManyToOne
     private User author;
+
+    public Comment() {}
+
+    public Comment(Ticket ticket, User author, String content) {
+        this.ticket = ticket;
+        this.author = author;
+        this.content = content;
+        this.createdAt = Instant.now();
+    }
 
     public Long getId() {
         return id;

@@ -1,7 +1,6 @@
 package dev.vepo.morphoboard.ticket;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,6 +16,8 @@ import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.ticket.comments.Comment;
 import dev.vepo.morphoboard.ticket.comments.CommentRequest;
 import dev.vepo.morphoboard.ticket.comments.CommentResponse;
+import dev.vepo.morphoboard.ticket.history.TicketHistory;
+import dev.vepo.morphoboard.ticket.history.TicketHistoryRepository;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
@@ -140,9 +141,10 @@ public class TicketEndpoint {
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketExpandedResponse findExpandedById(@PathParam("id") Long id) {
-        return repository.findById(id)
-                         .map(TicketExpandedResponse::load)
-                         .orElseThrow(ticketNotFound(id));
+        return TicketExpandedResponse.load(repository.findById(id)
+                                                     .orElseThrow(ticketNotFound(id)),
+                                           repository.findHistoryByTicketId(id)
+                                                     .toList());
     }
 
     @POST
@@ -183,7 +185,7 @@ public class TicketEndpoint {
         entity.setDescription(request.description());
         entity.setCategory(categoryRepository.findById(request.categoryId()).orElseThrow(categoryNotFound(request.categoryId())));
         entity.setAssignee(request.assigneeId() != null ? userRepository.findById(request.assigneeId()).orElseThrow(userNotFound(request.assigneeId())) : null);
-        entity.setUpdatedAt(LocalDateTime.now());
+        entity.setUpdatedAt(Instant.now());
         // Pega usuário autenticado via JWT
         String email = securityContext.getUserPrincipal().getName();
         User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
@@ -205,10 +207,7 @@ public class TicketEndpoint {
     @Path("/{id}/comments")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<CommentResponse> listComments(@PathParam("id") Long id) {
-        return repository.findById(id)
-                         .orElseThrow(ticketNotFound(id))
-                         .getComments()
-                         .stream()
+        return repository.findCommentsByTicketId(id)
                          .map(CommentResponse::load)
                          .toList();
     }
@@ -225,11 +224,7 @@ public class TicketEndpoint {
         var email = securityContext.getUserPrincipal().getName();
         var user = userRepository.findByEmail(email)
                                  .orElseThrow(userNotFound(email));
-        var comment = new Comment();
-        comment.setTicket(ticket);
-        comment.setAuthor(user);
-        comment.setCreatedAt(Instant.now());
-        ticket.getComments().add(comment);
+        var comment = new Comment(ticket, user, request.content());
         // Registrar histórico de comentário
         var history = new TicketHistory(ticket, user, "Comentário adicionado", Instant.now());
         historyRepository.save(history);
@@ -278,10 +273,7 @@ public class TicketEndpoint {
     @Path("/{id}/history")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<TicketHistoryResponse> getHistory(@PathParam("id") Long id) {
-        return repository.findById(id)
-                         .orElseThrow(ticketNotFound(id))
-                         .getHistory()
-                         .stream()
+        return repository.findHistoryByTicketId(id)
                          .map(TicketHistoryResponse::load)
                          .toList();
     }

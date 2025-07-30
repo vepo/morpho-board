@@ -1,13 +1,15 @@
-package dev.vepo.morphoboard.ticket;
+package dev.vepo.morphoboard.ticket.history;
 
 import java.time.Instant;
 
+import dev.vepo.morphoboard.ticket.Ticket;
 import dev.vepo.morphoboard.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
@@ -16,10 +18,12 @@ public class TicketHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "ticket_id", nullable = false)
     public Ticket ticket;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
     public User user;
 
     @Column(nullable = false)

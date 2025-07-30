@@ -1,21 +1,18 @@
 package dev.vepo.morphoboard.ticket;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.Instant;
+import java.util.Objects;
 
 import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.project.Project;
-import dev.vepo.morphoboard.ticket.comments.Comment;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,32 +21,37 @@ public class Ticket {
     @Id
     @GeneratedValue
     private Long id;
+
     private String title;
+
     @Column(columnDefinition = "TEXT")
     private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
 
     @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
     private WorkflowStatus status;
 
     @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     @ManyToOne
+    @JoinColumn(name = "assignee_id", nullable = true)
     private User assignee;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "project_id", nullable = true)
     private Project project;
-
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Comment> comments;
-
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TicketHistory> history;
 
     public Ticket() {}
 
@@ -61,6 +63,7 @@ public class Ticket {
         this.assignee = assignee;
         this.project = project;
         this.status = status;
+        this.createdAt = this.updatedAt = Instant.now();
     }
 
     public Long getId() {
@@ -87,19 +90,19 @@ public class Ticket {
         this.description = description;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -143,20 +146,15 @@ public class Ticket {
         this.project = project;
     }
 
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
-    public List<TicketHistory> getHistory() {
-        return history;
-    }
-
-    public void setHistory(List<TicketHistory> history) {
-        this.history = history;
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        } else if (Objects.nonNull(other) && other instanceof Ticket otherTicket) {
+            return Objects.equals(id, otherTicket.id);
+        } else {
+            return false;
+        }
     }
 
 }
