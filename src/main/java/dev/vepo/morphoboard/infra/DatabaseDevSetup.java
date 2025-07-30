@@ -216,7 +216,7 @@ public class DatabaseDevSetup {
                         header = true;
                         continue;
                     }
-                    workflowData.computeIfAbsent(line[0], __ -> new ArrayList<>()).add(line);
+                    workflowData.computeIfAbsent(line[0], key -> new ArrayList<>()).add(line);
                     workflowStart.putIfAbsent(line[0], line[1]);
                 }
             }
@@ -254,8 +254,7 @@ public class DatabaseDevSetup {
 
     private HashMap<String, Category> loadCategories() {
         var categories = new HashMap<String, Category>();
-        try (Reader reader = new InputStreamReader(
-                                                   DatabaseDevSetup.class.getResourceAsStream("/dev/data/categorias.csv"))) {
+        try (Reader reader = new InputStreamReader(DatabaseDevSetup.class.getResourceAsStream("/dev/data/categorias.csv"))) {
             try (CSVReader csvReader = new CSVReader(reader)) {
                 String[] line;
                 boolean header = false;

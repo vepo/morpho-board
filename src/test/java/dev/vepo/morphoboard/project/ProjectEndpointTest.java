@@ -166,7 +166,7 @@ class ProjectEndpointTest {
                      }""")
                .post("/api/projects")
                .then()
-               .statusCode(400)
+               .statusCode(404)
                .body("message", is("Workflow with ID 9999 does not exist"));
     }
 }

@@ -1,6 +1,7 @@
 package dev.vepo.morphoboard.project;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
@@ -13,7 +14,6 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -28,6 +28,14 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @DenyAll
 public class ProjectEndpoint {
+
+    private static Supplier<NotFoundException> projectNotFound(long projectId) {
+        return () -> new NotFoundException(String.format("Project with ID %d does not exist", projectId));
+    }
+
+    private static Supplier<NotFoundException> workflowNotFound(long workflowId) {
+        return () -> new NotFoundException(String.format("Workflow with ID %d does not exist", workflowId));
+    }
 
     private final ProjectRepository repository;
     private final WorkflowRepository workflowRepository;
@@ -53,12 +61,10 @@ public class ProjectEndpoint {
     @ResponseStatus(201)
     @RolesAllowed(Role.PROJECT_MANAGER_ROLE)
     public ProjectResponse createProject(@Valid @Parameter(name = "request") CreateProjectRequest request) {
-        var workflow = workflowRepository.findById(request.workflowId())
-                                         .orElseThrow(() -> new BadRequestException("Workflow with ID " + request.workflowId() + " does not exist"));
-
-        Project project = new Project(request.name(), request.description(), workflow);
-        repository.save(project);
-        return ProjectResponse.load(project);
+        return ProjectResponse.load(repository.save(new Project(request.name(),
+                                                                request.description(),
+                                                                workflowRepository.findById(request.workflowId())
+                                                                                  .orElseThrow(workflowNotFound(request.workflowId())))));
     }
 
     @GET
@@ -66,7 +72,7 @@ public class ProjectEndpoint {
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public ProjectResponse getProjectById(@PathParam("projectId") long projectId) {
         return ProjectResponse.load(repository.findById(projectId)
-                                              .orElseThrow(() -> new NotFoundException("Project with ID " + projectId + " does not exist")));
+                                              .orElseThrow(projectNotFound(projectId)));
     }
 
     @GET
@@ -74,7 +80,7 @@ public class ProjectEndpoint {
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public WorkflowResource.WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
         return WorkflowResource.toResponse(repository.findById(projectId)
-                                                     .orElseThrow(() -> new NotFoundException("Project with ID " + projectId + " does not exist"))
+                                                     .orElseThrow(projectNotFound(projectId))
                                                      .getWorkflow());
     }
 
@@ -88,6 +94,6 @@ public class ProjectEndpoint {
                                                 .stream()
                                                 .map(status -> ProjectStatusResponse.load(status, project.getWorkflow()))
                                                 .toList())
-                         .orElseThrow(() -> new NotFoundException("Project not found: " + projectId));
+                         .orElseThrow(projectNotFound(projectId));
     }
 }

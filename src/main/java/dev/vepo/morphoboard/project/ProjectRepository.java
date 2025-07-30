@@ -24,8 +24,9 @@ public class ProjectRepository {
                  .getResultStream();
     }
 
-    public void save(Project project) {
+    public Project save(Project project) {
         em.persist(project);
+        return project;
     }
 
     public Optional<Project> findByName(String name) {
