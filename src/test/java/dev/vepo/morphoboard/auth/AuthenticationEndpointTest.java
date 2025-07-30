@@ -31,6 +31,7 @@ class AuthenticationEndpointTest {
                .post("/api/auth/login")
                .then()
                .statusCode(400)
+               .body("violations[0].field", is("login.request.password"))
                .body("violations[0].message", is("Password must not be empty!"));
         given().contentType(ContentType.JSON)
                .body("""
@@ -42,6 +43,7 @@ class AuthenticationEndpointTest {
                .post("/api/auth/login")
                .then()
                .statusCode(400)
+               .body("violations[0].field", is("login.request.email"))
                .body("violations[0].message", is("Email must not be empty!"));
     }
 

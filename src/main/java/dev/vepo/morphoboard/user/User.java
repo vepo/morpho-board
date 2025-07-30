@@ -18,11 +18,13 @@ public class User {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "encoded_password")
+    @Column(name = "encoded_password", nullable = false)
     private String encodedPassword;
 
     @Enumerated(EnumType.STRING)

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import dev.vepo.morphoboard.Given;
-import dev.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
+import dev.vepo.morphoboard.workflow.WorkflowEndpoint.WorkflowResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
@@ -133,6 +133,7 @@ class ProjectEndpointTest {
                .post("/api/projects")
                .then()
                .statusCode(400)
+               .body("violations[0].field", is("create.request.name"))
                .body("violations[0].message", is("Project name cannot be empty"));
     }
 
@@ -152,6 +153,7 @@ class ProjectEndpointTest {
                .post("/api/projects")
                .then()
                .statusCode(400)
+               .body("violations[0].field", is("create.request.workflowId"))
                .body("violations[0].message", is("Workflow ID must be provided"));
 
         given().header(pmAuthenticatedHeader)

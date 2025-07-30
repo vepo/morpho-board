@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import dev.vepo.morphoboard.categories.CategoryRepository;
@@ -151,7 +150,7 @@ public class TicketEndpoint {
     @Transactional
     @ResponseStatus(201)
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public TicketResponse create(@Valid @Parameter(name = "request") CreateTicketRequest request) {
+    public TicketResponse create(@Valid CreateTicketRequest request) {
         var project = projectRepository.findById(request.projectId())
                                        .orElseThrow(projectNotFound(request.projectId()));
         var author = userRepository.findByEmail(securityContext.getUserPrincipal().getName())
@@ -236,7 +235,7 @@ public class TicketEndpoint {
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse moveTicket(@PathParam("id") Long id,
-                                     @Valid @Parameter(name = "request") MoveTicketRequest request) {
+                                     @Valid MoveTicketRequest request) {
         var ticket = repository.findById(id)
                                .orElseThrow(ticketNotFound(id));
 

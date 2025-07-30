@@ -7,8 +7,16 @@ import java.util.stream.Collectors;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
 
+import dev.vepo.morphoboard.user.Role;
+import jakarta.annotation.security.DenyAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -20,19 +28,18 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/workflows")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class WorkflowResource {
-
-    @Inject
-    private WorkflowRepository repository;
+@DenyAll
+public class WorkflowEndpoint {
 
     public static record TransitionResponse(String from, String to) {}
 
     public static record TransitionRequest(String from, String to) {}
 
-    public static record CreateWorkflowRequest(String name,
-                                               List<String> statuses,
-                                               String start,
-                                               List<TransitionRequest> transitions) {}
+    @ValidTransitions
+    public static record CreateWorkflowRequest(@NotBlank(message = "Workflow name cannot be empty!") @Size(min = 5, max = 64, message = "Workflow name should have at least 5 caracters and at most 64!") String name,
+                                               @NotEmpty(message = "No status defined!") @Size(min = 2, message = "At least 2 statuses must be defined!") List<String> statuses,
+                                               @NotNull(message = "No start status is defined!") String start,
+                                               @NotEmpty List<TransitionRequest> transitions) {}
 
     public static record WorkflowResponse(long id,
                                           String name,
@@ -57,7 +64,15 @@ public class WorkflowResource {
                                             .collect(Collectors.toList()));
     }
 
+    private final WorkflowRepository repository;
+
+    @Inject
+    public WorkflowEndpoint(WorkflowRepository repository) {
+        this.repository = repository;
+    }
+
     @GET
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<WorkflowResponse> listWorkflows() {
         return repository.findAll()
                          .map(workflow -> toResponse((Workflow) workflow))
@@ -67,32 +82,8 @@ public class WorkflowResource {
     @POST
     @Transactional
     @ResponseStatus(201)
-    public WorkflowResponse createWorkflow(CreateWorkflowRequest request) {
-        if (request.name == null || request.name.isBlank()) {
-            throw new BadRequestException("Workflow name cannot be empty");
-        }
-        if (request.statuses == null || request.statuses.isEmpty()) {
-            throw new BadRequestException("Workflow must have at least one status");
-        }
-        if (request.start == null || request.start == null || request.start.isBlank()) {
-            throw new BadRequestException("Workflow must have a valid start status");
-        }
-        if (request.transitions == null || request.transitions.isEmpty()) {
-            throw new BadRequestException("Workflow must have at least one transition");
-        }
-        if (request.transitions.stream().anyMatch(transition -> transition.from == null || transition.to == null)) {
-            throw new BadRequestException("All transitions must have valid 'from' and 'to' status");
-        }
-        if (request.statuses.stream().anyMatch(status -> status == null || status.isBlank())) {
-            throw new BadRequestException("All statuses must have valid names");
-        }
-        if (request.transitions.stream().anyMatch(transition -> transition.from.equals(transition.to))) {
-            throw new BadRequestException("Transitions cannot loop back to the same status");
-        }
-        if (request.statuses.stream().noneMatch(status -> status.equals(request.start))) {
-            throw new BadRequestException("Start status must be one of the defined statuses");
-        }
-
+    @RolesAllowed({ Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public WorkflowResponse create(@Valid CreateWorkflowRequest request) {
         var statuses = request.statuses()
                               .stream()
                               .map(status -> repository.findStatusByName(status)
@@ -103,14 +94,15 @@ public class WorkflowResource {
                                                        }))
                               .collect(Collectors.toMap(w -> w.getName(), Function.identity()));
 
-        Workflow workflow = new Workflow();
-        workflow.setName(request.name);
-        workflow.setStatuses(statuses.values().stream().toList());
-        workflow.setStart(statuses.get(request.start));
-        workflow.setTransitions(request.transitions.stream()
-                                                   .map(transition -> new WorkflowTransition(statuses.get(transition.from),
-                                                                                             statuses.get(transition.to)))
-                                                   .collect(Collectors.toList()));
+        Workflow workflow = new Workflow(request.name(),
+                                         statuses.values()
+                                                 .stream()
+                                                 .toList(),
+                                         statuses.get(request.start),
+                                         request.transitions().stream()
+                                                .map(transition -> new WorkflowTransition(statuses.get(transition.from),
+                                                                                          statuses.get(transition.to)))
+                                                .collect(Collectors.toList()));
         repository.save(workflow);
         return toResponse(workflow);
     }

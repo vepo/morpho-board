@@ -3,11 +3,13 @@ package dev.vepo.morphoboard.workflow;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -23,10 +25,11 @@ public class Workflow {
     private String name;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "start_id")
+    @JoinColumn(name = "start_id", referencedColumnName = "id", nullable = false)
     private WorkflowStatus start;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "tb_workflow_statuses", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "status_id"))
     private List<WorkflowStatus> statuses;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

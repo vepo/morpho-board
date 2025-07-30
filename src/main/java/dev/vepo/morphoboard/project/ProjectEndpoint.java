@@ -3,12 +3,11 @@ package dev.vepo.morphoboard.project;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import dev.vepo.morphoboard.user.Role;
+import dev.vepo.morphoboard.workflow.WorkflowEndpoint;
 import dev.vepo.morphoboard.workflow.WorkflowRepository;
-import dev.vepo.morphoboard.workflow.WorkflowResource;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -60,7 +59,7 @@ public class ProjectEndpoint {
     @Transactional
     @ResponseStatus(201)
     @RolesAllowed(Role.PROJECT_MANAGER_ROLE)
-    public ProjectResponse createProject(@Valid @Parameter(name = "request") CreateProjectRequest request) {
+    public ProjectResponse create(@Valid CreateProjectRequest request) {
         return ProjectResponse.load(repository.save(new Project(request.name(),
                                                                 request.description(),
                                                                 workflowRepository.findById(request.workflowId())
@@ -78,8 +77,8 @@ public class ProjectEndpoint {
     @GET
     @Path("{projectId}/workflow")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
-    public WorkflowResource.WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
-        return WorkflowResource.toResponse(repository.findById(projectId)
+    public WorkflowEndpoint.WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
+        return WorkflowEndpoint.toResponse(repository.findById(projectId)
                                                      .orElseThrow(projectNotFound(projectId))
                                                      .getWorkflow());
     }

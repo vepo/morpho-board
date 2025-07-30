@@ -20,7 +20,7 @@ import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
-import dev.vepo.morphoboard.workflow.WorkflowResource.WorkflowResponse;
+import dev.vepo.morphoboard.workflow.WorkflowEndpoint.WorkflowResponse;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.restassured.http.Header;
 import jakarta.enterprise.inject.spi.CDI;
@@ -138,7 +138,8 @@ public class Given {
 
     public static WorkflowResponse simpleWorkflow() {
         // try get the value before creating it
-        var existingWorkflow = given().when()
+        var existingWorkflow = given().header(authenticatedUser())
+                                      .when()
                                       .get("/api/workflows")
                                       .then()
                                       .statusCode(200)
@@ -151,7 +152,8 @@ public class Given {
                          .findFirst()
                          .orElseThrow();
         }
-        return given().when()
+        return given().header(authenticatedProjectManager())
+                      .when()
                       .contentType("application/json")
                       .body("""
                             {

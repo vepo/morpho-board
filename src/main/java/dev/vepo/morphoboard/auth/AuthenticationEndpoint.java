@@ -4,8 +4,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.UserRepository;
 import io.smallrye.jwt.build.Jwt;
@@ -39,9 +37,9 @@ public class AuthenticationEndpoint {
 
     @POST
     @Path("/login")
-    public LoginResponse login(@Valid @Parameter(name = "request") LoginRequest req) {
-        return this.userRepository.findByEmail(req.email())
-                                  .filter(u -> passwordEncoder.matches(req.password(), u.getEncodedPassword()))
+    public LoginResponse login(@Valid LoginRequest request) {
+        return this.userRepository.findByEmail(request.email())
+                                  .filter(u -> passwordEncoder.matches(request.password(), u.getEncodedPassword()))
                                   .map(user -> {
                                       Instant now = Instant.now();
                                       return new LoginResponse(Jwt.issuer("https://morpho-board.vepo.dev")
@@ -55,7 +53,7 @@ public class AuthenticationEndpoint {
                                                                   .expiresAt(now.plus(1, ChronoUnit.DAYS))
                                                                   .sign());
                                   })
-                                  .orElseThrow(() -> new NotAuthorizedException("Invalid credentials!", req));
+                                  .orElseThrow(() -> new NotAuthorizedException("Invalid credentials!", request));
     }
 
     @GET
