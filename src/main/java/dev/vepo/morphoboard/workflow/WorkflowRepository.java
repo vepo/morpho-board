@@ -44,11 +44,13 @@ public class WorkflowRepository {
                  .findFirst();
     }
 
-    public void save(WorkflowStatus status) {
+    public WorkflowStatus save(WorkflowStatus status) {
         em.persist(status);
+        return status;
     }
 
-    public void save(Workflow workflow) {
+    public Workflow save(Workflow workflow) {
         em.persist(workflow);
+        return workflow;
     }
 }
