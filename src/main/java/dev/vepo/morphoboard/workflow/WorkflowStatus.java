@@ -1,5 +1,7 @@
 package dev.vepo.morphoboard.workflow;
 
+import java.util.Objects;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,4 +41,14 @@ public class WorkflowStatus {
         this.name = name;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        } else if (Objects.nonNull(other) && other instanceof WorkflowStatus otherStatus) {
+            return Objects.equals(this.id, otherStatus.id);
+        } else {
+            return false;
+        }
+    }
 }
