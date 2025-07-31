@@ -3,12 +3,17 @@ package dev.vepo.morphoboard.workflow;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 
 @ApplicationScoped
 public class WorkflowRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowRepository.class);
 
     @PersistenceContext
     private EntityManager em;
@@ -50,6 +55,7 @@ public class WorkflowRepository {
     }
 
     public Workflow save(Workflow workflow) {
+        logger.info("Saving workflow! workflow={}", workflow);
         em.persist(workflow);
         return workflow;
     }

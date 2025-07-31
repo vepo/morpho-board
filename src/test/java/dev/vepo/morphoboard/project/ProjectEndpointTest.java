@@ -1,7 +1,8 @@
 package dev.vepo.morphoboard.project;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 
 import java.util.stream.Stream;
 
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import dev.vepo.morphoboard.Given;
-import dev.vepo.morphoboard.workflow.WorkflowEndpoint.WorkflowResponse;
+import dev.vepo.morphoboard.workflow.WorkflowResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;

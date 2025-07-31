@@ -6,6 +6,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.user.Role;
 import jakarta.annotation.security.DenyAll;
@@ -13,11 +15,6 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -30,22 +27,7 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @DenyAll
 public class WorkflowEndpoint {
-
-    public static record TransitionResponse(String from, String to) {}
-
-    public static record TransitionRequest(String from, String to) {}
-
-    @ValidTransitions
-    public static record CreateWorkflowRequest(@NotBlank(message = "Workflow name cannot be empty!") @Size(min = 5, max = 64, message = "Workflow name should have at least 5 caracters and at most 64!") String name,
-                                               @NotEmpty(message = "No status defined!") @Size(min = 2, message = "At least 2 statuses must be defined!") List<String> statuses,
-                                               @NotNull(message = "No start status is defined!") String start,
-                                               @NotEmpty List<TransitionRequest> transitions) {}
-
-    public static record WorkflowResponse(long id,
-                                          String name,
-                                          List<String> statuses,
-                                          String start,
-                                          List<TransitionResponse> transitions) {}
+    private static final Logger logger = LoggerFactory.getLogger(WorkflowEndpoint.class);
 
     public static WorkflowResponse toResponse(Workflow workflow) {
         return new WorkflowResponse(workflow.getId(),
@@ -84,6 +66,7 @@ public class WorkflowEndpoint {
     @ResponseStatus(201)
     @RolesAllowed({ Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public WorkflowResponse create(@Valid CreateWorkflowRequest request) {
+        logger.debug("Processing create ticket request! request={}", request);
         var statuses = request.statuses()
                               .stream()
                               .map(status -> repository.findStatusByName(status)
@@ -93,17 +76,15 @@ public class WorkflowEndpoint {
                                                            return dbStatus;
                                                        }))
                               .collect(Collectors.toMap(w -> w.getName(), Function.identity()));
-
-        Workflow workflow = new Workflow(request.name(),
-                                         statuses.values()
-                                                 .stream()
-                                                 .toList(),
-                                         statuses.get(request.start),
-                                         request.transitions().stream()
-                                                .map(transition -> new WorkflowTransition(statuses.get(transition.from),
-                                                                                          statuses.get(transition.to)))
-                                                .collect(Collectors.toList()));
-        repository.save(workflow);
-        return toResponse(workflow);
+        logger.debug("All status exists on database! statuses={}", statuses);
+        return toResponse(repository.save(new Workflow(request.name(),
+                                                       statuses.values()
+                                                               .stream()
+                                                               .toList(),
+                                                       statuses.get(request.start()),
+                                                       request.transitions().stream()
+                                                              .map(transition -> new WorkflowTransition(statuses.get(transition.from()),
+                                                                                                        statuses.get(transition.to())))
+                                                              .collect(Collectors.toList()))));
     }
 }

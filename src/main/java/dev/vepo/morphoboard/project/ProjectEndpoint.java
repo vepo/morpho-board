@@ -8,6 +8,7 @@ import org.jboss.resteasy.reactive.ResponseStatus;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.workflow.WorkflowEndpoint;
 import dev.vepo.morphoboard.workflow.WorkflowRepository;
+import dev.vepo.morphoboard.workflow.WorkflowResponse;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -77,7 +78,7 @@ public class ProjectEndpoint {
     @GET
     @Path("{projectId}/workflow")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
-    public WorkflowEndpoint.WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
+    public WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
         return WorkflowEndpoint.toResponse(repository.findById(projectId)
                                                      .orElseThrow(projectNotFound(projectId))
                                                      .getWorkflow());

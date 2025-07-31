@@ -20,7 +20,7 @@ import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
-import dev.vepo.morphoboard.workflow.WorkflowEndpoint.WorkflowResponse;
+import dev.vepo.morphoboard.workflow.WorkflowResponse;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.restassured.http.Header;
 import jakarta.enterprise.inject.spi.CDI;
