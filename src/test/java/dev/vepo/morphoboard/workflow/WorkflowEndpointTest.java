@@ -3,7 +3,9 @@ package dev.vepo.morphoboard.workflow;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
+import org.hamcrest.Matcher;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import dev.vepo.morphoboard.Given;
@@ -150,64 +152,60 @@ class WorkflowEndpointTest {
                .statusCode(400)
                .body("violations[0].field", is("create.request.statuses"))
                .body("violations[0].message", is("No status defined!"));
-        // given().header(Given.authenticatedProjectManager())
-        //        .when()
-        //        .contentType("application/json")
-        //        .body("""
-        //              {
-        //                  "name": "ValidName",
-        //                  "statuses": [],
-        //                  "start": "Status 1",
-        //                  "transitions": [{"from": "Status 1", "to": "Status 2"}]
-        //              }""")
-        //        .post("/api/workflows")
-        //        .then()
-        //        .statusCode(400)
-        //        .body("violations[0].field", is("create.request.statuses"))
-        //        .body("violations[0].message", is("No status defined!"));
-        // given().header(Given.authenticatedProjectManager())
-        //        .when()
-        //        .contentType("application/json")
-        //        .body("""
-        //              {
-        //                  "name": "ValidName",
-        //                  "statuses": ["Status 1"],
-        //                  "start": "Status 1",
-        //                  "transitions": [{"from": "Status 1", "to": "Status 2"}]
-        //              }""")
-        //        .post("/api/workflows")
-        //        .then()
-        //        .statusCode(400)
-        //        .body("violations[0].field", is("create.request.statuses"))
-        //        .body("violations[0].message", is("At least 2 statuses must be defined!"));
-        // given().header(Given.authenticatedProjectManager())
-        //        .when()
-        //        .contentType("application/json")
-        //        .body("""
-        //              {
-        //                  "name": "ValidName",
-        //                  "statuses": ["Status 1", "Status 2"],
-        //                  "transitions": [{"from": "Status 1", "to": "Status 2"}]
-        //              }""")
-        //        .post("/api/workflows")
-        //        .then()
-        //        .statusCode(400)
-        //        .body("violations[0].field", is("create.request.start"))
-        //        .body("violations[0].message", is("No start status is defined!"));
-        // given().header(Given.authenticatedProjectManager())
-        //        .when()
-        //        .contentType("application/json")
-        //        .body("""
-        //              {
-        //                  "name": "ValidName",
-        //                  "statuses": ["Status 1", "Status 2"],
-        //                  "start": "Status 3",
-        //                  "transitions": [{"from": "Status 1", "to": "Status 2"}]
-        //              }""")
-        //        .post("/api/workflows")
-        //        .then()
-        //        .statusCode(400)
-        //        .body("violations[0].field", is("create.request"))
-        //        .body("violations[0].message", is("Start status not defined on statuses"));
+        given().header(Given.authenticatedProjectManager())
+               .when()
+               .contentType("application/json")
+               .body("""
+                     {
+                         "name": "ValidName",
+                         "statuses": [],
+                         "start": "Status 1",
+                         "transitions": [{"from": "Status 1", "to": "Status 2"}]
+                     }""")
+               .post("/api/workflows")
+               .then()
+               .statusCode(400)
+               .body("violations.find { it.field == 'create.request.statuses' & it.message == 'No status defined!' }", notNullValue());
+        given().header(Given.authenticatedProjectManager())
+               .when()
+               .contentType("application/json")
+               .body("""
+                     {
+                         "name": "ValidName",
+                         "statuses": ["Status 1"],
+                         "start": "Status 1",
+                         "transitions": [{"from": "Status 1", "to": "Status 2"}]
+                     }""")
+               .post("/api/workflows")
+               .then()
+               .statusCode(400)
+               .body("violations.find { it.field == 'create.request.statuses' & it.message == 'At least 2 statuses must be defined!' }", notNullValue());
+        given().header(Given.authenticatedProjectManager())
+               .when()
+               .contentType("application/json")
+               .body("""
+                     {
+                         "name": "ValidName",
+                         "statuses": ["Status 1", "Status 2"],
+                         "transitions": [{"from": "Status 1", "to": "Status 2"}]
+                     }""")
+               .post("/api/workflows")
+               .then()
+               .statusCode(400)
+               .body("violations.find { it.field == 'create.request.start' & it.message == 'No start status is defined!' }", notNullValue());
+        given().header(Given.authenticatedProjectManager())
+               .when()
+               .contentType("application/json")
+               .body("""
+                     {
+                         "name": "ValidName",
+                         "statuses": ["Status 1", "Status 2"],
+                         "start": "Status 3",
+                         "transitions": [{"from": "Status 1", "to": "Status 2"}]
+                     }""")
+               .post("/api/workflows")
+               .then()
+               .statusCode(400)
+               .body("violations.find { it.field == 'create.request' }.message", is("Workflow should define all status used on start and transitions!"));
     }
 }
