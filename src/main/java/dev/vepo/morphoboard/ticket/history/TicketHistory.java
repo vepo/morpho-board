@@ -11,8 +11,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "tb_ticket_history")
 public class TicketHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

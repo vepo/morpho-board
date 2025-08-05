@@ -157,4 +157,10 @@ public class Ticket {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Ticket [id=" + id + ", title=" + title + ", description=" + description + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+                + ", category=" + category + ", status=" + status + ", author=" + author + ", assignee=" + assignee + ", project=" + project + "]";
+    }
+
 }

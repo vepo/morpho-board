@@ -15,12 +15,15 @@ import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.Project;
 import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.project.ProjectResponse;
+import dev.vepo.morphoboard.ticket.TicketRepository;
 import dev.vepo.morphoboard.ticket.TicketResponse;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
+import dev.vepo.morphoboard.workflow.WorkflowRepository;
 import dev.vepo.morphoboard.workflow.WorkflowResponse;
+import dev.vepo.morphoboard.workflow.WorkflowStatus;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.restassured.http.Header;
 import jakarta.enterprise.inject.spi.CDI;
@@ -213,7 +216,7 @@ public class Given {
             QuarkusTransaction.commit();
         } catch (Exception e) {
             QuarkusTransaction.rollback();
-            fail("Fail to create user!");
+            fail("Fail to create transaction!", e);
         }
     }
 
@@ -225,5 +228,14 @@ public class Given {
     public static Project project(long projectId) {
         return inject(ProjectRepository.class).findById(projectId)
                                               .orElseThrow();
+    }
+
+    public static WorkflowStatus status(String status) {
+        return inject(WorkflowRepository.class).findStatusByName(status)
+                                               .orElseThrow();
+    }
+
+    public static void withoutTicket(long id) {
+        transaction(() -> inject(TicketRepository.class).delete(id));
     }
 }

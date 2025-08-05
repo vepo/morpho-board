@@ -3,6 +3,7 @@ package dev.vepo.morphoboard.ticket;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -168,13 +169,13 @@ class TicketEndpointTest {
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .body(String.format("""
-                                   {
-                                       "title": "Invalid Project Ticket",
-                                       "description": "This ticket has an invalid project ID.",
-                                       "projectId": 9999,
-                                       "categoryId": 1
-                                   }"""))
+               .body("""
+                     {
+                         "title": "Invalid Project Ticket",
+                         "description": "This ticket has an invalid project ID.",
+                         "projectId": 9999,
+                         "categoryId": 1
+                     }""")
                .post("/api/tickets")
                .then()
                .statusCode(404)
@@ -200,5 +201,46 @@ class TicketEndpointTest {
                .body("category", equalTo(category.getName()))
                .body("project.id", equalTo(project.getId().intValue()))
                .body("project.name", equalTo(project.getName()));
+    }
+
+    @Test
+    @Order(9)
+    @DisplayName("It should be possible to update a ticket")
+    void updateTicketTest() {
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body(String.format("""
+                                   {
+                                       "title": "New Ticket Title",
+                                       "description": "New Ticket description",
+                                       "categoryId": 2
+                                   }"""))
+               .post("/api/tickets/" + ticket.id())
+               .then()
+               .statusCode(200)
+               .body("title", equalTo("New Ticket Title"))
+               .body("description", equalTo("New Ticket description"))
+               .body("category", is(2));
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("It should be psosible to move ticket to a new status")
+    void moveTicketTest() {
+        var inProgress = Given.status("In Progress");
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body(String.format("""
+                                   {
+                                       "to": %d
+                                   }""", inProgress.getId()))
+               .post("/api/tickets/" + ticket.id() + "/move")
+               .then()
+               .statusCode(200)
+               .body("category", is(inProgress.getId().intValue()));
     }
 }

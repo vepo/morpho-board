@@ -9,6 +9,8 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import org.jboss.resteasy.reactive.ResponseStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.ProjectRepository;
@@ -48,6 +50,7 @@ import jakarta.ws.rs.core.SecurityContext;
 @DenyAll
 public class TicketEndpoint {
 
+    private static final Logger logger = LoggerFactory.getLogger(TicketEndpoint.class);
     private static final String NUMBER_REGEX = "\\d+";
     private static final Predicate<String> IS_NUMBER = Pattern.compile(NUMBER_REGEX).asMatchPredicate();
 
@@ -170,11 +173,11 @@ public class TicketEndpoint {
         return TicketResponse.load(ticket);
     }
 
-    @PUT
+    @POST
     @Path("/{id}")
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public TicketResponse update(@PathParam("id") Long id, UpdateTicketRequest request) {
+    public TicketResponse update(@PathParam("id") Long id, @Valid UpdateTicketRequest request) {
         if (request.title() == null || request.description() == null || request.categoryId() == null) {
             throw new BadRequestException("Campos obrigatórios não podem ser nulos");
         }
@@ -183,7 +186,6 @@ public class TicketEndpoint {
         entity.setTitle(request.title());
         entity.setDescription(request.description());
         entity.setCategory(categoryRepository.findById(request.categoryId()).orElseThrow(categoryNotFound(request.categoryId())));
-        entity.setAssignee(request.assigneeId() != null ? userRepository.findById(request.assigneeId()).orElseThrow(userNotFound(request.assigneeId())) : null);
         entity.setUpdatedAt(Instant.now());
         // Pega usuário autenticado via JWT
         String email = securityContext.getUserPrincipal().getName();
@@ -230,33 +232,35 @@ public class TicketEndpoint {
         return CommentResponse.load(comment);
     }
 
-    @PATCH
+    @POST
     @Path("/{id}/move")
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse moveTicket(@PathParam("id") Long id,
                                      @Valid MoveTicketRequest request) {
+        logger.debug("Moving ticket to a new status! ticketId={}, request={}", id, request);
         var ticket = repository.findById(id)
                                .orElseThrow(ticketNotFound(id));
 
         if (Objects.isNull(request) || Objects.isNull(request.to())) {
             throw new BadRequestException("Destino não informado");
         }
-
+        logger.debug("Retrived ticket! ticket={}", ticket);
         var to = ticket.getProject()
                        .getWorkflow()
                        .getStatuses()
                        .stream()
-                       .filter(s -> s.getId() == request.to())
+                       .filter(s -> Objects.equals(s.getId(), request.to()))
                        .findFirst()
-                       .orElseThrow(() -> new BadRequestException(String.format("Destino inválido! id=%d", request.to())));
+                       .orElseThrow(() -> new BadRequestException(String.format("Stage not defined in project! stageId=%d", request.to())));
         if (ticket.getProject()
                   .getWorkflow()
                   .getTransitions()
                   .stream()
-                  .noneMatch(t -> t.getTo().getId() == request.to() && t.getFrom().getId() == ticket.getStatus().getId())) {
-            throw new BadRequestException("Transição não permitida");
+                  .noneMatch(t -> t.getTo().equals(to) && t.getFrom().equals(ticket.getStatus()))) {
+            throw new BadRequestException(String.format("New stage not acceptable by workflow! stageId=%d", request.to()));
         }
+        logger.info("Valid transition of {} to {}", ticket, to);
         ticket.setStatus(to);
         // Pega usuário autenticado via JWT
         var email = securityContext.getUserPrincipal().getName();

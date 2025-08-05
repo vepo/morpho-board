@@ -81,7 +81,7 @@ export class TicketService {
   }
 
   move(ticketId: number, toStatus: number) :Observable<Ticket> {
-    return this.http.patch<Ticket>(`/api/tickets/${ticketId}/move`, { to: toStatus });
+    return this.http.post<Ticket>(`/api/tickets/${ticketId}/move`, { to: toStatus });
   }
 
   createTicket(request: CreateTicketRequest): Observable<Ticket> {

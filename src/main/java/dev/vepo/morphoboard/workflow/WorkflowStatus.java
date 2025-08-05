@@ -52,4 +52,10 @@ public class WorkflowStatus {
             return false;
         }
     }
+
+    @Override
+    public String toString() {
+        return "WorkflowStatus [id=" + id + ", name=" + name + "]";
+    }
+
 }
