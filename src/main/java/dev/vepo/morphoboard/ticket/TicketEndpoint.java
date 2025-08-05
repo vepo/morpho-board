@@ -14,12 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.ProjectRepository;
+import dev.vepo.morphoboard.ticket.business.TicketHistoryService;
 import dev.vepo.morphoboard.ticket.comments.Comment;
 import dev.vepo.morphoboard.ticket.comments.CommentRequest;
 import dev.vepo.morphoboard.ticket.comments.CommentResponse;
-import dev.vepo.morphoboard.ticket.UpdateAssigneeRequest;
-import dev.vepo.morphoboard.ticket.business.TicketHistoryService;
-import dev.vepo.morphoboard.ticket.history.TicketHistory;
 import dev.vepo.morphoboard.ticket.history.TicketHistoryRepository;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
@@ -37,7 +35,6 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -78,7 +75,6 @@ public class TicketEndpoint {
 
     private TicketRepository repository;
     private UserRepository userRepository;
-    private TicketHistoryRepository historyRepository;
     private ProjectRepository projectRepository;
     private CategoryRepository categoryRepository;
     private TicketHistoryService historyService;
@@ -87,14 +83,12 @@ public class TicketEndpoint {
     @Inject
     public TicketEndpoint(TicketRepository repository,
                           UserRepository userRepository,
-                          TicketHistoryRepository historyRepository,
                           ProjectRepository projectRepository,
                           CategoryRepository categoryRepository,
                           TicketHistoryService historyService,
                           @Context SecurityContext securityContext) {
         this.repository = repository;
         this.userRepository = userRepository;
-        this.historyRepository = historyRepository;
         this.projectRepository = projectRepository;
         this.categoryRepository = categoryRepository;
         this.historyService = historyService;
@@ -303,6 +297,10 @@ public class TicketEndpoint {
         var user = userRepository.findByEmail(email)
                                  .orElseThrow(userNotFound(email));
         var comment = new Comment(ticket, user, request.content());
+
+        // Save comment
+        comment = repository.saveComment(comment);
+
         // Log comment addition
         historyService.logCommentAdded(ticket, user);
         return CommentResponse.load(comment);

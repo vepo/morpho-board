@@ -30,6 +30,18 @@ export interface TicketProject {
   name: string;
 }
 
+export interface Comment {
+  id: number;
+  author: TicketUser;
+  content: string;
+  createdAt: number;
+  isHtml?: boolean;
+}
+
+export interface CreateCommentRequest {
+  content: string;
+}
+
 export interface TicketExpanded {
   id: number;
   title: string;
@@ -94,5 +106,13 @@ export class TicketService {
 
   getTicketHistory(id: string) {
     return this.http.get<any[]>(`/api/tickets/${id}/history`);
+  }
+
+  getComments(ticketId: number): Observable<Comment[]> {
+    return this.http.get<Comment[]>(`/api/tickets/${ticketId}/comments`);
+  }
+
+  addComment(ticketId: number, request: CreateCommentRequest): Observable<Comment> {
+    return this.http.post<Comment>(`/api/tickets/${ticketId}/comments`, request);
   }
 }

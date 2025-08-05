@@ -1,0 +1,68 @@
+<div class="rich-text-editor" [class.disabled]="disabled">
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <button 
+      type="button" 
+      class="toolbar-btn" 
+      [class.active]="isBold"
+      (click)="formatText('bold')"
+      title="Negrito (Ctrl+B)">
+      <strong>B</strong>
+    </button>
+    
+    <button 
+      type="button" 
+      class="toolbar-btn" 
+      [class.active]="isItalic"
+      (click)="formatText('italic')"
+      title="Itálico (Ctrl+I)">
+      <em>I</em>
+    </button>
+    
+    <button 
+      type="button" 
+      class="toolbar-btn" 
+      [class.active]="isUnderline"
+      (click)="formatText('underline')"
+      title="Sublinhado (Ctrl+U)">
+      <u>U</u>
+    </button>
+    
+    <div class="separator"></div>
+    
+    <button 
+      type="button" 
+      class="toolbar-btn"
+      (click)="insertLink()"
+      title="Inserir Link">
+      🔗
+    </button>
+    
+    <button 
+      type="button" 
+      class="toolbar-btn"
+      (click)="insertList()"
+      title="Lista">
+      • Lista
+    </button>
+    
+    <div class="separator"></div>
+    
+    <button 
+      type="button" 
+      class="toolbar-btn"
+      (click)="clearFormatting()"
+      title="Limpar Formatação">
+      🗑️
+    </button>
+  </div>
+
+  <!-- Editor Area -->
+  <div 
+    #editor
+    class="editor-area"
+    contenteditable="true"
+    [attr.placeholder]="placeholder"
+    [class.disabled]="disabled">
+  </div>
+</div> 

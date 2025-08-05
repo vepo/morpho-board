@@ -9,26 +9,94 @@
     <p><strong>Responsável:</strong> {{ ticket.assignee?.name }}</p>
     <p><strong>Status:</strong> {{ ticket.status | normalize }}</p>
     <hr>
-    @if (ticket.history && ticket.history.length > 0) {
-      <div class="table">
-        <div class="header">Histórico de Alterações</div>
-        <div class="body">
-          <div class="sub-header">
-            <div>Data</div>
-            <div>Usuário</div>
-            <div>Alteração</div>
-          </div>
-          @for (entry of ticket.history; track entry.timestamp) {
-            <div class="row {{ $even ? 'even' : 'odd' }}">
-              <div>{{ entry.timestamp | date:'medium' }}</div>
-              <div>{{ entry.user.email }}</div>
-              <div>{{ entry.description }}</div>
+    
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'history'"
+        (click)="setActiveTab('history')">
+        Histórico
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'comments'"
+        (click)="setActiveTab('comments')">
+        Comentários
+      </button>
+    </div>
+
+    <!-- History Tab -->
+    @if (activeTab === 'history') {
+      @if (ticket.history && ticket.history.length > 0) {
+        <div class="table">
+          <div class="header">Histórico de Alterações</div>
+          <div class="body">
+            <div class="sub-header">
+              <div>Data</div>
+              <div>Usuário</div>
+              <div>Alteração</div>
             </div>
+            @for (entry of ticket.history; track entry.timestamp) {
+              <div class="row {{ $even ? 'even' : 'odd' }}">
+                <div>{{ entry.timestamp | date:'medium' }}</div>
+                <div>{{ entry.user.email }}</div>
+                <div>{{ entry.description }}</div>
+              </div>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="table empty">Nenhuma atividade registrada...</div>
+      }
+    }
+
+    <!-- Comments Tab -->
+    @if (activeTab === 'comments') {
+      <div class="comments-section">
+        <!-- Add Comment Form -->
+        <div class="comment-form">
+          <h3>Adicionar Comentário</h3>
+          <div class="form-group">
+            <app-rich-text-editor
+              [value]="newComment"
+              [disabled]="submittingComment"
+              placeholder="Digite seu comentário..."
+              (valueChange)="onCommentChange($event)">
+            </app-rich-text-editor>
+          </div>
+          <button 
+            class="btn" 
+            (click)="addComment()"
+            [disabled]="!newComment.trim() || submittingComment">
+            @if (submittingComment) {
+              Enviando...
+            } @else {
+              Adicionar Comentário
+            }
+          </button>
+        </div>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+          <h3>Comentários ({{ comments.length }})</h3>
+          @if (loadingComments) {
+            <div class="loading">Carregando comentários...</div>
+          } @else if (comments.length > 0) {
+            @for (comment of comments; track comment.id) {
+              <div class="comment">
+                <div class="comment-header">
+                  <span class="comment-author">{{ comment.author.name }}</span>
+                  <span class="comment-date">{{ comment.createdAt | date:'medium' }}</span>
+                </div>
+                <div class="comment-content" [innerHTML]="comment.content"></div>
+              </div>
+            }
+          } @else {
+            <div class="no-comments">Nenhum comentário ainda. Seja o primeiro a comentar!</div>
           }
         </div>
       </div>
-    } @else {
-      <div class="table empty">Nenhuma atividade registrada...</div>
     }
   </div>
 </div>

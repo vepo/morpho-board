@@ -119,4 +119,9 @@ public class TicketRepository {
                  .setParameter("id", id)
                  .getResultStream();
     }
+
+    public Comment saveComment(Comment comment) {
+        em.persist(comment);
+        return comment;
+    }
 }

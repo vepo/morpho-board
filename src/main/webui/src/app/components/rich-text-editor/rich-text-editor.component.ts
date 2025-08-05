@@ -1,0 +1,81 @@
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+@Component({
+  selector: 'app-rich-text-editor',
+  templateUrl: './rich-text-editor.component.html',
+  styleUrls: ['./rich-text-editor.component.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]
+})
+export class RichTextEditorComponent implements AfterViewInit {
+  @Input() placeholder: string = 'Digite seu texto...';
+  @Input() value: string = '';
+  @Input() disabled: boolean = false;
+  @Output() valueChange = new EventEmitter<string>();
+
+  @ViewChild('editor') editorRef!: ElementRef<HTMLDivElement>;
+
+  isBold = false;
+  isItalic = false;
+  isUnderline = false;
+  isList = false;
+
+  ngAfterViewInit() {
+    this.setupEditor();
+  }
+
+  setupEditor() {
+    if (this.editorRef) {
+      this.editorRef.nativeElement.innerHTML = this.value;
+      this.editorRef.nativeElement.addEventListener('input', () => {
+        this.value = this.editorRef.nativeElement.innerHTML;
+        this.valueChange.emit(this.value);
+      });
+    }
+  }
+
+  formatText(command: string, value: string = '') {
+    document.execCommand(command, false, value);
+    this.editorRef.nativeElement.focus();
+    this.updateToolbarState();
+    this.emitChange();
+  }
+
+  updateToolbarState() {
+    this.isBold = document.queryCommandState('bold');
+    this.isItalic = document.queryCommandState('italic');
+    this.isUnderline = document.queryCommandState('underline');
+  }
+
+  emitChange() {
+    this.value = this.editorRef.nativeElement.innerHTML;
+    this.valueChange.emit(this.value);
+  }
+
+  insertLink() {
+    const url = prompt('Digite a URL:');
+    if (url) {
+      this.formatText('createLink', url);
+    }
+  }
+
+  insertList() {
+    this.formatText('insertUnorderedList');
+    this.isList = !this.isList;
+  }
+
+  clearFormatting() {
+    this.formatText('removeFormat');
+    this.updateToolbarState();
+  }
+
+  getPlainText(): string {
+    return this.editorRef.nativeElement.innerText || '';
+  }
+
+  getHtml(): string {
+    return this.editorRef.nativeElement.innerHTML || '';
+  }
+} 
