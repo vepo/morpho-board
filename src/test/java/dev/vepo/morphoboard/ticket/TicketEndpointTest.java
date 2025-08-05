@@ -241,6 +241,6 @@ class TicketEndpointTest {
                .post("/api/tickets/" + ticket.id() + "/move")
                .then()
                .statusCode(200)
-               .body("category", is(inProgress.getId().intValue()));
+               .body("status", is(inProgress.getId().intValue()));
     }
 }

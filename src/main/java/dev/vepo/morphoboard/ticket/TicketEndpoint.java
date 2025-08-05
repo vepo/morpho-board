@@ -17,6 +17,8 @@ import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.ticket.comments.Comment;
 import dev.vepo.morphoboard.ticket.comments.CommentRequest;
 import dev.vepo.morphoboard.ticket.comments.CommentResponse;
+import dev.vepo.morphoboard.ticket.UpdateAssigneeRequest;
+import dev.vepo.morphoboard.ticket.business.TicketHistoryService;
 import dev.vepo.morphoboard.ticket.history.TicketHistory;
 import dev.vepo.morphoboard.ticket.history.TicketHistoryRepository;
 import dev.vepo.morphoboard.user.Role;
@@ -79,6 +81,7 @@ public class TicketEndpoint {
     private TicketHistoryRepository historyRepository;
     private ProjectRepository projectRepository;
     private CategoryRepository categoryRepository;
+    private TicketHistoryService historyService;
     private SecurityContext securityContext;
 
     @Inject
@@ -87,12 +90,14 @@ public class TicketEndpoint {
                           TicketHistoryRepository historyRepository,
                           ProjectRepository projectRepository,
                           CategoryRepository categoryRepository,
+                          TicketHistoryService historyService,
                           @Context SecurityContext securityContext) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.historyRepository = historyRepository;
         this.projectRepository = projectRepository;
         this.categoryRepository = categoryRepository;
+        this.historyService = historyService;
         this.securityContext = securityContext;
     }
 
@@ -167,9 +172,8 @@ public class TicketEndpoint {
                                 project,
                                 project.getWorkflow().getStart());
         repository.save(ticket);
-        // Registrar histórico de criação
-        var history = new TicketHistory(ticket, author, "Ticket criado", Instant.now());
-        historyRepository.save(history);
+        // Log ticket creation
+        historyService.logTicketCreated(ticket, author);
         return TicketResponse.load(ticket);
     }
 
@@ -183,16 +187,79 @@ public class TicketEndpoint {
         }
         Ticket entity = repository.findById(id)
                                   .orElseThrow(ticketNotFound(id));
+
+        // Track changes for history
+        StringBuilder changes = new StringBuilder();
+        boolean hasChanges = false;
+
+        // Check title change
+        if (!entity.getTitle().equals(request.title())) {
+            changes.append("title");
+            hasChanges = true;
+        }
+
+        // Check description change
+        if (!entity.getDescription().equals(request.description())) {
+            if (hasChanges)
+                changes.append(", ");
+            changes.append("description");
+            hasChanges = true;
+        }
+
+        // Check category change
+        var newCategory = categoryRepository.findById(request.categoryId()).orElseThrow(categoryNotFound(request.categoryId()));
+        if (!entity.getCategory().equals(newCategory)) {
+            if (hasChanges)
+                changes.append(", ");
+            changes.append("category");
+            hasChanges = true;
+        }
+
+        // Update entity
         entity.setTitle(request.title());
         entity.setDescription(request.description());
-        entity.setCategory(categoryRepository.findById(request.categoryId()).orElseThrow(categoryNotFound(request.categoryId())));
+        entity.setCategory(newCategory);
         entity.setUpdatedAt(Instant.now());
-        // Pega usuário autenticado via JWT
+
+        // Get authenticated user
         String email = securityContext.getUserPrincipal().getName();
         User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
-        // Registrar histórico de edição
-        var history = new TicketHistory(entity, user, "Ticket editado", Instant.now());
-        historyRepository.save(history);
+
+        // Log changes if any
+        if (hasChanges) {
+            historyService.logTicketUpdated(entity, user, changes.toString());
+        }
+
+        return TicketResponse.load(entity);
+    }
+
+    @PATCH
+    @Path("/{id}/assignee")
+    @Transactional
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public TicketResponse updateAssignee(@PathParam("id") Long id, @Valid UpdateAssigneeRequest request) {
+        Ticket entity = repository.findById(id)
+                                  .orElseThrow(ticketNotFound(id));
+
+        // Get new assignee
+        User newAssignee = userRepository.findById(request.assigneeId())
+                                         .orElseThrow(userNotFound(request.assigneeId()));
+
+        // Track assignee change
+        String fromAssignee = entity.getAssignee() != null ? entity.getAssignee().getName() : null;
+        String toAssignee = newAssignee.getName();
+
+        // Update entity
+        entity.setAssignee(newAssignee);
+        entity.setUpdatedAt(Instant.now());
+
+        // Get authenticated user
+        String email = securityContext.getUserPrincipal().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
+
+        // Log assignee change
+        historyService.logAssigneeChanged(entity, user, fromAssignee, toAssignee);
+
         return TicketResponse.load(entity);
     }
 
@@ -201,6 +268,16 @@ public class TicketEndpoint {
     @Transactional
     @RolesAllowed({ Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public void delete(@PathParam("id") Long id) {
+        Ticket ticket = repository.findById(id)
+                                  .orElseThrow(ticketNotFound(id));
+
+        // Get authenticated user
+        String email = securityContext.getUserPrincipal().getName();
+        User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
+
+        // Log ticket deletion
+        historyService.logTicketDeleted(ticket, user);
+
         repository.delete(id);
     }
 
@@ -226,9 +303,8 @@ public class TicketEndpoint {
         var user = userRepository.findByEmail(email)
                                  .orElseThrow(userNotFound(email));
         var comment = new Comment(ticket, user, request.content());
-        // Registrar histórico de comentário
-        var history = new TicketHistory(ticket, user, "Comentário adicionado", Instant.now());
-        historyRepository.save(history);
+        // Log comment addition
+        historyService.logCommentAdded(ticket, user);
         return CommentResponse.load(comment);
     }
 
@@ -261,14 +337,21 @@ public class TicketEndpoint {
             throw new BadRequestException(String.format("New stage not acceptable by workflow! stageId=%d", request.to()));
         }
         logger.info("Valid transition of {} to {}", ticket, to);
+
+        // Track status change
+        String fromStatus = ticket.getStatus().getName();
+        String toStatus = to.getName();
+
         ticket.setStatus(to);
-        // Pega usuário autenticado via JWT
+
+        // Get authenticated user
         var email = securityContext.getUserPrincipal().getName();
         var user = userRepository.findByEmail(email)
                                  .orElseThrow(userNotFound(email));
-        // Registrar histórico de movimentação
-        var history = new TicketHistory(ticket, user, "Ticket movido para status: " + to.getName(), Instant.now());
-        historyRepository.save(history);
+
+        // Log status change
+        historyService.logStatusChanged(ticket, user, fromStatus, toStatus);
+
         return TicketResponse.load(ticket);
     }
 
