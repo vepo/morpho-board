@@ -18,7 +18,8 @@ import { TrimPipe } from '../pipes/trim.pipe';
 export class HomeComponent implements OnInit {
   projects: Project[] = [];
 
-  constructor(private projectsService: ProjectsService, private authService: AuthService) {}
+  constructor(private readonly projectsService: ProjectsService,
+              private readonly authService: AuthService) { }
 
   ngOnInit() {
     this.projectsService.findAll().subscribe({

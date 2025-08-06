@@ -1,11 +1,11 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-login',
@@ -19,11 +19,12 @@ export class LoginComponent {
   error = '';
   hide = signal(true);
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private readonly auth: AuthService, 
+              private readonly router: Router) {}
 
   login() {
     this.auth.login(this.email, this.password).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: async () => await this.router.navigate(['/']),
       error: () => this.error = 'E-mail ou senha inválidos'
     });
   }
