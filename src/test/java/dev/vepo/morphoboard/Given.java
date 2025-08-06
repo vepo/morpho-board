@@ -56,6 +56,13 @@ public class Given {
                                            .orElseThrow(() -> new IllegalStateException("User created!"));
     }
 
+    public static User randomUser(String email) {
+        var id = System.currentTimeMillis();
+        ensureUser("Random User " + id, email, Set.of(Role.USER));
+        return inject(UserRepository.class).findByEmail(email)
+                                           .orElseThrow(() -> new IllegalStateException("User created!"));
+    }
+
     public static Header authenticatedProjectManager() {
         ensureUser("PM", "pm@morpho-board.vepo.dev", Set.of(Role.PROJECT_MANAGER));
         var response = given().when()
@@ -228,6 +235,11 @@ public class Given {
     public static Project project(long projectId) {
         return inject(ProjectRepository.class).findById(projectId)
                                               .orElseThrow();
+    }
+
+    public static User user(String email) {
+        return inject(UserRepository.class).findByEmail(email)
+                                           .orElseGet(() -> randomUser(email));
     }
 
     public static WorkflowStatus status(String status) {

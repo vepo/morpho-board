@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import dev.vepo.morphoboard.Given;
+import dev.vepo.morphoboard.auth.AuthResponse;
 import dev.vepo.morphoboard.project.ProjectResponse;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
 import io.quarkus.test.junit.QuarkusTest;
@@ -242,5 +243,236 @@ class TicketEndpointTest {
                .then()
                .statusCode(200)
                .body("status", is(inProgress.getId().intValue()));
+    }
+
+    @Test
+    @Order(11)
+    @DisplayName("It should be possible to update ticket assignee")
+    void updateAssigneeTest() {
+        var newAssignee = Given.user("user2@morpho-board.vepo.dev");
+        given().header(pmAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body(String.format("""
+                                   {
+                                       "assigneeId": %d
+                                   }""", newAssignee.getId()))
+               .patch("/api/tickets/" + ticket.id() + "/assignee")
+               .then()
+               .statusCode(200)
+               .body("assignee", equalTo(newAssignee.getId().intValue()));
+    }
+
+    @Test
+    @Order(12)
+    @DisplayName("It should not be possible to update assignee with invalid user ID")
+    void shouldNotUpdateAssigneeWithInvalidUserIdTest() {
+        given().header(pmAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body("""
+                     {
+                         "assigneeId": 9999
+                     }""")
+               .patch("/api/tickets/" + ticket.id() + "/assignee")
+               .then()
+               .statusCode(404)
+               .body("message", equalTo("User does not found! userId=9999"));
+    }
+
+    @Test
+    @Order(13)
+    @DisplayName("Only admin or project manager should be able to delete a ticket")
+    void shouldDeleteTicketTest() {
+        // First create a ticket to delete
+        var ticketToDelete = given().header(pmAuthenticatedHeader)
+                                    .contentType(ContentType.JSON)
+                                    .accept(ContentType.JSON)
+                                    .when()
+                                    .body(String.format("""
+                                                        {
+                                                            "title": "Ticket to delete",
+                                                            "description": "This ticket will be deleted.",
+                                                            "projectId": %d,
+                                                            "categoryId": %d
+                                                        }""",
+                                                        project.id(), 1))
+                                    .post("/api/tickets")
+                                    .then()
+                                    .statusCode(201)
+                                    .extract()
+                                    .as(TicketResponse.class);
+
+        // Delete the ticket as PM
+        given().header(pmAuthenticatedHeader)
+               .accept(ContentType.JSON)
+               .when()
+               .delete("/api/tickets/" + ticketToDelete.id())
+               .then()
+               .statusCode(204);
+
+        // Verify ticket is deleted
+        given().header(pmAuthenticatedHeader)
+               .accept(ContentType.JSON)
+               .when()
+               .get("/api/tickets/" + ticketToDelete.id())
+               .then()
+               .statusCode(404);
+    }
+
+    @Test
+    @Order(14)
+    @DisplayName("Regular user should not be able to delete a ticket")
+    void regularUserShouldNotDeleteTicketTest() {
+        given().header(userAuthenticatedHeader)
+               .accept(ContentType.JSON)
+               .when()
+               .delete("/api/tickets/" + ticket.id())
+               .then()
+               .statusCode(403);
+    }
+
+    @Test
+    @Order(15)
+    @DisplayName("It should be possible to list comments for a ticket")
+    void shouldListCommentsTest() {
+        // First add a comment
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body("""
+                     {
+                         "content": "This is a test comment"
+                     }""")
+               .post("/api/tickets/" + ticket.id() + "/comments")
+               .then()
+               .statusCode(201);
+
+        // Then list comments
+        given().header(userAuthenticatedHeader)
+               .accept(ContentType.JSON)
+               .when()
+               .get("/api/tickets/" + ticket.id() + "/comments")
+               .then()
+               .statusCode(200)
+               .body("$.size()", greaterThan(0))
+               .body("[0].content", equalTo("This is a test comment"));
+    }
+
+    @Test
+    @Order(16)
+    @DisplayName("It should be possible to add a comment to a ticket")
+    void shouldAddCommentTest() {
+        var loggedUser = given().header(userAuthenticatedHeader)
+                                .accept(ContentType.JSON)
+                                .when()
+                                .get("/api/auth/me")
+                                .then()
+                                .statusCode(200)
+                                .extract()
+                                .as(AuthResponse.class);
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body("""
+                     {
+                         "content": "Another test comment"
+                     }""")
+               .post("/api/tickets/" + ticket.id() + "/comments")
+               .then()
+               .statusCode(201)
+               .body("content", equalTo("Another test comment"))
+               .body("author.id", equalTo((int) loggedUser.id()))
+               .body("author.name", equalTo(loggedUser.name()))
+               .body("author.email", equalTo(loggedUser.email()));
+    }
+
+    @Test
+    @Order(17)
+    @DisplayName("It should not be possible to add a comment to a non-existent ticket")
+    void shouldNotAddCommentToInvalidTicketTest() {
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body("""
+                     {
+                         "content": "Invalid ticket comment"
+                     }""")
+               .post("/api/tickets/9999/comments")
+               .then()
+               .statusCode(404)
+               .body("message", equalTo("Ticket does not found! ticketId=9999"));
+    }
+
+    @Test
+    @Order(18)
+    @DisplayName("It should be possible to get ticket history")
+    void shouldGetTicketHistoryTest() {
+        // First make some changes to generate history
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body(String.format("""
+                                   {
+                                       "title": "Updated Title for History",
+                                       "description": "Updated description for history",
+                                       "categoryId": 2
+                                   }"""))
+               .post("/api/tickets/" + ticket.id())
+               .then()
+               .statusCode(200);
+
+        // Get history
+        given().header(userAuthenticatedHeader)
+               .accept(ContentType.JSON)
+               .when()
+               .get("/api/tickets/" + ticket.id() + "/history")
+               .then()
+               .statusCode(200)
+               .body("$.size()", greaterThan(0));
+    }
+
+    @Test
+    @Order(19)
+    @DisplayName("It should not be possible to move ticket to invalid status")
+    void shouldNotMoveToInvalidStatusTest() {
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body("""
+                     {
+                         "to": 9999
+                     }""")
+               .post("/api/tickets/" + ticket.id() + "/move")
+               .then()
+               .statusCode(400)
+               .body("message", equalTo("Stage not defined in project! stageId=9999"));
+    }
+
+    @Test
+    @Order(20)
+    @DisplayName("It should not be possible to update ticket with invalid category ID")
+    void shouldNotUpdateTicketWithInvalidCategoryIdTest() {
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .body("""
+                     {
+                         "title": "Invalid Category Ticket",
+                         "description": "This ticket has an invalid category ID.",
+                         "categoryId": 9999
+                     }""")
+               .post("/api/tickets/" + ticket.id())
+               .then()
+               .statusCode(404)
+               .body("message", equalTo("Category does not found! categoryId=9999"));
     }
 }

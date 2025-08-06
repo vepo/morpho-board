@@ -83,3 +83,9 @@
 1. Mudança de pacote `io.vepo` para `dev.vepo`
 2. Revisão da interface
 3. Criação de menus faltantes
+
+## Live 2
+
+1. [Implementação do Log de Mudanças](/changelog/HISTORY_LOG_IMPLEMENTATION.md)
+2. [Implementação do suporte a comentários](/changelog/COMMENTS_IMPLEMENTATION.md)
+3. [Melhorias no suporte a comentários](/changelog/COMMENTS_IMPROVEMENTS.md)

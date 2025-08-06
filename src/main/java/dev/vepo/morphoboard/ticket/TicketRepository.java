@@ -31,6 +31,8 @@ public class TicketRepository {
 
         var predicates = new ArrayList<Predicate>();
 
+        predicates.add(cb.isFalse(ticket.get("deleted")));
+
         if (terms.length > 0) {
             var termPredicates = new ArrayList<Predicate>();
             for (String term : terms) {
@@ -45,11 +47,6 @@ public class TicketRepository {
             predicates.add(cb.equal(ticket.get("status")
                                           .get("id"),
                                     statusId));
-        }
-
-        if (predicates.isEmpty()) {
-            logger.info("Returning all tickets because no filter is defined!");
-            return em.createQuery(cq).getResultStream();
         }
 
         cq.where(cb.and(predicates.toArray(Predicate[]::new)));
@@ -68,26 +65,26 @@ public class TicketRepository {
     }
 
     public Stream<Ticket> findByStatusId(long statusId) {
-        return em.createQuery("FROM Ticket WHERE status.id = :id", Ticket.class)
+        return em.createQuery("FROM Ticket WHERE deleted = false AND status.id = :id", Ticket.class)
                  .setParameter("id", statusId)
                  .getResultStream();
     }
 
     public Optional<Ticket> findById(long id) {
-        return em.createQuery("FROM Ticket WHERE id = :id", Ticket.class)
+        return em.createQuery("FROM Ticket WHERE deleted = false AND id = :id", Ticket.class)
                  .setParameter("id", id)
                  .getResultStream()
                  .findFirst();
     }
 
     public Stream<Ticket> findByStatusName(String status) {
-        return em.createQuery("FROM Ticket where status.name = :name", Ticket.class)
+        return em.createQuery("FROM Ticket WHERE deleted = false AND status.name = :name", Ticket.class)
                  .setParameter("name", status)
                  .getResultStream();
     }
 
     public Stream<Ticket> findAll() {
-        return em.createQuery("FROM Ticket", Ticket.class)
+        return em.createQuery("FROM Ticket WHERE deleted = false", Ticket.class)
                  .getResultStream();
     }
 
@@ -96,14 +93,14 @@ public class TicketRepository {
     }
 
     public void delete(long id) {
-        int deletedItems = em.createQuery("DELETE FROM Ticket WHERE id = :id")
+        int deletedItems = em.createQuery("UPDATE Ticket SET deleted = true WHERE id = :id")
                              .setParameter("id", id)
                              .executeUpdate();
         logger.warn("Deleted tickets! count={}", deletedItems);
     }
 
     public Stream<Ticket> findByProjectId(long id) {
-        return em.createQuery("FROM Ticket where project.id = :id", Ticket.class)
+        return em.createQuery("FROM Ticket WHERE deleted = false AND project.id = :id", Ticket.class)
                  .setParameter("id", id)
                  .getResultStream();
     }

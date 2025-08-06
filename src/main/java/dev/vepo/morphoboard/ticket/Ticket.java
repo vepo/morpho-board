@@ -27,6 +27,9 @@ public class Ticket {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(columnDefinition = "boolean default false")
+    private boolean deleted;
+
     @Column(name = "created_at")
     private Instant createdAt;
 
@@ -64,6 +67,7 @@ public class Ticket {
         this.project = project;
         this.status = status;
         this.createdAt = this.updatedAt = Instant.now();
+        this.deleted = false;
     }
 
     public Long getId() {
@@ -146,6 +150,14 @@ public class Ticket {
         this.project = project;
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -162,5 +174,4 @@ public class Ticket {
         return "Ticket [id=" + id + ", title=" + title + ", description=" + description + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
                 + ", category=" + category + ", status=" + status + ", author=" + author + ", assignee=" + assignee + ", project=" + project + "]";
     }
-
 }

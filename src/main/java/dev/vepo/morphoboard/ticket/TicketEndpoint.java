@@ -8,6 +8,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
+import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.resteasy.reactive.ResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import dev.vepo.morphoboard.ticket.business.TicketHistoryService;
 import dev.vepo.morphoboard.ticket.comments.Comment;
 import dev.vepo.morphoboard.ticket.comments.CommentRequest;
 import dev.vepo.morphoboard.ticket.comments.CommentResponse;
-import dev.vepo.morphoboard.ticket.history.TicketHistoryRepository;
 import dev.vepo.morphoboard.user.Role;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
