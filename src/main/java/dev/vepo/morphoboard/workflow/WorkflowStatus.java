@@ -43,6 +43,11 @@ public class WorkflowStatus {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -55,7 +60,7 @@ public class WorkflowStatus {
 
     @Override
     public String toString() {
-        return "WorkflowStatus [id=" + id + ", name=" + name + "]";
+        return "WorkflowStatus [id=%d, name=%s]".formatted(id, name);
     }
 
 }
