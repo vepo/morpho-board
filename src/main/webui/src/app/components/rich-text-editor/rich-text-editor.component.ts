@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, FormsModule]
 })
-export class RichTextEditorComponent implements AfterViewInit {
+export class RichTextEditorComponent implements AfterViewInit, OnChanges {
   @Input() placeholder: string = 'Digite seu texto...';
   @Input() value: string = '';
   @Input() disabled: boolean = false;
@@ -24,6 +24,13 @@ export class RichTextEditorComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     this.setupEditor();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // indetify external change on value
+    if (this.editorRef && changes['value'] && changes['value'].currentValue == '' && changes['value'].previousValue != '') {
+      this.editorRef.nativeElement.innerHTML = '';
+    }
   }
 
   setupEditor() {

@@ -15,6 +15,10 @@
     padding: 0.5rem;
     border-bottom: 1px solid #eee;
     background: #f8f9fa;
+    color: #444444;
+    button {
+      color: #444444;
+    }
     border-radius: 4px 4px 0 0;
 
     .toolbar-btn {
@@ -31,10 +35,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-
+      background: #E9ECEF7F;
+      border-color: #ADB5BD7F;
+      
       &:hover {
-        background: #e9ecef;
-        border-color: #adb5bd;
+      background: #e9ecef;
+      border-color: #adb5bd;
       }
 
       &.active {
@@ -64,6 +70,7 @@
     outline: none;
     line-height: 1.5;
     color: #333;
+    resize: vertical;
 
     &:empty:before {
       content: attr(placeholder);
