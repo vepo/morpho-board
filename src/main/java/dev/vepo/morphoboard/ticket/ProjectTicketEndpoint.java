@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 public class ProjectTicketEndpoint {
 
     private final TicketRepository repository;
-    
+
     @Inject
     public ProjectTicketEndpoint(TicketRepository repository) {
         this.repository = repository;

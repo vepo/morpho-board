@@ -18,7 +18,7 @@ public class CategoryEndpoint {
     }
 
     private final CategoryRepository repository;
-    
+
     @Inject
     public CategoryEndpoint(CategoryRepository repository) {
         this.repository = repository;

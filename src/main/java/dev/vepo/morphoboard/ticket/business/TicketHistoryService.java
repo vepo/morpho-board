@@ -12,8 +12,12 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class TicketHistoryService {
 
+    private final TicketHistoryRepository historyRepository;
+
     @Inject
-    private TicketHistoryRepository historyRepository;
+    public TicketHistoryService(TicketHistoryRepository historyRepository) {
+        this.historyRepository = historyRepository;
+    }
 
     /**
      * Logs ticket creation

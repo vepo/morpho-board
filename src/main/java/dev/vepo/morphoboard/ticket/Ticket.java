@@ -159,6 +159,11 @@ public class Ticket {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id);
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -171,7 +176,16 @@ public class Ticket {
 
     @Override
     public String toString() {
-        return "Ticket [id=" + id + ", title=" + title + ", description=" + description + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
-                + ", category=" + category + ", status=" + status + ", author=" + author + ", assignee=" + assignee + ", project=" + project + "]";
+        return "Ticket [id=%d, title=%d, description=%s, createdAt=%d, updatedAt=%d, category=%d, status=%s, author=%s, assignee=%d, project=%d, deleted=%b]".formatted(id,
+                                                                                                                                                                        title,
+                                                                                                                                                                        deleted,
+                                                                                                                                                                        createdAt,
+                                                                                                                                                                        updatedAt,
+                                                                                                                                                                        category,
+                                                                                                                                                                        status,
+                                                                                                                                                                        author,
+                                                                                                                                                                        assignee,
+                                                                                                                                                                        project,
+                                                                                                                                                                        deleted);
     }
 }

@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import org.jboss.resteasy.reactive.ResponseStatus;
 
 import dev.vepo.morphoboard.user.Role;
-import dev.vepo.morphoboard.workflow.WorkflowEndpoint;
 import dev.vepo.morphoboard.workflow.WorkflowRepository;
 import dev.vepo.morphoboard.workflow.WorkflowResponse;
 import jakarta.annotation.security.DenyAll;
@@ -79,9 +78,9 @@ public class ProjectEndpoint {
     @Path("{projectId}/workflow")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })
     public WorkflowResponse getProjectWorkflow(@PathParam("projectId") long projectId) {
-        return WorkflowEndpoint.toResponse(repository.findById(projectId)
-                                                     .orElseThrow(projectNotFound(projectId))
-                                                     .getWorkflow());
+        return WorkflowResponse.load(repository.findById(projectId)
+                                               .orElseThrow(projectNotFound(projectId))
+                                               .getWorkflow());
     }
 
     @GET

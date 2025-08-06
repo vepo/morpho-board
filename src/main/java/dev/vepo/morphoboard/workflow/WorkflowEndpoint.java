@@ -1,6 +1,5 @@
 package dev.vepo.morphoboard.workflow;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,23 +28,6 @@ import jakarta.ws.rs.core.MediaType;
 public class WorkflowEndpoint {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowEndpoint.class);
 
-    public static WorkflowResponse toResponse(Workflow workflow) {
-        return new WorkflowResponse(workflow.getId(),
-                                    workflow.getName(),
-                                    workflow.getStatuses()
-                                            .stream()
-                                            .sorted(Comparator.comparing(WorkflowStatus::getId))
-                                            .map(status -> status.getName())
-                                            .collect(Collectors.toList()),
-                                    workflow.getStart()
-                                            .getName(),
-                                    workflow.getTransitions()
-                                            .stream()
-                                            .map(transition -> new TransitionResponse(transition.getFrom().getName(),
-                                                                                      transition.getTo().getName()))
-                                            .collect(Collectors.toList()));
-    }
-
     private final WorkflowRepository repository;
 
     @Inject
@@ -57,7 +39,7 @@ public class WorkflowEndpoint {
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public List<WorkflowResponse> listWorkflows() {
         return repository.findAll()
-                         .map(workflow -> toResponse((Workflow) workflow))
+                         .map(WorkflowResponse::load)
                          .toList();
     }
 
@@ -77,14 +59,14 @@ public class WorkflowEndpoint {
                                                        }))
                               .collect(Collectors.toMap(w -> w.getName(), Function.identity()));
         logger.debug("All status exists on database! statuses={}", statuses);
-        return toResponse(repository.save(new Workflow(request.name(),
-                                                       statuses.values()
-                                                               .stream()
-                                                               .toList(),
-                                                       statuses.get(request.start()),
-                                                       request.transitions().stream()
-                                                              .map(transition -> new WorkflowTransition(statuses.get(transition.from()),
-                                                                                                        statuses.get(transition.to())))
-                                                              .collect(Collectors.toList()))));
+        return WorkflowResponse.load(repository.save(new Workflow(request.name(),
+                                                                  statuses.values()
+                                                                          .stream()
+                                                                          .toList(),
+                                                                  statuses.get(request.start()),
+                                                                  request.transitions().stream()
+                                                                         .map(transition -> new WorkflowTransition(statuses.get(transition.from()),
+                                                                                                                   statuses.get(transition.to())))
+                                                                         .toList())));
     }
 }

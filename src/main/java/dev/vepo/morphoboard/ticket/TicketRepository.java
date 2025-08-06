@@ -53,11 +53,9 @@ public class TicketRepository {
 
         logger.atInfo()
               .setMessage("Searching with criteria query")
-              .addArgument(() -> {
-                  // This is a simplified logging of the query - in reality CriteriaQuery doesn't
-                  // expose its structure easily
-                  return "Terms: " + Arrays.toString(terms) + ", statusId: " + (statusId != -1 ? statusId : "any");
-              })
+              // This is a simplified logging of the query - in reality CriteriaQuery doesn't
+              // expose its structure easily
+              .addArgument(() -> "Terms: " + Arrays.toString(terms) + ", statusId: " + (statusId != -1 ? statusId : "any"))
               .log();
 
         return em.createQuery(cq)
