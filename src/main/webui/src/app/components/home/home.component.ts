@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Project, ProjectsService } from '../../services/projects.service';
 import { TrimPipe } from '../pipes/trim.pipe';
@@ -18,7 +18,7 @@ import { TrimPipe } from '../pipes/trim.pipe';
 export class HomeComponent implements OnInit {
   projects: Project[] = [];
 
-  constructor(private router: Router, private projectsService: ProjectsService, private authService: AuthService) {}
+  constructor(private projectsService: ProjectsService, private authService: AuthService) {}
 
   ngOnInit() {
     this.projectsService.findAll().subscribe({
