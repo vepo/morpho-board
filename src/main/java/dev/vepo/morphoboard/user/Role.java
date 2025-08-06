@@ -1,6 +1,6 @@
 package dev.vepo.morphoboard.user;
 
-@SuppressWarnings("java:S1192")
+@SuppressWarnings({ "java:S1192", "java:S1700" })
 public enum Role {
     USER("user"),
     ADMIN("admin"),
