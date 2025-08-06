@@ -1,0 +1,48 @@
+<div class="centered">
+    <h1>Gestão de Usuários</h1>
+
+    <div class="table">
+        <div class="header">
+            Usuários
+            <div class="actions">
+                <button class="btn" matButton>
+                    <mat-icon fontIcon="person"></mat-icon> Novo
+                </button>
+            </div>
+        </div>
+        {{ filter.name }}
+        <div class="body">
+            <div class="sub-header">
+                <div>ID</div>
+                <div>Nome</div>
+                <div>Email</div>
+                <div>Roles</div>
+            </div>
+            <div class="sub-header">
+                <div><i>Filtros</i></div>
+                <div><input type="text" placeholder="Filtre por nome.." [(ngModel)]="filter.name" (ngModelChange)="filterChanged('name')" /></div>
+                <div><input type="text" placeholder="Filtre por email.." [(ngModel)]="filter.email" (ngModelChange)="filterChanged('email')" /></div>
+                <div>
+                    <input type="checkbox" [checked]="filter.roles.indexOf('admin') != -1" (change)="toggleRole('admin')" /> Administrador
+                    <input type="checkbox" [checked]="filter.roles.indexOf('project-manager') != -1" (change)="toggleRole('project-manager')" /> Gerente de Projetos
+                    <input type="checkbox" [checked]="filter.roles.indexOf('user') != -1" (change)="toggleRole('user')" /> Usuário
+                </div>
+            </div>
+            @for (entry of users; track entry.id) {
+            <div class="row {{ $even ? 'even' : 'odd' }}">
+                <div>{{ entry.id }}</div>
+                <div>{{ entry.name }}</div>
+                <div>{{ entry.email }}</div>
+                <div>
+                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('admin') != -1"/> Administrador
+                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('project-manager') != -1" /> Gerente de Projetos
+                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('user') != -1" /> Usuário
+                </div>
+            </div>
+            }
+        </div>
+        @if (users.length == 0 ){
+        <div class="table empty">Nenhuma usuario encontrado...</div>
+        }
+    </div>
+</div>

@@ -2,6 +2,7 @@ package dev.vepo.morphoboard.workflow;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -12,8 +13,9 @@ import jakarta.persistence.UniqueConstraint;
 @Table(name = "tb_workflow_transitions", uniqueConstraints = @UniqueConstraint(name = "tb_workflow_transition_UK", columnNames = { "workflow_id", "from_id", "to_id" }))
 public class WorkflowTransition {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne
     @JoinColumn(name = "from_id", nullable = false)
     private WorkflowStatus from;

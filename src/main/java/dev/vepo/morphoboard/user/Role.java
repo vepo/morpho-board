@@ -1,5 +1,8 @@
 package dev.vepo.morphoboard.user;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 @SuppressWarnings({ "java:S1192", "java:S1700" })
 public enum Role {
     USER("user"),
@@ -18,5 +21,11 @@ public enum Role {
 
     public String role() {
         return role;
+    }
+
+    public static Optional<Role> from(String role) {
+        return Stream.of(Role.values())
+                     .filter(r -> r.role.equalsIgnoreCase(role))
+                     .findFirst();
     }
 }

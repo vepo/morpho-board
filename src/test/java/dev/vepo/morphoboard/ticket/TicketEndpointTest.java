@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.is;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import dev.vepo.morphoboard.Given;
 import dev.vepo.morphoboard.auth.AuthResponse;
+import dev.vepo.morphoboard.categories.Category;
+import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.ProjectResponse;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
 import io.quarkus.test.junit.QuarkusTest;
@@ -31,11 +34,15 @@ class TicketEndpointTest {
     private Header pmAuthenticatedHeader;
     private TicketResponse ticket;
     private List<StatusResponse> allStatuses;
+    private Category bug;
+    private Category feature;
 
     @BeforeEach
     void setup() {
+        this.bug = Given.transaction(() -> Given.inject(CategoryRepository.class).save(new Category("Bug" + UUID.randomUUID(), "red")));
+        this.feature = Given.transaction(() -> Given.inject(CategoryRepository.class).save(new Category("Feature" + UUID.randomUUID(), "green")));
         this.project = Given.simpleProject();
-        this.ticket = Given.simpleTicket(this.project.id());
+        this.ticket = Given.simpleTicket(this.project.id(), bug.getId());
         this.userAuthenticatedHeader = Given.authenticatedUser();
         this.pmAuthenticatedHeader = Given.authenticatedProjectManager();
         this.allStatuses = Given.allStatuses();
@@ -147,14 +154,14 @@ class TicketEndpointTest {
                                        "projectId": %d,
                                        "categoryId": %d
                                    }""",
-                                   project.id(), 1))
+                                   project.id(), bug.getId()))
                .post("/api/tickets")
                .then()
                .statusCode(201)
                .body("title", equalTo("New Ticket"))
                .body("description", equalTo("This is a new ticket."))
                .body("project", equalTo((int) project.id()))
-               .body("category", equalTo(1))
+               .body("category", equalTo(bug.getId().intValue()))
                .body("author", equalTo((int) Given.userIdByEmail("pm@morpho-board.vepo.dev")))
                .body("status", equalTo((int) allStatuses.stream()
                                                         .filter(status -> status.name().equals("TODO"))
@@ -175,8 +182,8 @@ class TicketEndpointTest {
                          "title": "Invalid Project Ticket",
                          "description": "This ticket has an invalid project ID.",
                          "projectId": 9999,
-                         "categoryId": 1
-                     }""")
+                         "categoryId": %d
+                     }""".formatted(bug.getId()))
                .post("/api/tickets")
                .then()
                .statusCode(404)
@@ -216,14 +223,14 @@ class TicketEndpointTest {
                                    {
                                        "title": "New Ticket Title",
                                        "description": "New Ticket description",
-                                       "categoryId": 2
-                                   }"""))
+                                       "categoryId": %d
+                                   }""".formatted(feature.getId())))
                .post("/api/tickets/" + ticket.id())
                .then()
                .statusCode(200)
                .body("title", equalTo("New Ticket Title"))
                .body("description", equalTo("New Ticket description"))
-               .body("category", is(2));
+               .body("category", is(feature.getId().intValue()));
     }
 
     @Test
@@ -298,7 +305,7 @@ class TicketEndpointTest {
                                                             "projectId": %d,
                                                             "categoryId": %d
                                                         }""",
-                                                        project.id(), 1))
+                                                        project.id(), bug.getId()))
                                     .post("/api/tickets")
                                     .then()
                                     .statusCode(201)
@@ -422,8 +429,8 @@ class TicketEndpointTest {
                                    {
                                        "title": "Updated Title for History",
                                        "description": "Updated description for history",
-                                       "categoryId": 2
-                                   }"""))
+                                       "categoryId": %d
+                                   }""".formatted(feature.getId())))
                .post("/api/tickets/" + ticket.id())
                .then()
                .statusCode(200);

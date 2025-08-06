@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import dev.vepo.morphoboard.auth.LoginResponse;
@@ -81,8 +82,7 @@ public class Given {
         return new Header("Authorization", "Bearer " + response.token());
     }
 
-    public static TicketResponse simpleTicket(Long projectId) {
-        var categoryId = 1L; // Assuming category ID 1 exists
+    public static TicketResponse simpleTicket(Long projectId, long categoryId) {
         var existingTickets = given().when()
                                      .header(authenticatedProjectManager())
                                      .get("/api/tickets")
@@ -212,11 +212,11 @@ public class Given {
         }
     }
 
-    private static <T> T inject(Class<T> clazz) {
+    public static <T> T inject(Class<T> clazz) {
         return CDI.current().select(clazz).get();
     }
 
-    private static void transaction(Runnable code) {
+    public static void transaction(Runnable code) {
         try {
             QuarkusTransaction.begin();
             code.run();
@@ -224,6 +224,19 @@ public class Given {
         } catch (Exception e) {
             QuarkusTransaction.rollback();
             fail("Fail to create transaction!", e);
+        }
+    }
+
+    public static <T> T transaction(Supplier<T> code) {
+        try {
+            QuarkusTransaction.begin();
+            T value = code.get();
+            QuarkusTransaction.commit();
+            return value;
+        } catch (Exception e) {
+            QuarkusTransaction.rollback();
+            fail("Fail to create transaction!", e);
+            return null;
         }
     }
 

@@ -12,6 +12,7 @@ export class RoleDirective {
     private authService = inject(AuthService);
 
     @Input() set role(role: string) {
+        console.debug("Checking role...", role);
         const hasRole = this.authService.hasRole(role);
         if (hasRole && !this.hasView) {
             this.viewContainerRef.createEmbeddedView(this.templateRef);

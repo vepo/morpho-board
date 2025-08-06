@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -15,7 +16,7 @@ import jakarta.persistence.Table;
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -28,7 +29,10 @@ public class User {
     private String encodedPassword;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Set<Role> roles;
+
+    private boolean deleted;
 
     public User() {}
 
@@ -37,6 +41,7 @@ public class User {
         this.email = email;
         this.encodedPassword = encodedPassword;
         this.roles = roles;
+        this.deleted = false;
     }
 
     public Long getId() {
@@ -78,4 +83,13 @@ public class User {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
 }

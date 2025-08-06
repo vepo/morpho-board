@@ -4,6 +4,11 @@
     <p>Bem-vindo ao sistema de gerenciamento de tickets</p>
     @if (isAuthenticated()) {
     <div class="box">
+      @if (projects.length == 0) {
+      <div class="card empty">
+        Nenhum projeto...
+      </div>  
+      }
       @for (project of projects; track project.name) {
       <div class="card">
         <div class="title">{{ project.name }}</div>

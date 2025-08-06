@@ -44,6 +44,7 @@ export class AuthService {
     const token = this.getToken();
     if (!token) return [];
     const payload = JSON.parse(atob(token.split('.')[1]));
+    console.debug('JWT Roles:', payload.groups);
     return payload.groups || [];
   }
 

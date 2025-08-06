@@ -24,7 +24,8 @@ public class CategoryRepository {
                  .getResultStream();
     }
 
-    public void save(Category categoria) {
-        em.persist(categoria);
+    public Category save(Category category) {
+        em.persist(category);
+        return category;
     }
 }

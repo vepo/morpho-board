@@ -530,6 +530,10 @@ div.table {
         font-weight: bolder;
         padding: 0.5rem 2rem;
         text-align: center;
+
+        .actions {
+            float: right;
+        }
     }
     .body {
         display: table;
