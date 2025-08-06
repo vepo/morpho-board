@@ -176,7 +176,7 @@ public class Ticket {
 
     @Override
     public String toString() {
-        return "Ticket [id=%d, title=%d, description=%s, createdAt=%d, updatedAt=%d, category=%d, status=%s, author=%s, assignee=%d, project=%d, deleted=%b]".formatted(id,
+        return "Ticket [id=%d, title=%s, description=%s, createdAt=%d, updatedAt=%s, category=%s, status=%s, author=%s, assignee=%s, project=%s, deleted=%b]".formatted(id,
                                                                                                                                                                         title,
                                                                                                                                                                         deleted,
                                                                                                                                                                         createdAt,
