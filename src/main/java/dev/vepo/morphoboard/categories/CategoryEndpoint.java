@@ -17,8 +17,12 @@ public class CategoryEndpoint {
         return new CategoryResponse(category.getId(), category.getName(), category.getColor());
     }
 
+    private final CategoryRepository repository;
+    
     @Inject
-    CategoryRepository repository;
+    public CategoryEndpoint(CategoryRepository repository) {
+        this.repository = repository;
+    }
 
     @GET
     public List<CategoryResponse> listAll() {

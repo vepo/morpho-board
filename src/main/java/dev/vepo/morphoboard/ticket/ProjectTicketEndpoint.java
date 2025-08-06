@@ -13,8 +13,12 @@ import jakarta.ws.rs.core.MediaType;
 @Path("/projects/{projectId}/tickets")
 public class ProjectTicketEndpoint {
 
+    private final TicketRepository repository;
+    
     @Inject
-    private TicketRepository repository;
+    public ProjectTicketEndpoint(TicketRepository repository) {
+        this.repository = repository;
+    }
 
     @GET
     public List<TicketResponse> findByProjectId(@PathParam("projectId") long projectId) {

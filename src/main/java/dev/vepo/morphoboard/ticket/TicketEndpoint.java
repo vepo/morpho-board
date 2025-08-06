@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.jboss.resteasy.reactive.ResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -176,9 +175,6 @@ public class TicketEndpoint {
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketResponse update(@PathParam("id") Long id, @Valid UpdateTicketRequest request) {
-        if (request.title() == null || request.description() == null || request.categoryId() == null) {
-            throw new BadRequestException("Campos obrigatórios não podem ser nulos");
-        }
         Ticket entity = repository.findById(id)
                                   .orElseThrow(ticketNotFound(id));
 
