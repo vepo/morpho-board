@@ -15,7 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_workflows", uniqueConstraints = @jakarta.persistence.UniqueConstraint(name = "tb_workflow_UK", columnNames = "name"))
+@Table(name = "tb_workflows", uniqueConstraints = @jakarta.persistence.UniqueConstraint(name = "tb_workflows_UK", columnNames = "name"))
 public class Workflow {
     @Id
     @GeneratedValue
@@ -28,7 +28,7 @@ public class Workflow {
     private WorkflowStatus start;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "tb_workflow_statuses", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "status_id"))
+    @JoinTable(name = "tb_workflow_statuses", joinColumns = @JoinColumn(name = "workflow_id"), inverseJoinColumns = @JoinColumn(name = "status_id"))
     private List<WorkflowStatus> statuses;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

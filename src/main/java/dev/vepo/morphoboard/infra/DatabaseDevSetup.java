@@ -66,86 +66,94 @@ public class DatabaseDevSetup {
 
     @Transactional
     public void onStart(@Observes StartupEvent ev) {
-        var encodedDefaultPassword = passwordEncoder.hashPassword("qwas1234");
-        logger.info("Populating database with initial data for development...");
-        userRepository.save(new User("Gestor", "pm@morpho-board.io", encodedDefaultPassword, Set.of(Role.PROJECT_MANAGER)));
-        userRepository.save(new User("Desenvolvedor", "dev@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)));
-        userRepository.save(new User("Administrador", "admin@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN)));
-        userRepository.save(new User("Super Admin", "sudo@morpho-board.io", encodedDefaultPassword, Set.of(Role.ADMIN, Role.PROJECT_MANAGER)));
-        userRepository.save(new User("Usuário", "user@morpho-board.io", encodedDefaultPassword, Set.of(Role.USER)));
+        // var encodedDefaultPassword = passwordEncoder.hashPassword("qwas1234");
+        // logger.info("Populating database with initial data for development...");
+        // userRepository.save(new User("Gestor", "pm@morpho-board.io",
+        // encodedDefaultPassword, Set.of(Role.PROJECT_MANAGER)));
+        // userRepository.save(new User("Desenvolvedor", "dev@morpho-board.io",
+        // encodedDefaultPassword, Set.of(Role.USER)));
+        // userRepository.save(new User("Administrador", "admin@morpho-board.io",
+        // encodedDefaultPassword, Set.of(Role.ADMIN)));
+        // userRepository.save(new User("Super Admin", "sudo@morpho-board.io",
+        // encodedDefaultPassword, Set.of(Role.ADMIN, Role.PROJECT_MANAGER)));
+        // userRepository.save(new User("Usuário", "user@morpho-board.io",
+        // encodedDefaultPassword, Set.of(Role.USER)));
 
-        var todo = workflowRepository.save(new WorkflowStatus("TO_DO"));
-        var inProgress = workflowRepository.save(new WorkflowStatus("IN_PROGRESS"));
-        var blocked = workflowRepository.save(new WorkflowStatus("BLOCKED"));
-        var done = workflowRepository.save(new WorkflowStatus("DONE"));
+        // var todo = workflowRepository.save(new WorkflowStatus("TO_DO"));
+        // var inProgress = workflowRepository.save(new WorkflowStatus("IN_PROGRESS"));
+        // var blocked = workflowRepository.save(new WorkflowStatus("BLOCKED"));
+        // var done = workflowRepository.save(new WorkflowStatus("DONE"));
 
-        workflowRepository.save(new Workflow("Kanban",
-                                             List.of(todo, inProgress, blocked, done),
-                                             todo,
-                                             List.of(new WorkflowTransition(todo, inProgress),
-                                                     new WorkflowTransition(inProgress, blocked),
-                                                     new WorkflowTransition(blocked, inProgress),
-                                                     new WorkflowTransition(inProgress, done))));
+        // workflowRepository.save(new Workflow("Kanban",
+        // List.of(todo, inProgress, blocked, done),
+        // todo,
+        // List.of(new WorkflowTransition(todo, inProgress),
+        // new WorkflowTransition(inProgress, blocked),
+        // new WorkflowTransition(blocked, inProgress),
+        // new WorkflowTransition(inProgress, done))));
 
-        // Buscar usuários
-        var author = userRepository.findByEmail("user@morpho-board.io").orElseThrow();
-        var assignee = userRepository.findByEmail("dev@morpho-board.io").orElseThrow();
-        loadCsvs(author);
+        // // Buscar usuários
+        // var author =
+        // userRepository.findByEmail("user@morpho-board.io").orElseThrow();
+        // var assignee =
+        // userRepository.findByEmail("dev@morpho-board.io").orElseThrow();
+        // loadCsvs(author);
 
-        projectRepository.save(new Project("Projeto 1",
-                                           "Descrição do projeto 1", workflowRepository.findByName("Kanban").orElseThrow()));
+        // projectRepository.save(new Project("Projeto 1",
+        // "Descrição do projeto 1",
+        // workflowRepository.findByName("Kanban").orElseThrow()));
 
-        // Categoria para os tickets
-        var categoria = new Category("Bug");
-        categoryRepository.save(categoria);
-        categoryRepository.save(new Category("Melhoria"));
-        categoryRepository.save(new Category("Integração"));
+        // // Categoria para os tickets
+        // var categoria = new Category("Bug");
+        // categoryRepository.save(categoria);
+        // categoryRepository.save(new Category("Melhoria"));
+        // categoryRepository.save(new Category("Integração"));
 
-        // Buscar projeto
-        var projeto = projectRepository.findByName("Projeto 1").orElseThrow();
+        // // Buscar projeto
+        // var projeto = projectRepository.findByName("Projeto 1").orElseThrow();
 
-        // Criar tickets de teste
-        ticketRepository.save(new Ticket("Corrigir bug na tela de login",
-                                         "Usuários não conseguem acessar com senha especial.",
-                                         categoria,
-                                         author,
-                                         assignee,
-                                         projeto,
-                                         todo));
+        // // Criar tickets de teste
+        // ticketRepository.save(new Ticket("Corrigir bug na tela de login",
+        // "Usuários não conseguem acessar com senha especial.",
+        // categoria,
+        // author,
+        // assignee,
+        // projeto,
+        // todo));
 
-        ticketRepository.save(new Ticket("Implementar exportação de relatórios",
-                                         "Adicionar opção de exportar relatórios em PDF.",
-                                         categoria,
-                                         author,
-                                         assignee,
-                                         projeto,
-                                         inProgress));
+        // ticketRepository.save(new Ticket("Implementar exportação de relatórios",
+        // "Adicionar opção de exportar relatórios em PDF.",
+        // categoria,
+        // author,
+        // assignee,
+        // projeto,
+        // inProgress));
 
-        ticketRepository.save(new Ticket("Importar dados por CSV",
-                                         "A aplicação deve ser capaz de importar dados via CSV.",
-                                         categoria,
-                                         author,
-                                         assignee,
-                                         projeto,
-                                         inProgress));
+        // ticketRepository.save(new Ticket("Importar dados por CSV",
+        // "A aplicação deve ser capaz de importar dados via CSV.",
+        // categoria,
+        // author,
+        // assignee,
+        // projeto,
+        // inProgress));
 
-        ticketRepository.save(new Ticket("Ajustar layout mobile",
-                                         "Elementos sobrepostos em telas pequenas.",
-                                         categoria,
-                                         author,
-                                         assignee,
-                                         projeto,
-                                         blocked));
+        // ticketRepository.save(new Ticket("Ajustar layout mobile",
+        // "Elementos sobrepostos em telas pequenas.",
+        // categoria,
+        // author,
+        // assignee,
+        // projeto,
+        // blocked));
 
-        ticketRepository.save(new Ticket("Atualizar documentação",
-                                         "Documentação desatualizada após últimas mudanças.",
-                                         categoria,
-                                         author,
-                                         assignee,
-                                         projeto,
-                                         done));
+        // ticketRepository.save(new Ticket("Atualizar documentação",
+        // "Documentação desatualizada após últimas mudanças.",
+        // categoria,
+        // author,
+        // assignee,
+        // projeto,
+        // done));
 
-        logger.info("Database populated with initial data for development.");
+        // logger.info("Database populated with initial data for development.");
     }
 
     private void loadCsvs(User author) {
