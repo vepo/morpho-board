@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -30,8 +28,6 @@ import jakarta.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 @DenyAll
 public class UserEndpoint {
-    private static final Logger logger = LoggerFactory.getLogger(UserEndpoint.class);
-
     private final UserRepository userRepository;
     private final String passwordDefault;
 
@@ -55,7 +51,6 @@ public class UserEndpoint {
     @Transactional
     @RolesAllowed(Role.ADMIN_ROLE)
     public UserResponse create(@Valid CreateUserRequest request) {
-        logger.info("Creating user {}", request);
         return UserResponse.load(this.userRepository.save(new User(request.name(),
                                                                    request.email(),
                                                                    passwordDefault,
@@ -70,14 +65,14 @@ public class UserEndpoint {
     @Transactional
     @RolesAllowed(Role.ADMIN_ROLE)
     public UserResponse update(@PathParam("userId") long userId, @Valid CreateUserRequest request) {
-        logger.info("Creating user {}", request);
         return UserResponse.load(this.userRepository.findById(userId)
                                                     .map(user -> {
                                                         user.setEmail(request.email());
                                                         user.setName(request.name());
                                                         user.setRoles(request.roles()
                                                                              .stream()
-                                                                             .map(role -> Role.from(role).orElseThrow(() -> new BadRequestException()))
+                                                                             .map(role -> Role.from(role)
+                                                                                              .orElseThrow(() -> new BadRequestException("Role does not exists! role=%s".formatted(role))))
                                                                              .collect(Collectors.toSet()));
                                                         this.userRepository.save(user);
                                                         return user;
@@ -91,7 +86,6 @@ public class UserEndpoint {
     public List<UserResponse> search(@QueryParam("name") String name,
                                      @QueryParam("email") String email,
                                      @QueryParam("roles") List<String> roles) {
-        logger.info("Searching for used! name={} email={} roles={}", name, email, roles);
         return userRepository.search(name, email, roles.stream().map(role -> Role.from(role)
                                                                                  .orElseThrow(() -> new BadRequestException("Role does not exist! role=%s".formatted(role))))
                                                        .toList())
