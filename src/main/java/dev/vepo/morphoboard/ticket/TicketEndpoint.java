@@ -53,23 +53,23 @@ public class TicketEndpoint {
     private static final Predicate<String> IS_NUMBER = Pattern.compile(NUMBER_REGEX).asMatchPredicate();
 
     private static final Supplier<NotFoundException> ticketNotFound(long ticketId) {
-        return () -> new NotFoundException(String.format("Ticket does not found! ticketId=%d", ticketId));
+        return () -> new NotFoundException("Ticket does not found! ticketId=%d".formatted(ticketId));
     }
 
     private static final Supplier<NotFoundException> userNotFound(long userId) {
-        return () -> new NotFoundException(String.format("User does not found! userId=%d", userId));
+        return () -> new NotFoundException("User does not found! userId=%d".formatted(userId));
     }
 
     private static final Supplier<NotFoundException> userNotFound(String email) {
-        return () -> new NotFoundException(String.format("User does not found! email=%s", email));
+        return () -> new NotFoundException("User does not found! email=%s".formatted(email));
     }
 
     private static final Supplier<NotFoundException> projectNotFound(long projectId) {
-        return () -> new NotFoundException(String.format("Project does not found! projectId=%d", projectId));
+        return () -> new NotFoundException("Project does not found! projectId=%d".formatted(projectId));
     }
 
     private static final Supplier<NotFoundException> categoryNotFound(long categoryId) {
-        return () -> new NotFoundException(String.format("Category does not found! categoryId=%d", categoryId));
+        return () -> new NotFoundException("Category does not found! categoryId=%d".formatted(categoryId));
     }
 
     private TicketRepository repository;
@@ -322,13 +322,13 @@ public class TicketEndpoint {
                        .stream()
                        .filter(s -> Objects.equals(s.getId(), request.to()))
                        .findFirst()
-                       .orElseThrow(() -> new BadRequestException(String.format("Stage not defined in project! stageId=%d", request.to())));
+                       .orElseThrow(() -> new BadRequestException("Stage not defined in project! stageId=%d".formatted(request.to())));
         if (ticket.getProject()
                   .getWorkflow()
                   .getTransitions()
                   .stream()
                   .noneMatch(t -> t.getTo().equals(to) && t.getFrom().equals(ticket.getStatus()))) {
-            throw new BadRequestException(String.format("New stage not acceptable by workflow! stageId=%d", request.to()));
+            throw new BadRequestException("New stage not acceptable by workflow! stageId=%d".formatted(request.to()));
         }
         logger.info("Valid transition of {} to {}", ticket, to);
 

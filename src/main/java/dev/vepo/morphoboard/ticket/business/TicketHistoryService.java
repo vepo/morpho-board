@@ -37,7 +37,7 @@ public class TicketHistoryService {
      * Logs ticket status change
      */
     public void logStatusChanged(Ticket ticket, User user, String fromStatus, String toStatus) {
-        createHistoryEntry(ticket, user, String.format("Status changed from '%s' to '%s'", fromStatus, toStatus));
+        createHistoryEntry(ticket, user, "Status changed from '%s' to '%s'".formatted(fromStatus, toStatus));
     }
 
     /**
@@ -46,11 +46,11 @@ public class TicketHistoryService {
     public void logAssigneeChanged(Ticket ticket, User user, String fromAssignee, String toAssignee) {
         String description;
         if (fromAssignee == null && toAssignee != null) {
-            description = String.format("Assigned to '%s'", toAssignee);
+            description = "Assigned to '%s'".formatted(toAssignee);
         } else if (fromAssignee != null && toAssignee == null) {
             description = "Unassigned";
         } else {
-            description = String.format("Assignee changed from '%s' to '%s'", fromAssignee, toAssignee);
+            description = "Assignee changed from '%s' to '%s'".formatted(fromAssignee, toAssignee);
         }
         createHistoryEntry(ticket, user, description);
     }
@@ -59,7 +59,7 @@ public class TicketHistoryService {
      * Logs category change
      */
     public void logCategoryChanged(Ticket ticket, User user, String fromCategory, String toCategory) {
-        createHistoryEntry(ticket, user, String.format("Category changed from '%s' to '%s'", fromCategory, toCategory));
+        createHistoryEntry(ticket, user, "Category changed from '%s' to '%s'".formatted(fromCategory, toCategory));
     }
 
     /**
@@ -87,14 +87,14 @@ public class TicketHistoryService {
      * Logs priority change (if priority field is added)
      */
     public void logPriorityChanged(Ticket ticket, User user, String fromPriority, String toPriority) {
-        createHistoryEntry(ticket, user, String.format("Priority changed from '%s' to '%s'", fromPriority, toPriority));
+        createHistoryEntry(ticket, user, "Priority changed from '%s' to '%s'".formatted(fromPriority, toPriority));
     }
 
     /**
      * Logs due date change (if due date field is added)
      */
     public void logDueDateChanged(Ticket ticket, User user, String fromDueDate, String toDueDate) {
-        createHistoryEntry(ticket, user, String.format("Due date changed from '%s' to '%s'", fromDueDate, toDueDate));
+        createHistoryEntry(ticket, user, "Due date changed from '%s' to '%s'".formatted(fromDueDate, toDueDate));
     }
 
     /**

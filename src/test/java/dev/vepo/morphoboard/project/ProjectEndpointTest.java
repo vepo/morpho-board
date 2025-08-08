@@ -66,12 +66,12 @@ class ProjectEndpointTest {
                .accept(ContentType.JSON)
                .when()
                .contentType(ContentType.JSON)
-               .body(String.format("""
-                                   {
-                                       "name": "Test Project",
-                                       "description": "This is a test project.",
-                                       "workflowId": %d
-                                   }""", workflow.id()))
+               .body("""
+                     {
+                         "name": "Test Project",
+                         "description": "This is a test project.",
+                         "workflowId": %d
+                     }""".formatted(workflow.id()))
                .post("/api/projects")
                .then()
                .statusCode(403);
@@ -85,12 +85,12 @@ class ProjectEndpointTest {
                .accept(ContentType.JSON)
                .when()
                .contentType(ContentType.JSON)
-               .body(String.format("""
-                                   {
-                                       "name": "Test Project",
-                                       "description": "This is a test project.",
-                                       "workflowId": %d
-                                   }""", workflow.id()))
+               .body("""
+                     {
+                         "name": "Test Project",
+                         "description": "This is a test project.",
+                         "workflowId": %d
+                     }""".formatted(workflow.id()))
                .post("/api/projects")
                .then()
                .statusCode(201)
@@ -126,11 +126,11 @@ class ProjectEndpointTest {
                .accept(ContentType.JSON)
                .when()
                .contentType(ContentType.JSON)
-               .body(String.format("""
-                                   {
-                                       "description": "This is a test project.",
-                                       "workflowId": 1
-                                   }""", workflow.id()))
+               .body("""
+                     {
+                         "description": "This is a test project.",
+                         "workflowId": 1
+                     }""".formatted(workflow.id()))
                .post("/api/projects")
                .then()
                .statusCode(400)

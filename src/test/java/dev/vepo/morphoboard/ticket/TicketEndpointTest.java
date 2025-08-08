@@ -147,14 +147,13 @@ class TicketEndpointTest {
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .body(String.format("""
-                                   {
-                                       "title": "New Ticket",
-                                       "description": "This is a new ticket.",
-                                       "projectId": %d,
-                                       "categoryId": %d
-                                   }""",
-                                   project.id(), bug.getId()))
+               .body("""
+                     {
+                         "title": "New Ticket",
+                         "description": "This is a new ticket.",
+                         "projectId": %d,
+                         "categoryId": %d
+                     }""".formatted(project.id(), bug.getId()))
                .post("/api/tickets")
                .then()
                .statusCode(201)
@@ -219,12 +218,12 @@ class TicketEndpointTest {
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .body(String.format("""
-                                   {
-                                       "title": "New Ticket Title",
-                                       "description": "New Ticket description",
-                                       "categoryId": %d
-                                   }""".formatted(feature.getId())))
+               .body("""
+                     {
+                         "title": "New Ticket Title",
+                         "description": "New Ticket description",
+                         "categoryId": %d
+                     }""".formatted(feature.getId()))
                .post("/api/tickets/" + ticket.id())
                .then()
                .statusCode(200)
@@ -242,10 +241,10 @@ class TicketEndpointTest {
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .body(String.format("""
-                                   {
-                                       "to": %d
-                                   }""", inProgress.getId()))
+               .body("""
+                     {
+                         "to": %d
+                     }""".formatted(inProgress.getId()))
                .post("/api/tickets/" + ticket.id() + "/move")
                .then()
                .statusCode(200)
@@ -261,10 +260,10 @@ class TicketEndpointTest {
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .body(String.format("""
-                                   {
-                                       "assigneeId": %d
-                                   }""", newAssignee.getId()))
+               .body("""
+                     {
+                         "assigneeId": %d
+                     }""".formatted(newAssignee.getId()))
                .patch("/api/tickets/" + ticket.id() + "/assignee")
                .then()
                .statusCode(200)
@@ -298,14 +297,13 @@ class TicketEndpointTest {
                                     .contentType(ContentType.JSON)
                                     .accept(ContentType.JSON)
                                     .when()
-                                    .body(String.format("""
-                                                        {
-                                                            "title": "Ticket to delete",
-                                                            "description": "This ticket will be deleted.",
-                                                            "projectId": %d,
-                                                            "categoryId": %d
-                                                        }""",
-                                                        project.id(), bug.getId()))
+                                    .body("""
+                                          {
+                                              "title": "Ticket to delete",
+                                              "description": "This ticket will be deleted.",
+                                              "projectId": %d,
+                                              "categoryId": %d
+                                          }""".formatted(project.id(), bug.getId()))
                                     .post("/api/tickets")
                                     .then()
                                     .statusCode(201)
@@ -425,12 +423,12 @@ class TicketEndpointTest {
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
                .when()
-               .body(String.format("""
-                                   {
-                                       "title": "Updated Title for History",
-                                       "description": "Updated description for history",
-                                       "categoryId": %d
-                                   }""".formatted(feature.getId())))
+               .body("""
+                     {
+                         "title": "Updated Title for History",
+                         "description": "Updated description for history",
+                         "categoryId": %d
+                     }""".formatted(feature.getId()))
                .post("/api/tickets/" + ticket.id())
                .then()
                .statusCode(200);

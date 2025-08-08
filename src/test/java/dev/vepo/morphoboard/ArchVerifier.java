@@ -35,9 +35,8 @@ class ArchVerifier {
                       .stream()
                       .filter(p -> !p.isAnnotatedWith(PathParam.class) && !p.isAnnotatedWith(QueryParam.class))
                       .filter(p -> !p.getType().getName().endsWith("Request"))
-                      .map(p -> SimpleConditionEvent.violated(method,
-                                                              String.format("Method %s has body parameter %s that is not a Request", method.getFullName(),
-                                                                            p.getType().getName())))
+                      .map(p -> SimpleConditionEvent.violated(method, "Method %s has body parameter %s that is not a Request".formatted(method.getFullName(),
+                                                                                                                                        p.getType().getName())))
                       .forEach(events::add);
 
             }
@@ -55,11 +54,9 @@ class ArchVerifier {
                         method.getRawReturnType().isAssignableFrom(Set.class)) {
                     var types = method.getReturnType().getAllInvolvedRawTypes().toArray(JavaClass[]::new);
                     if (types.length == 1 || types[1].getSimpleName().equals("Object")) {
-                        events.add(SimpleConditionEvent.violated(method,
-                                                                 String.format("Returned List/Set typet %s is not define!", method.getFullName())));
+                        events.add(SimpleConditionEvent.violated(method, "Returned List/Set typet %s is not define!".formatted(method.getFullName())));
                     } else if (!types[1].getSimpleName().endsWith("Response")) {
-                        events.add(SimpleConditionEvent.violated(method,
-                                                                 String.format("Returned List/Set type for %s is not a Response!", method.getFullName())));
+                        events.add(SimpleConditionEvent.violated(method, "Returned List/Set type for %s is not a Response!".formatted(method.getFullName())));
                     }
                     return;
                 }
@@ -67,8 +64,7 @@ class ArchVerifier {
                 System.out.println("Return type: " + method.getRawReturnType().getName());
                 if (!method.getRawReturnType().getClass().isInstance(Response.class) &&
                         !method.getRawReturnType().getName().endsWith("Response")) {
-                    events.add(SimpleConditionEvent.violated(method,
-                                                             String.format("Method %s does not return Response", method.getFullName())));
+                    events.add(SimpleConditionEvent.violated(method, "Method %s does not return Response".formatted(method.getFullName())));
                 }
 
             }

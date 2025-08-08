@@ -36,7 +36,7 @@ public class TicketRepository {
         if (terms.length > 0) {
             var termPredicates = new ArrayList<Predicate>();
             for (String term : terms) {
-                var pattern = String.format("%%%s%%", term).toLowerCase();
+                var pattern = "%%%s%%".formatted(term).toLowerCase();
                 termPredicates.add(cb.or(cb.like(cb.lower(ticket.get("title")), pattern),
                                          cb.like(cb.lower(ticket.get("description")), pattern)));
             }

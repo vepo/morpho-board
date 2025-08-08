@@ -100,13 +100,13 @@ public class Given {
         return given().when()
                       .contentType("application/json")
                       .header(authenticatedProjectManager())
-                      .body(String.format("""
-                                          {
-                                              "title": "Test Ticket",
-                                              "description": "This is a test ticket.",
-                                              "projectId": %d,
-                                              "categoryId": %d
-                                          }""", projectId, categoryId))
+                      .body("""
+                            {
+                                "title": "Test Ticket",
+                                "description": "This is a test ticket.",
+                                "projectId": %d,
+                                "categoryId": %d
+                            }""".formatted(projectId, categoryId))
                       .post("/api/tickets")
                       .then()
                       .statusCode(201)
@@ -133,12 +133,12 @@ public class Given {
         return given().when()
                       .contentType("application/json")
                       .header(authenticatedProjectManager())
-                      .body(String.format("""
-                                          {
-                                              "name": "Test Project",
-                                              "description": "This is a test project.",
-                                              "workflowId": %d
-                                          }""", workflow.id()))
+                      .body("""
+                            {
+                                "name": "Test Project",
+                                "description": "This is a test project.",
+                                "workflowId": %d
+                            }""".formatted(workflow.id()))
                       .post("/api/projects")
                       .then()
                       .statusCode(201)

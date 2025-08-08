@@ -29,11 +29,11 @@ import jakarta.ws.rs.core.MediaType;
 public class ProjectEndpoint {
 
     private static Supplier<NotFoundException> projectNotFound(long projectId) {
-        return () -> new NotFoundException(String.format("Project with ID %d does not exist", projectId));
+        return () -> new NotFoundException("Project with ID %d does not exist".formatted(projectId));
     }
 
     private static Supplier<NotFoundException> workflowNotFound(long workflowId) {
-        return () -> new NotFoundException(String.format("Workflow with ID %d does not exist", workflowId));
+        return () -> new NotFoundException("Workflow with ID %d does not exist".formatted(workflowId));
     }
 
     private final ProjectRepository repository;

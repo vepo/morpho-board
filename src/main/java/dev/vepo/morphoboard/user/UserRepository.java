@@ -57,11 +57,11 @@ public class UserRepository {
         predicates.add(cb.isFalse(user.get("deleted")));
 
         if (Objects.nonNull(name) && !name.isBlank()) {
-            predicates.add(cb.like(cb.lower(user.get("name")), String.format("%%%s%%", name).toLowerCase()));
+            predicates.add(cb.like(cb.lower(user.get("name")), "%%%s%%".formatted(name).toLowerCase()));
         }
 
         if (Objects.nonNull(email) && !email.isBlank()) {
-            predicates.add(cb.like(cb.lower(user.get("email")), String.format("%%%s%%", email).toLowerCase()));
+            predicates.add(cb.like(cb.lower(user.get("email")), "%%%s%%".formatted(email).toLowerCase()));
         }
 
         // TODO: Filter on query
