@@ -1,0 +1,26 @@
+<div class="centered">
+  <form class="edit" [formGroup]="userForm">
+    @if (editMode) {
+    <h1>Edit User</h1>
+    } @else {
+    <h1>Create User</h1>
+    }
+    <mat-form-field class="form-field" appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" required />
+    </mat-form-field>
+    <mat-form-field class="form-field" appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" required />
+    </mat-form-field>
+    <section>
+      <mat-checkbox aria-label="Adminstrator"    [checked]="isRoleSelected('admin')"           (change)="toggle('admin')">Adminstrator</mat-checkbox>
+      <mat-checkbox aria-label="Project Manager" [checked]="isRoleSelected('project-manager')" (change)="toggle('project-manager')">Project Manager</mat-checkbox>
+      <mat-checkbox aria-label="User"            [checked]="isRoleSelected('user')"            (change)="toggle('user')">User</mat-checkbox>
+    </section>
+    <div class="actions">
+       <button class="btn btn-cancel" matButton="filled" (click)="cancel()">Cancel</button>
+       <button class="btn btn-primary" [disabled]="this.userForm.invalid" matButton="filled" (click)="save()">Salve</button>
+    </div>
+  </form>
+</div>

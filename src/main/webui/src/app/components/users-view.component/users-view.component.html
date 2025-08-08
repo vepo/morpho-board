@@ -5,7 +5,7 @@
         <div class="header">
             Usuários
             <div class="actions">
-                <button class="btn" matButton>
+                <button class="btn" matButton [routerLink]="['/', 'users', 'new']">
                     <mat-icon fontIcon="person"></mat-icon> Novo
                 </button>
             </div>
@@ -17,16 +17,23 @@
                 <div>Nome</div>
                 <div>Email</div>
                 <div>Roles</div>
+                <div>&nbsp;</div>
             </div>
             <div class="sub-header">
                 <div><i>Filtros</i></div>
-                <div><input type="text" placeholder="Filtre por nome.." [(ngModel)]="filter.name" (ngModelChange)="filterChanged('name')" /></div>
-                <div><input type="text" placeholder="Filtre por email.." [(ngModel)]="filter.email" (ngModelChange)="filterChanged('email')" /></div>
+                <div><input type="text" placeholder="Filtre por nome.." [(ngModel)]="filter.name"
+                        (ngModelChange)="filterChanged('name')" /></div>
+                <div><input type="text" placeholder="Filtre por email.." [(ngModel)]="filter.email"
+                        (ngModelChange)="filterChanged('email')" /></div>
                 <div>
-                    <input type="checkbox" [checked]="filter.roles.indexOf('admin') != -1" (change)="toggleRole('admin')" /> Administrador
-                    <input type="checkbox" [checked]="filter.roles.indexOf('project-manager') != -1" (change)="toggleRole('project-manager')" /> Gerente de Projetos
-                    <input type="checkbox" [checked]="filter.roles.indexOf('user') != -1" (change)="toggleRole('user')" /> Usuário
+                    <input type="checkbox" [checked]="filter.roles.indexOf('admin') != -1"
+                        (change)="toggleRole('admin')" /> Administrador
+                    <input type="checkbox" [checked]="filter.roles.indexOf('project-manager') != -1"
+                        (change)="toggleRole('project-manager')" /> Gerente de Projetos
+                    <input type="checkbox" [checked]="filter.roles.indexOf('user') != -1"
+                        (change)="toggleRole('user')" /> Usuário
                 </div>
+                <div>Actions</div>
             </div>
             @for (entry of users; track entry.id) {
             <div class="row {{ $even ? 'even' : 'odd' }}">
@@ -34,9 +41,15 @@
                 <div>{{ entry.name }}</div>
                 <div>{{ entry.email }}</div>
                 <div>
-                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('admin') != -1"/> Administrador
-                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('project-manager') != -1" /> Gerente de Projetos
+                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('admin') != -1" /> Administrador
+                    <input type="checkbox" disabled [checked]="entry.roles.indexOf('project-manager') != -1" /> Gerente
+                    de Projetos
                     <input type="checkbox" disabled [checked]="entry.roles.indexOf('user') != -1" /> Usuário
+                </div>
+                <div>
+                    <button class="btn" matButton [routerLink]="['/', 'users', entry.id]">
+                        <mat-icon fontIcon="person"></mat-icon> Editar
+                    </button>
                 </div>
             </div>
             }

@@ -15,6 +15,12 @@ export interface UserSearchFilter {
   roles: string[];
 }
 
+export interface UpdateOrCreateUserRequest {
+  name: string;
+  email: string;
+  roles: string[];
+}
+
 export function emptyFilter(): UserSearchFilter {
   return {
     name: '',
@@ -29,6 +35,18 @@ export function emptyFilter(): UserSearchFilter {
 export class UsersService {
   constructor(private readonly http: HttpClient) { }
   private readonly API_URL = 'http://localhost:8080/api';
+
+  findById(userId: number): Observable<User> {
+    return this.http.get<User>(`${this.API_URL}/users/${userId}`);
+  }
+
+  create(user: UpdateOrCreateUserRequest): Observable<User> {
+    return this.http.post<User>(`${this.API_URL}/users`, user);
+  }
+
+  update(userId: number, user: UpdateOrCreateUserRequest): Observable<User> {
+    return this.http.post<User>(`${this.API_URL}/users/${userId}`, user);
+  }
 
   search(filter?: UserSearchFilter): Observable<User[]> {
     let params = new HttpParams();

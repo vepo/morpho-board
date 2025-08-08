@@ -23,6 +23,20 @@ button {
     padding: 0.3rem 1.3rem;
     background-color: colors.$base-active-color;
     color: #FFFFFF;
+
+    &.btn-cancel {
+        background-color: colors.$base-secondary-bg-color;
+        border-color: colors.$base-secondary-bg-color;
+        color: colors.$base-secondary-color;
+
+        &:hover {
+            background-color: colors.$base-secondary-bg-active-color;
+        }
+        .mdc-button__label, .mat-icon { 
+            color: colors.$base-secondary-color;
+        }
+    }
+
     .mdc-button__label, .mat-icon {
         color: #FFFFFF;
     }
@@ -564,5 +578,22 @@ div.table {
                 }
             }
         }
+    }
+}
+
+form.edit {
+    background-color: #FFFFFF;
+    max-width: 960px;
+    margin: auto;
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    border-radius: 0.2rem;
+
+    .actions {
+        margin-top: 2rem;
+        padding: 2rem 0;
+        border-radius: 0 0 0.2rem  0.2rem;
+        background-color: #F0F0F0;
+        border-top: solid 1px #444444;
     }
 }

@@ -9,8 +9,9 @@ import { projectResolver } from './resolvers/project-resolver';
 import { statusResolver } from './resolvers/status-resolver';
 import { ticketResolver } from './resolvers/ticket.resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
-import { usersResolver } from './resolvers/users.resolver';
+import { userResolver, usersResolver } from './resolvers/users.resolver';
 import { authGuard } from './services/auth.guard';
+import { UsersEditComponent } from './components/users-edit.component/users-edit.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -38,14 +39,29 @@ export const routes: Routes = [
     component: TicketViewComponent,
     resolve: {
       ticket: ticketResolver
-    }
+    },
+    canActivate: [authGuard],
   },
   {
     path: 'users',
     component: UsersViewComponent,
     resolve: {
       users: usersResolver
-    }
+    },
+    canActivate: [authGuard],
+  },
+  {
+    path: 'users/new',
+    component: UsersEditComponent,
+    canActivate: [authGuard],
+  },
+  {
+    path: 'users/:userId',
+    component: UsersEditComponent,
+    resolve: {
+      user: userResolver
+    },
+    canActivate: [authGuard],
   },
   {
     path: '',

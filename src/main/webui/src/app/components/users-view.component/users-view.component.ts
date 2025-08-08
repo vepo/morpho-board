@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { emptyFilter, User, UserSearchFilter, UsersService } from '../../services/users.service';
 
 @Component({
   selector: 'app-users-view.component',
-  imports: [MatIcon, MatButton, FormsModule],
+  imports: [MatIcon, MatButton, FormsModule, RouterLink],
   templateUrl: './users-view.component.html',
   styleUrl: './users-view.component.scss'
 })
