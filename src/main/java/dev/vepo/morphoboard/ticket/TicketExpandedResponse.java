@@ -5,6 +5,7 @@ import java.util.List;
 import dev.vepo.morphoboard.ticket.history.TicketHistory;
 
 public record TicketExpandedResponse(long id,
+                                     String identifier,
                                      String title,
                                      String description,
                                      String category,
@@ -16,6 +17,7 @@ public record TicketExpandedResponse(long id,
 
     public static TicketExpandedResponse load(Ticket ticket, List<TicketHistory> history) {
         return new TicketExpandedResponse(ticket.getId(),
+                                          ticket.getIdentifier(),
                                           ticket.getTitle(),
                                           ticket.getDescription(),
                                           ticket.getCategory().getName(),

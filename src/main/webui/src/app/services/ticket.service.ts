@@ -45,6 +45,7 @@ export interface CreateCommentRequest {
 
 export interface TicketExpanded {
   id: number;
+  identifier: string;
   title: string;
   description: string;
   category: string;
