@@ -60,7 +60,8 @@ public class ProjectEndpoint {
     @ResponseStatus(201)
     @RolesAllowed(Role.PROJECT_MANAGER_ROLE)
     public ProjectResponse create(@Valid CreateProjectRequest request) {
-        return ProjectResponse.load(repository.save(new Project(request.name(),
+        return ProjectResponse.load(repository.save(new Project(request.prefix(),
+                                                                request.name(),
                                                                 request.description(),
                                                                 workflowRepository.findById(request.workflowId())
                                                                                   .orElseThrow(workflowNotFound(request.workflowId())))));

@@ -32,6 +32,7 @@ describe('KanbanComponent', () => {
   const mockTickets: Ticket[] = [
     {
       id: 1,
+      identifier: 'PRJ-001',
       title: 'Ticket 1',
       description: 'Description 1',
       author: 1,
@@ -42,6 +43,7 @@ describe('KanbanComponent', () => {
     },
     {
       id: 2,
+      identifier: 'PRJ-002',
       title: 'Ticket 2',
       description: 'Description 2\nWith line break',
       author: 2,
@@ -213,7 +215,7 @@ describe('KanbanComponent', () => {
     it('should render ticket links correctly', () => {
       fixture.detectChanges();
       const ticketLink = fixture.nativeElement.querySelector('.identifier a');
-      expect(ticketLink.getAttribute('href')).toContain('/ticket/1');
+      expect(ticketLink.getAttribute('href')).toContain('/ticket/PRJ-001');
       expect(ticketLink.textContent).toContain('1');
     });
   });

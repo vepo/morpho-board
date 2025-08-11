@@ -17,6 +17,9 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String prefix;
+
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
@@ -29,7 +32,8 @@ public class Project {
 
     public Project() {}
 
-    public Project(String name, String description, Workflow workflow) {
+    public Project(String prefix, String name, String description, Workflow workflow) {
+        this.prefix = prefix;
         this.name = name;
         this.description = description;
         this.workflow = workflow;
@@ -41,6 +45,14 @@ public class Project {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 
     public String getName() {

@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface Ticket {
   id: number;
+  identifier: string;
   title: string;
   description: string;
   category?: number;
@@ -81,6 +82,10 @@ export class TicketService {
 
   findExpandedById(ticketId: number): Observable<TicketExpanded> {
     return this.http.get<TicketExpanded>(`/api/tickets/${ticketId}/expanded`);
+  }
+
+  findExpandedByIdentifier(ticketIdentifier: string): Observable<TicketExpanded> {
+    return this.http.get<TicketExpanded>(`/api/tickets/${ticketIdentifier}/expanded`);
   }
 
   search(term: string, status: number): Observable<Ticket[]> {

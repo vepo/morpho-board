@@ -36,6 +36,7 @@ export class KanbanComponent implements OnInit {
   fixLineBreak(ticket: Ticket): Ticket {
     return {
       id: ticket.id,
+      identifier: ticket.identifier,
       title: ticket.title,
       description: ticket.description.replaceAll('\n', '<br/>'),
       author: ticket.author,

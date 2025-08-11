@@ -1,6 +1,7 @@
 package dev.vepo.morphoboard.ticket;
 
 public record TicketResponse(long id,
+                             String identifier,
                              String title,
                              String description,
                              long category,
@@ -10,6 +11,7 @@ public record TicketResponse(long id,
                              long status) {
     public static TicketResponse load(Ticket ticket) {
         return new TicketResponse(ticket.getId(),
+                                  ticket.getIdentifier(),
                                   ticket.getTitle(),
                                   ticket.getDescription(),
                                   ticket.getCategory().getId(),

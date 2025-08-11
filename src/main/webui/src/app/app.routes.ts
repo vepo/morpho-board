@@ -2,16 +2,17 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { KanbanComponent } from './components/kanban/kanban.component';
 import { LoginComponent } from './components/login/login.component';
+import { ProjectsViewComponent } from './components/projects-view.component/projects-view.component';
 import { SearchTicketsComponent } from './components/search-tickets/search-tickets.component';
 import { TicketViewComponent } from './components/ticket-view/ticket-view.component';
+import { UsersEditComponent } from './components/users-edit.component/users-edit.component';
 import { UsersViewComponent } from './components/users-view.component/users-view.component';
-import { projectResolver } from './resolvers/project-resolver';
+import { projectResolver, projectsResolver } from './resolvers/project-resolver';
 import { statusResolver } from './resolvers/status-resolver';
 import { ticketResolver } from './resolvers/ticket.resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
 import { userResolver, usersResolver } from './resolvers/users.resolver';
 import { authGuard } from './services/auth.guard';
-import { UsersEditComponent } from './components/users-edit.component/users-edit.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -35,7 +36,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'ticket/:ticketId',
+    path: 'ticket/:ticketIdentifier',
     component: TicketViewComponent,
     resolve: {
       ticket: ticketResolver
@@ -60,6 +61,14 @@ export const routes: Routes = [
     component: UsersEditComponent,
     resolve: {
       user: userResolver
+    },
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects',
+    component: ProjectsViewComponent,
+    resolve: {
+      projects: projectsResolver
     },
     canActivate: [authGuard],
   },

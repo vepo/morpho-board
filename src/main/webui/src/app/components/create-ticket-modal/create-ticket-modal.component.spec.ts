@@ -111,7 +111,7 @@ describe('CreateTicketModalComponent', () => {
             component.description = 'Test Description';
             component.category = mockCategories[0];
 
-            const mockResponse: Ticket = { id: 1, title: 'Test Ticket', description: 'Test Description', author: -1, project: -1, status: -1 };
+            const mockResponse: Ticket = { id: 1, title: 'Test Ticket', identifier: 'PRJ-001', description: 'Test Description', author: -1, project: -1, status: -1 };
             mockTicketService.createTicket.and.returnValue(of(mockResponse));
 
             component.createTicket();

@@ -15,11 +15,10 @@ export class AuthService {
   constructor(private readonly http: HttpClient) {}
 
   login(email: string, password: string) {
-    return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password }).pipe(
-      tap(res => {
-        if (res.token) this.saveToken(res.token);
-      })
-    );
+    return this.http.post<AuthResponse>(`${this.API_URL}/auth/login`, { email, password })
+                    .pipe(tap(res => {
+                                if (res.token) this.saveToken(res.token);
+                          }));
   }
 
   saveToken(token: string) {
@@ -50,7 +49,7 @@ export class AuthService {
 
   hasRole(role: string): boolean {
     return this.getRoles()
-      .includes(role);
+               .includes(role);
   }
 
   logout() {

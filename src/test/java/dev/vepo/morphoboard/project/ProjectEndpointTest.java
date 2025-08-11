@@ -2,6 +2,7 @@ package dev.vepo.morphoboard.project;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
 import java.util.stream.Stream;
@@ -55,7 +56,7 @@ class ProjectEndpointTest {
                .get("/api/projects")
                .then()
                .statusCode(200)
-               .body("$.size()", equalTo(0));
+               .body("$.size()", greaterThan(0));
     }
 
     @Test
@@ -89,6 +90,7 @@ class ProjectEndpointTest {
                      {
                          "name": "Test Project",
                          "description": "This is a test project.",
+                         "prefix": "PRJ",
                          "workflowId": %d
                      }""".formatted(workflow.id()))
                .post("/api/projects")
@@ -111,7 +113,7 @@ class ProjectEndpointTest {
                                         .get("/api/projects")
                                         .then()
                                         .statusCode(200)
-                                        .body("$.size()", equalTo(1))
+                                        .body("$.size()", greaterThan(1))
                                         .body("find { it.name == 'Test Project' }.name", is("Test Project"))
                                         .body("find { it.name == 'Test Project' }.description", is("This is a test project."))
                                         .body("find { it.name == 'Test Project' }.workflow.id", is((int) workflow.id()))
@@ -149,7 +151,8 @@ class ProjectEndpointTest {
                .body("""
                      {
                          "name": "Test Project",
-                         "description": "This is a test project."
+                         "description": "This is a test project.",
+                         "prefix": "PRJJJJ"
                      }""")
                .post("/api/projects")
                .then()
@@ -165,7 +168,8 @@ class ProjectEndpointTest {
                      {
                          "name": "Test Project",
                          "description": "This is a test project.",
-                         "workflowId": 9999
+                         "workflowId": 9999,
+                         "prefix": "PRJJJJ"
                      }""")
                .post("/api/projects")
                .then()

@@ -75,6 +75,13 @@ public class TicketRepository {
                  .findFirst();
     }
 
+    public Optional<Ticket> findByIdentifier(String id) {
+        return em.createQuery("FROM Ticket WHERE deleted = false AND identifier = :identifier", Ticket.class)
+                 .setParameter("identifier", id)
+                 .getResultStream()
+                 .findFirst();
+    }
+
     public Stream<Ticket> findByStatusName(String status) {
         return em.createQuery("FROM Ticket WHERE deleted = false AND status.name = :name", Ticket.class)
                  .setParameter("name", status)
@@ -113,6 +120,13 @@ public class TicketRepository {
         return em.createQuery("FROM Comment where ticket.id = :id", Comment.class)
                  .setParameter("id", id)
                  .getResultStream();
+    }
+
+    public int countProjectTickets(long projectId) {
+        return (int) em.createQuery("SELECT id FROM Ticket WHERE project.id = :id", Long.class)
+                       .setParameter("id", projectId)
+                       .getResultStream()
+                       .count();
     }
 
     public Comment saveComment(Comment comment) {

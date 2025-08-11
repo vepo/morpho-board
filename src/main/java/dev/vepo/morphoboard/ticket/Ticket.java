@@ -23,6 +23,10 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String identifier;
+
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -31,10 +35,10 @@ public class Ticket {
     @Column(columnDefinition = "boolean default false")
     private boolean deleted;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
     @ManyToOne
@@ -54,12 +58,13 @@ public class Ticket {
     private User assignee;
 
     @ManyToOne
-    @JoinColumn(name = "project_id", nullable = true)
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 
     public Ticket() {}
 
-    public Ticket(String title, String description, Category category, User author, User assignee, Project project, WorkflowStatus status) {
+    public Ticket(String identifier, String title, String description, Category category, User author, User assignee, Project project, WorkflowStatus status) {
+        this.identifier = identifier;
         this.title = title;
         this.description = description;
         this.category = category;
@@ -77,6 +82,14 @@ public class Ticket {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getTitle() {

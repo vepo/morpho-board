@@ -1,0 +1,37 @@
+<div class="centered">
+    <h1>Gestão de Projetos</h1>
+
+    <div class="table">
+        <div class="header">
+            Projetos
+            <div class="actions">
+                <button class="btn" matButton [routerLink]="['/', 'projects', 'new']">
+                    <mat-icon fontIcon="work"></mat-icon> Novo
+                </button>
+            </div>
+        </div>
+        <div class="body">
+            <div class="sub-header">
+                <div>ID</div>
+                <div class="left-aligned">Nome</div>
+                <div class="left-aligned">Descrição</div>
+                <div>Actions</div>
+            </div>
+            @for (entry of projects; track entry.id) {
+            <div class="row {{ $even ? 'even' : 'odd' }}">
+                <div>{{ entry.id }}</div>
+                <div class="left-aligned">{{ entry.name }}</div>
+                <div class="left-aligned">{{ entry.description }}</div>
+                <div>
+                    <button class="btn" matButton [routerLink]="['/', 'projects', entry.id]">
+                        <mat-icon fontIcon="work"></mat-icon> Editar
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+        @if (projects.length == 0 ){
+        <div class="table empty">Nenhuma projeto encontrado...</div>
+        }
+    </div>
+</div>

@@ -10,3 +10,7 @@ export const projectResolver: ResolveFn<Project> = (route, state) => {
   }
   return inject(ProjectsService).findById(Number(projectId));
 };
+
+export const projectsResolver: ResolveFn<Project[]> = (route, state) => {
+  return inject(ProjectsService).findAll();
+};

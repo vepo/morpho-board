@@ -56,6 +56,10 @@ public class TicketEndpoint {
         return () -> new NotFoundException("Ticket does not found! ticketId=%d".formatted(ticketId));
     }
 
+    private static final Supplier<NotFoundException> ticketNotFound(String ticketIdentifier) {
+        return () -> new NotFoundException("Ticket does not found! ticketIdentifier=%d".formatted(ticketIdentifier));
+    }
+
     private static final Supplier<NotFoundException> userNotFound(long userId) {
         return () -> new NotFoundException("User does not found! userId=%d".formatted(userId));
     }
@@ -137,13 +141,25 @@ public class TicketEndpoint {
     }
 
     @GET
-    @Path("/{id}/expanded")
+    @Path("/{id:[0-9]+}/expanded")
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public TicketExpandedResponse findExpandedById(@PathParam("id") Long id) {
         return TicketExpandedResponse.load(repository.findById(id)
                                                      .orElseThrow(ticketNotFound(id)),
                                            repository.findHistoryByTicketId(id)
+                                                     .toList());
+    }
+
+    @GET
+    @Path("/{id:[0-9A-Z\\-]+}/expanded")
+    @Transactional
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public TicketExpandedResponse findExpandedByIdentifier(@PathParam("id") String id) {
+        var ticket = repository.findByIdentifier(id)
+                               .orElseThrow(ticketNotFound(id));
+        return TicketExpandedResponse.load(ticket,
+                                           repository.findHistoryByTicketId(ticket.getId())
                                                      .toList());
     }
 
@@ -156,7 +172,9 @@ public class TicketEndpoint {
                                        .orElseThrow(projectNotFound(request.projectId()));
         var author = userRepository.findByEmail(securityContext.getUserPrincipal().getName())
                                    .orElseThrow(userNotFound(securityContext.getUserPrincipal().getName()));
-        var ticket = new Ticket(request.title(),
+        var projectTickets = repository.countProjectTickets(request.projectId());
+        var ticket = new Ticket("%s-%03d".formatted(project.getPrefix(), projectTickets + 1),
+                                request.title(),
                                 request.description(),
                                 categoryRepository.findById(request.categoryId())
                                                   .orElseThrow(categoryNotFound(request.categoryId())),
