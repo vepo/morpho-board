@@ -57,7 +57,7 @@ public class TicketEndpoint {
     }
 
     private static final Supplier<NotFoundException> ticketNotFound(String ticketIdentifier) {
-        return () -> new NotFoundException("Ticket does not found! ticketIdentifier=%d".formatted(ticketIdentifier));
+        return () -> new NotFoundException("Ticket does not found! ticketIdentifier=%s".formatted(ticketIdentifier));
     }
 
     private static final Supplier<NotFoundException> userNotFound(long userId) {

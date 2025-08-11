@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_tickets")
+@SuppressWarnings("java:S107")
 public class Ticket {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
