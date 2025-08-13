@@ -16,7 +16,7 @@ import { JsonPipe } from '@angular/common';
   selector: 'app-create-ticket-modal',
   templateUrl: './create-ticket-modal.component.html',
   standalone: true,
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatOptionModule , JsonPipe]
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatOptionModule]
 })
 export class CreateTicketModalComponent implements OnInit {
   authorId!: number;

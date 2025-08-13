@@ -11,7 +11,7 @@ import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-project-edit.component',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, JsonPipe],
+  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule],
   templateUrl: './project-edit.component.html',
   styleUrl: './project-edit.component.scss'
 })

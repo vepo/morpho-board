@@ -29,7 +29,8 @@ button {
     padding: 0.3rem 1.3rem;
     background-color: colors.$base-active-color;
     color: #FFFFFF;
-
+    cursor: pointer;
+    
     &.btn-cancel {
         background-color: colors.$base-secondary-bg-color;
         border-color: colors.$base-secondary-bg-color;
@@ -46,7 +47,7 @@ button {
     .mdc-button__label, .mat-icon {
         color: #FFFFFF;
     }
-    cursor: pointer;
+
     &:not(:last-child) {
         margin-right: 0.5rem;
     }
