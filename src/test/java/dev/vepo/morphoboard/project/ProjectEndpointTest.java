@@ -131,7 +131,8 @@ class ProjectEndpointTest {
                .body("""
                      {
                          "description": "This is a test project.",
-                         "workflowId": 1
+                         "workflowId": 1,
+                         "prefix": "PRJ"
                      }""".formatted(workflow.id()))
                .post("/api/projects")
                .then()
