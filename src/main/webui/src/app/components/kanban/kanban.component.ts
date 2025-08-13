@@ -10,7 +10,6 @@ import { NormalizePipe } from '../pipes/normalize.pipe';
 @Component({
   selector: 'app-kanban',
   templateUrl: './kanban.component.html',
-  styleUrls: ['./kanban.component.scss'],
   imports: [CommonModule, DragDropModule, RouterLink, NormalizePipe],
   standalone: true
 })

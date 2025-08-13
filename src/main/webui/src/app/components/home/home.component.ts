@@ -11,7 +11,6 @@ import { TrimPipe } from '../pipes/trim.pipe';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
   imports: [CommonModule, RouterModule, FormsModule, TrimPipe, MatIconModule, MatButtonModule],
   standalone: true
 })

@@ -1,15 +1,15 @@
 <div class="main centered">
     <div class="form-header">
-        <h2>MorphoBoard - Entrar</h2>
-        <p>Sistema de gerenciamento de tickets</p>
+        <h2 i18n>MorphoBoard - Entrar</h2>
+        <p i18n>Sistema de gerenciamento de tickets</p>
     </div>
     <form (ngSubmit)="login()">
         <mat-form-field class="form-field" appearance="fill">
-            <mat-label>E-mail</mat-label>
+            <mat-label i18n>E-mail</mat-label>
             <input matInput [(ngModel)]="email" name="email" required />
         </mat-form-field>
         <mat-form-field class="form-field" appearance="fill">
-            <mat-label>Password</mat-label>
+            <mat-label i18n>Password</mat-label>
             <input matInput name="password" [(ngModel)]="password" [type]="hide() ? 'password' : 'text'" required />
             <mat-icon matSuffix (click)="clickEvent($event)">
                 {{hide() ? 'visibility_off' : 'visibility'}}
@@ -19,7 +19,9 @@
             <div class="error">{{error}}</div>
         }
         <div>
-            <button class="btn" matButton type="submit"><mat-icon fontIcon="login"></mat-icon>Entrar</button>
+            <button class="btn" matButton type="submit">
+                <mat-icon fontIcon="login"></mat-icon><span i18n>Entrar</span>
+            </button>
         </div>
     </form>
 </div>

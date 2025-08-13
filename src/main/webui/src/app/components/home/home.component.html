@@ -1,11 +1,11 @@
 <div class="centered">
   <div class="home-content">
-    <h1>MorphoBoard</h1>
-    <p>Bem-vindo ao sistema de gerenciamento de tickets</p>
+    <h1 i18n>MorphoBoard</h1>
+    <p i18n>Bem-vindo ao sistema de gerenciamento de tickets</p>
     @if (isAuthenticated()) {
     <div class="box">
       @if (projects.length == 0) {
-      <div class="card empty">
+      <div class="card empty" i18n>
         Nenhum projeto...
       </div>  
       }
@@ -13,8 +13,12 @@
       <div class="card">
         <div class="title">{{ project.name }}</div>
         <div title="{{ project.description }}" class="description">{{ project.description | trim:100 }}</div>
-        <button class="btn" matButton [routerLink]="['/project', project.id, 'kanban']"><mat-icon fontIcon="view_kanban"></mat-icon>Kanban</button>
-        <button class="btn" matButton [routerLink]="['/project', project.id, 'dashboard']"><mat-icon fontIcon="query_stats"></mat-icon>Dasboard</button>
+        <button class="btn" matButton [routerLink]="['/project', project.id, 'kanban']">
+          <mat-icon fontIcon="view_kanban"></mat-icon><span i18n>Kanban</span>
+        </button>
+        <button class="btn" matButton [routerLink]="['/project', project.id, 'dashboard']">
+          <mat-icon fontIcon="query_stats"></mat-icon><span i18n>Dasboard</span>
+        </button>
       </div>
       }
     </div>
