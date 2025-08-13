@@ -67,6 +67,21 @@ public class ProjectEndpoint {
                                                                                   .orElseThrow(workflowNotFound(request.workflowId())))));
     }
 
+    @POST
+    @Path("{projectId}")
+    @Transactional
+    @ResponseStatus(201)
+    @RolesAllowed(Role.PROJECT_MANAGER_ROLE)
+    public ProjectResponse update(@PathParam("projectId") Long projectId, @Valid CreateProjectRequest request) {
+        return ProjectResponse.load(repository.save(repository.findById(projectId)
+                                                              .map(project -> {
+                                                                  project.setName(request.name());
+                                                                  project.setPrefix(request.prefix());
+                                                                  project.setDescription(request.description());
+                                                                  return project;
+                                                              }).orElseThrow(projectNotFound(projectId))));
+    }
+
     @GET
     @Path("{projectId}")
     @RolesAllowed({ Role.PROJECT_MANAGER_ROLE, Role.ADMIN_ROLE, Role.USER_ROLE })

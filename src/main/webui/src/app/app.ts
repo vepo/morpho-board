@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
 
   openCreateTicketDialog() {
     this.dialog.open(CreateTicketModalComponent, {
-      width: '500px',
+      width: '750px',
       disableClose: true
     });
   }

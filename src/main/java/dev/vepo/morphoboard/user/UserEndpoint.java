@@ -56,7 +56,8 @@ public class UserEndpoint {
                                                                    passwordDefault,
                                                                    request.roles()
                                                                           .stream()
-                                                                          .map(role -> Role.from(role).orElseThrow(() -> new BadRequestException("Role does not exists! role=%s".formatted(role))))
+                                                                          .map(role -> Role.from(role)
+                                                                                           .orElseThrow(() -> new BadRequestException("Role does not exists! role=%s".formatted(role))))
                                                                           .collect(Collectors.toSet()))));
     }
 

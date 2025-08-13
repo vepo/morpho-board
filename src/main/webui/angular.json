@@ -11,7 +11,7 @@
         }
       },
       "i18n": {
-        "sourceLocale": "pt"
+        "sourceLocale": "pt-BR"
       },
       "root": "",
       "sourceRoot": "src",
@@ -23,7 +23,8 @@
             "outputPath": "dist/morphoboard",
             "browser": "src/main.ts",
             "polyfills": [
-              "zone.js"
+              "zone.js",
+              "@angular/localize/init"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -81,7 +82,8 @@
           "options": {
             "polyfills": [
               "zone.js",
-              "zone.js/testing"
+              "zone.js/testing",
+              "@angular/localize/init"
             ],
             "codeCoverage": true,
             "tsConfig": "tsconfig.spec.json",

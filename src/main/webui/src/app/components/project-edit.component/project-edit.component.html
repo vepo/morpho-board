@@ -1,0 +1,35 @@
+<div class="centered">
+    <form class="edit" [formGroup]="projectForm">
+        @if (editMode) {
+        <h1>Edit Project</h1>
+        } @else {
+        <h1>Create Project</h1>
+        }
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput formControlName="name" required />
+        </mat-form-field>
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Processo</mat-label>
+            <mat-select formControlName="workflow">
+                <mat-option [value]="-1" disabled>Select a project workflow...</mat-option>
+                @for (workflow of workflows; track workflow.name) {
+                    <mat-option [value]="workflow.id">{{workflow.name}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Prefix</mat-label>
+            <input matInput formControlName="prefix" required />
+        </mat-form-field>
+        <mat-form-field class="form-field" appearance="fill">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" required></textarea>
+        </mat-form-field>
+        <div class="actions">
+            <button class="btn btn-cancel" matButton="filled" (click)="cancel()">Cancel</button>
+            <button class="btn btn-primary" [disabled]="this.projectForm.invalid" matButton="filled"
+                (click)="save()">Salve</button>
+        </div>
+    </form>
+</div>

@@ -8,6 +8,12 @@ DECLARE
     feature_id     INTEGER;
     user_cto_id    INTEGER;
     proj_morpho_id INTEGER;
+    open_id        INTEGER;
+    info_id        INTEGER;
+    analyse_id     INTEGER;
+    valid_id       INTEGER;
+    support_id     INTEGER;
+    cancel_id      INTEGER;
 BEGIN
     -- Usuário com apenas a role PROJECT_MANAGER
     INSERT INTO tb_users (name, email, encoded_password, roles) VALUES 
@@ -53,10 +59,38 @@ BEGIN
     INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (agile_id, blocked_id);
     INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (agile_id, done_id);
 
-    INSERT INTO tb_workflow_transitions (from_id, to_id, workflow_id) VALUES (todo_id,     progress_id, agile_id);
-    INSERT INTO tb_workflow_transitions (from_id, to_id, workflow_id) VALUES (progress_id, blocked_id, agile_id);
-    INSERT INTO tb_workflow_transitions (from_id, to_id, workflow_id) VALUES (blocked_id,  progress_id, agile_id);
-    INSERT INTO tb_workflow_transitions (from_id, to_id, workflow_id) VALUES (progress_id, done_id, agile_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (agile_id, todo_id,     progress_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (agile_id, progress_id, blocked_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (agile_id, blocked_id,  progress_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (agile_id, progress_id, done_id);
+
+    INSERT INTO tb_workflow_status (name) VALUES ('OPEN')                RETURNING id INTO open_id;
+    INSERT INTO tb_workflow_status (name) VALUES ('REQUEST_INFORMATION') RETURNING id INTO info_id;
+    INSERT INTO tb_workflow_status (name) VALUES ('VALIDATING')          RETURNING id INTO valid_id;
+    INSERT INTO tb_workflow_status (name) VALUES ('ANALYSING')           RETURNING id INTO analyse_id;
+    INSERT INTO tb_workflow_status (name) VALUES ('CANCEL')              RETURNING id INTO cancel_id;
+
+    INSERT INTO tb_workflows (name, start_id) VALUES ('Support', open_id) RETURNING id INTO support_id;
+
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, open_id);
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, progress_id);
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, blocked_id);
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, valid_id);
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, info_id);
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, analyse_id);
+    INSERT INTO tb_workflow_statuses (workflow_id, status_id) VALUES (support_id, done_id);
+
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, open_id,     analyse_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, analyse_id,  progress_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, analyse_id,  info_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, analyse_id,  cancel_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, info_id,     analyse_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, info_id,     cancel_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, info_id,     progress_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, progress_id, blocked_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, blocked_id,  progress_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, progress_id, valid_id);
+    INSERT INTO tb_workflow_transitions (workflow_id, from_id, to_id) VALUES (support_id, valid_id,    done_id);
 
     INSERT INTO tb_projects (name, description, prefix, workflow_id) VALUES ('Morpho Board', 'MVP Morpho Board', 'MORPH', agile_id) RETURNING id INTO proj_morpho_id;
 

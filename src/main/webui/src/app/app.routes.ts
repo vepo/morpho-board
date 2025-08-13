@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './components/home/home.component';
 import { KanbanComponent } from './components/kanban/kanban.component';
 import { LoginComponent } from './components/login/login.component';
+import { ProjectEditComponent } from './components/project-edit.component/project-edit.component';
 import { ProjectsViewComponent } from './components/projects-view.component/projects-view.component';
 import { SearchTicketsComponent } from './components/search-tickets/search-tickets.component';
 import { TicketViewComponent } from './components/ticket-view/ticket-view.component';
@@ -13,6 +14,7 @@ import { ticketResolver } from './resolvers/ticket.resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
 import { userResolver, usersResolver } from './resolvers/users.resolver';
 import { authGuard } from './services/auth.guard';
+import { workflowsResolver } from './resolvers/workflow-resolver';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -69,6 +71,23 @@ export const routes: Routes = [
     component: ProjectsViewComponent,
     resolve: {
       projects: projectsResolver
+    },
+    canActivate: [authGuard],
+  },
+  {
+    path: 'projects/new',
+    component: ProjectEditComponent,
+    canActivate: [authGuard],
+    resolve: {
+      workflows: workflowsResolver
+    }
+  },
+  {
+    path: 'projects/:projectId',
+    component: ProjectEditComponent,
+    resolve: {
+      project: projectResolver,
+      workflows: workflowsResolver
     },
     canActivate: [authGuard],
   },

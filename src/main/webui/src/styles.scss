@@ -3,9 +3,15 @@
 // https://coolors.co/01172f-d9e8df-00635d-bf0603-446df6
 
 @use "./colors";
+@use '@angular/material' as mat;
 
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
+:root {
+  @include mat.form-field-overrides((
+    filled-input-text-placeholder-color: #AAAAAA,
+  ));
+}
 
 body {
     margin: 0;
@@ -405,6 +411,14 @@ main {
 form {
     .form-field {
         display: block;
+    }
+
+    .mat-mdc-form-field-error-wrapper {
+        padding: 0;
+    }
+    .mat-mdc-form-field-error {
+        font-size: 0.8rem;
+        color: #FB120E;
     }
 }
 

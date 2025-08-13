@@ -3,7 +3,7 @@ import { KanbanComponent } from './kanban.component';
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Project, ProjectsService, Workflow } from '../../services/projects.service';
+import { Project, ProjectsService, ProjectWorkflow } from '../../services/projects.service';
 import { Ticket, TicketService } from '../../services/ticket.service';
 import { of } from 'rxjs';
 import { NormalizePipe } from '../pipes/normalize.pipe';
@@ -19,7 +19,8 @@ describe('KanbanComponent', () => {
   const mockProject: Project = {
     id: 1,
     name: 'Test Project',
-    description: 'Test Description'
+    description: 'Test Description',
+    prefix: 'PRJ'
   };
 
   const mockStatuses: ProjectStatus[] = [
@@ -54,7 +55,7 @@ describe('KanbanComponent', () => {
     }
   ];
 
-  const mockWorkflow: Workflow = {
+  const mockWorkflow: ProjectWorkflow = {
     id: 1,
     name: "Waterfall",
     statuses: mockStatuses.map(s => s.name),

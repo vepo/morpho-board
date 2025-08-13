@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface Project {
   id: number;
   name: string;
+  prefix: string;
   description: string;
 }
 
@@ -13,12 +14,19 @@ export interface WorkflowTransition {
   to: string;
 }
 
-export interface Workflow {
+export interface ProjectWorkflow {
   id: number;
   name: string;
   statuses: string[];
   start: string;
   transitions: WorkflowTransition[];
+}
+
+export interface CreateOrUpdateProjectRequest {
+  name: string;
+  prefix: string;
+  description: string;
+  workflowId: number;
 }
 
 @Injectable({
@@ -37,7 +45,16 @@ export class ProjectsService {
     return this.http.get<Project[]>(`${this.API_URL}`);
   }
 
-  findWorkflowByProjectId(projectId: number): Observable<Workflow> {
-    return this.http.get<Workflow>(`${this.API_URL}/${projectId}/workflow`);
+  create(request: CreateOrUpdateProjectRequest): Observable<Project> {
+    return this.http.post<Project>(`${this.API_URL}`, request);
+  }
+
+
+  update(projectId: number, request: CreateOrUpdateProjectRequest): Observable<Project> {
+    return this.http.post<Project>(`${this.API_URL}/${projectId}`, request);
+  }
+
+  findWorkflowByProjectId(projectId: number): Observable<ProjectWorkflow> {
+    return this.http.get<ProjectWorkflow>(`${this.API_URL}/${projectId}/workflow`);
   }
 }

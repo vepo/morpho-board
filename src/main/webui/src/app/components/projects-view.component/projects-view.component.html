@@ -15,6 +15,7 @@
                 <div>ID</div>
                 <div class="left-aligned">Nome</div>
                 <div class="left-aligned">Descrição</div>
+                <div class="left-aligned">Prefixo</div>
                 <div>Actions</div>
             </div>
             @for (entry of projects; track entry.id) {
@@ -22,6 +23,7 @@
                 <div>{{ entry.id }}</div>
                 <div class="left-aligned">{{ entry.name }}</div>
                 <div class="left-aligned">{{ entry.description }}</div>
+                <div class="left-aligned">{{ entry.prefix }}</div>
                 <div>
                     <button class="btn" matButton [routerLink]="['/', 'projects', entry.id]">
                         <mat-icon fontIcon="work"></mat-icon> Editar
