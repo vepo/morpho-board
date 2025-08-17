@@ -82,8 +82,8 @@
   </div>
   <div class="actions">
     <div class="form-actions">
-      <button [disabled]="ticketForm.invalid" (click)="createTicket()" i18n>Criar</button>
-      <button class="cancel" (click)="close()" i18n>Cancelar</button>
+      <button matButton class="btn btn-cancel" (click)="close()" i18n>Cancelar</button>
+      <button matButton class="btn" [disabled]="ticketForm.invalid" (click)="createTicket()" i18n>Criar</button>
     </div>
   </div>
 </div>

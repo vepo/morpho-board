@@ -32,15 +32,11 @@ button {
     cursor: pointer;
     
     &.btn-cancel {
-        background-color: colors.$base-secondary-bg-color;
-        border-color: colors.$base-secondary-bg-color;
-        color: colors.$base-secondary-color;
+        background-color: colors.$base-error-color;
+        border-color: colors.$base-error-color;
 
         &:hover {
-            background-color: colors.$base-secondary-bg-active-color;
-        }
-        .mdc-button__label, .mat-icon { 
-            color: colors.$base-secondary-color;
+            background-color: colors.$base-error-active-color;
         }
     }
 
@@ -65,15 +61,6 @@ button {
         border-color: #777777;
         cursor: default;
         opacity: 0.6;
-    }
-
-    &.cancel {
-        background-color: #BF0603;
-        border-color: #A10502;
-
-        &:hover {
-            background-color: #A00603;
-        }
     }
 }
 

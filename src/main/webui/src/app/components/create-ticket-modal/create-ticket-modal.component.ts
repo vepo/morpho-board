@@ -6,11 +6,11 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Category, CategoryService } from '../../services/category.service';
 import { Project, ProjectsService } from '../../services/projects.service';
 import { CreateTicketRequest, TicketService } from '../../services/ticket.service';
-import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-create-ticket-modal',
@@ -36,7 +36,7 @@ export class CreateTicketModalComponent implements OnInit {
     private readonly categoryService: CategoryService,
     private readonly projectsService: ProjectsService,
     private readonly authService: AuthService,
-  ) {
+    private readonly router: Router) {
     this.authorId = authService.getAuthUserId();
   }
 
@@ -78,6 +78,9 @@ export class CreateTicketModalComponent implements OnInit {
       projectId: this.ticketForm.value.projectId!
     };
     this.ticketService.createTicket(req)
-                      .subscribe(ticket => this.dialogRef.close(ticket));
+                      .subscribe(ticket => { 
+                        this.dialogRef.close(ticket);
+                        this.router.navigate(['/', 'ticket', ticket.identifier]);
+                      });
   }
 } 
