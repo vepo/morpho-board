@@ -20,7 +20,8 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
     path: '',
-    component: HomeComponent
+    component: HomeComponent,
+    canActivate: [authGuard]
   },
   {
     path: 'project/:projectId/kanban',
@@ -89,7 +90,7 @@ export const routes: Routes = [
       project: projectResolver,
       workflows: workflowsResolver
     },
-    canActivate: [authGuard],
+    canActivate: [authGuard]
   },
   {
     path: '',

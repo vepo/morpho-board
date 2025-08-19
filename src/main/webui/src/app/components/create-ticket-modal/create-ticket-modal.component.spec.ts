@@ -12,6 +12,7 @@ import { Project, ProjectsService } from '../../services/projects.service';
 import { Category, CategoryService } from '../../services/category.service';
 import { AuthService } from '../../services/auth.service';
 import { of, throwError } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('CreateTicketModalComponent', () => {
     let component: CreateTicketModalComponent;
@@ -21,6 +22,7 @@ describe('CreateTicketModalComponent', () => {
     let mockCategoryService: jasmine.SpyObj<CategoryService>;
     let mockProjectsService: jasmine.SpyObj<ProjectsService>;
     let mockAuthService: jasmine.SpyObj<AuthService>;
+    let router: jasmine.SpyObj<Router>;
 
     const mockProjects: Project[] = [
         { id: 1, name: 'Project 1', prefix: 'PRJ1', description: 'Desc 1' },
@@ -37,9 +39,12 @@ describe('CreateTicketModalComponent', () => {
         mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['close']);
         mockTicketService = jasmine.createSpyObj('TicketService', ['createTicket']);
         mockCategoryService = jasmine.createSpyObj('CategoryService', ['findAll']);
+        mockCategoryService.findAll.and.returnValue(of(mockCategories));
         mockProjectsService = jasmine.createSpyObj('ProjectsService', ['findAll']);
+        mockProjectsService.findAll.and.returnValue(of(mockProjects));
         mockAuthService = jasmine.createSpyObj('AuthService', ['getAuthUserId']);
         mockAuthService.getAuthUserId.and.returnValue(123);
+        router = jasmine.createSpyObj('Router', ['navigate']);
 
         TestBed.configureTestingModule({
             imports: [
@@ -57,25 +62,26 @@ describe('CreateTicketModalComponent', () => {
                 { provide: TicketService, useValue: mockTicketService },
                 { provide: CategoryService, useValue: mockCategoryService },
                 { provide: ProjectsService, useValue: mockProjectsService },
-                { provide: AuthService, useValue: mockAuthService }
+                { provide: AuthService, useValue: mockAuthService },
+                { provide: Router, useValue: router }
             ]
         }).compileComponents();
     }));
 
-    // beforeEach(() => {
-    //     fixture = TestBed.createComponent(CreateTicketModalComponent);
-    //     component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateTicketModalComponent);
+        component = fixture.componentInstance;
 
-    //     mockAuthService.getAuthUserId.and.returnValue(123);
-    //     mockCategoryService.findAll.and.returnValue(of(mockCategories));
-    //     mockProjectsService.findAll.and.returnValue(of(mockProjects));
+        mockAuthService.getAuthUserId.and.returnValue(123);
+        mockCategoryService.findAll.and.returnValue(of(mockCategories));
+        mockProjectsService.findAll.and.returnValue(of(mockProjects));
 
-    //     fixture.detectChanges();
-    // });
+        fixture.detectChanges();
+    });  
 
-    // it('should create', () => {
-    //     expect(component).toBeTruthy();
-    // });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
     // it('should initialize with empty form and load data', () => {
     //     expect(component.title).toBe('');
