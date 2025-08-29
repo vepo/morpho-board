@@ -1,16 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TicketExpanded, TicketService, Comment, CreateCommentRequest } from '../../services/ticket.service';
-import { DatePipe } from '@angular/common';
+import { DatePipe, JsonPipe } from '@angular/common';
 import { NormalizePipe } from '../pipes/normalize.pipe';
 import { FormsModule } from '@angular/forms';
 import { RichTextEditorComponent } from '../rich-text-editor/rich-text-editor.component';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-ticket-view',
   templateUrl: './ticket-view.component.html',
   styleUrls: ['./ticket-view.component.scss'],
-  imports: [DatePipe, NormalizePipe, FormsModule, RichTextEditorComponent]
+  imports: [DatePipe, NormalizePipe, FormsModule, RichTextEditorComponent, JsonPipe, MatButtonModule, MatIconModule]
 })
 export class TicketViewComponent implements OnInit {
   ticket?: TicketExpanded;
@@ -20,7 +23,9 @@ export class TicketViewComponent implements OnInit {
   loadingComments = false;
   submittingComment = false;
 
-  constructor(private route: ActivatedRoute, private ticketService: TicketService) { }
+  constructor(private route: ActivatedRoute,
+    private ticketService: TicketService,
+    private authService: AuthService) { }
 
   ngOnInit(): void {
     this.route.data.subscribe(({ ticket }) => {
@@ -33,7 +38,7 @@ export class TicketViewComponent implements OnInit {
 
   loadComments(): void {
     if (!this.ticket) return;
-    
+
     this.loadingComments = true;
     this.ticketService.getComments(this.ticket.id).subscribe({
       next: (comments) => {
@@ -58,7 +63,7 @@ export class TicketViewComponent implements OnInit {
         this.comments.unshift(comment); // Add to beginning
         this.newComment = '';
         this.submittingComment = false;
-        
+
         // Reload ticket to get updated history
         this.reloadTicket();
       },
@@ -73,9 +78,25 @@ export class TicketViewComponent implements OnInit {
     this.newComment = content;
   }
 
+  isSubscribed(): boolean {
+    return this.ticket?.subscribers.findIndex(user => user.id == this.authService.getAuthUserId()) != -1;
+  }
+
+  toggle() {
+    if (!this.ticket) return;
+
+    if (this.isSubscribed()) {
+      this.ticketService.removeSubscription(this.ticket?.id, this.authService.getAuthUserId())
+        .subscribe(ticket => this.ticket = ticket);
+    } else {
+      this.ticketService.addSubscription(this.ticket?.id, this.authService.getAuthUserId())
+        .subscribe(ticket => this.ticket = ticket);
+    }
+  }
+
   reloadTicket(): void {
     if (!this.ticket) return;
-    
+
     this.ticketService.findExpandedById(this.ticket.id).subscribe({
       next: (updatedTicket) => {
         this.ticket = updatedTicket;

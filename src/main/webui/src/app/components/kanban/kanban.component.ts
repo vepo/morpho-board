@@ -6,6 +6,7 @@ import { Project, ProjectsService, ProjectWorkflow } from '../../services/projec
 import { ProjectStatus } from '../../services/status.service';
 import { Ticket, TicketService } from '../../services/ticket.service';
 import { NormalizePipe } from '../pipes/normalize.pipe';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-kanban',
@@ -20,9 +21,13 @@ export class KanbanComponent implements OnInit {
   workflow?: ProjectWorkflow;
   constructor(private readonly activatedRoute: ActivatedRoute, 
               private readonly projectsService: ProjectsService, 
-              private readonly ticketService: TicketService) { }
+              private readonly ticketService: TicketService,
+            private readonly notificationService: NotificationService) { }
 
   ngOnInit(): void {
+    this.notificationService.connect();
+    this.notificationService.listen()
+                            .subscribe(event => console.log("Received event!", event));
     this.activatedRoute.data.subscribe(({ statuses, project, tickets }) => {
       this.project = project;
       this.tickets = (tickets as Ticket[]).map(t => this.fixLineBreak(t));

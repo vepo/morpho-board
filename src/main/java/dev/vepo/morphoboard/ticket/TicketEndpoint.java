@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.categories.CategoryRepository;
+import dev.vepo.morphoboard.notifications.Notification;
 import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.ticket.business.TicketHistoryService;
 import dev.vepo.morphoboard.ticket.comments.Comment;
@@ -23,6 +24,7 @@ import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.user.UserRepository;
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -34,6 +36,7 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -76,12 +79,13 @@ public class TicketEndpoint {
         return () -> new NotFoundException("Category does not found! categoryId=%d".formatted(categoryId));
     }
 
-    private TicketRepository repository;
-    private UserRepository userRepository;
-    private ProjectRepository projectRepository;
-    private CategoryRepository categoryRepository;
-    private TicketHistoryService historyService;
-    private SecurityContext securityContext;
+    private final TicketRepository repository;
+    private final UserRepository userRepository;
+    private final ProjectRepository projectRepository;
+    private final CategoryRepository categoryRepository;
+    private final TicketHistoryService historyService;
+    private final SecurityContext securityContext;
+    private final Event<Notification> notificationEmmiter;
 
     @Inject
     public TicketEndpoint(TicketRepository repository,
@@ -89,13 +93,15 @@ public class TicketEndpoint {
                           ProjectRepository projectRepository,
                           CategoryRepository categoryRepository,
                           TicketHistoryService historyService,
-                          @Context SecurityContext securityContext) {
+                          @Context SecurityContext securityContext,
+                          Event<Notification> notificationEmmiter) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
         this.categoryRepository = categoryRepository;
         this.historyService = historyService;
         this.securityContext = securityContext;
+        this.notificationEmmiter = notificationEmmiter;
     }
 
     @GET
@@ -363,7 +369,8 @@ public class TicketEndpoint {
 
         // Log status change
         historyService.logStatusChanged(ticket, user, fromStatus, toStatus);
-
+        logger.info("Enviando evento CDI!");
+        notificationEmmiter.fire(new Notification(ticket.getId(), "Ticket mudou de status!"));
         return TicketResponse.load(ticket);
     }
 
@@ -374,5 +381,40 @@ public class TicketEndpoint {
         return repository.findHistoryByTicketId(id)
                          .map(TicketHistoryResponse::load)
                          .toList();
+    }
+
+    public static record SubscribeRequest(long subscriberId) {
+
+    }
+
+    @PUT
+    @Path("/{id}/subscribe")
+    @Transactional
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public TicketExpandedResponse subscribe(@PathParam("id") Long id,
+                                            SubscribeRequest request) {
+        var ticket = this.repository.findById(id)
+                                    .orElseThrow(ticketNotFound(id));
+        ticket.getSubscribers()
+              .add(this.userRepository.findById(request.subscriberId())
+                                      .orElseThrow(userNotFound(request.subscriberId())));
+        return TicketExpandedResponse.load(this.repository.save(ticket),
+                                           repository.findHistoryByTicketId(id)
+                                                     .toList());
+    }
+
+    @DELETE
+    @Path("/{id}/subscribe/{subscriberId}")
+    @Transactional
+    @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
+    public TicketExpandedResponse subscribe(@PathParam("id") Long id,
+                                            @PathParam("subscriberId") long subscriberId) {
+        var ticket = this.repository.findById(id)
+                                    .orElseThrow(ticketNotFound(id));
+        ticket.getSubscribers()
+              .removeIf(user -> subscriberId == user.getId());
+        return TicketExpandedResponse.load(this.repository.save(ticket),
+                                           repository.findHistoryByTicketId(id)
+                                                     .toList());
     }
 }

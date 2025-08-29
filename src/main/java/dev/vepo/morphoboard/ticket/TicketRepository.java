@@ -93,8 +93,9 @@ public class TicketRepository {
                  .getResultStream();
     }
 
-    public void save(Ticket ticket) {
+    public Ticket save(Ticket ticket) {
         em.persist(ticket);
+        return ticket;
     }
 
     public void delete(long id) {

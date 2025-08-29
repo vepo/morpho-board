@@ -1,6 +1,8 @@
 package dev.vepo.morphoboard.ticket;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import dev.vepo.morphoboard.ticket.history.TicketHistory;
 
@@ -11,6 +13,7 @@ public record TicketExpandedResponse(long id,
                                      String category,
                                      TicketUserResponse author,
                                      TicketUserResponse assignee,
+                                     List<TicketUserResponse> subscribers,
                                      TicketProjectResponse project,
                                      String status,
                                      List<TicketHistoryResponse> history) {
@@ -23,6 +26,10 @@ public record TicketExpandedResponse(long id,
                                           ticket.getCategory().getName(),
                                           TicketUserResponse.load(ticket.getAuthor()),
                                           TicketUserResponse.load(ticket.getAssignee()),
+                                          ticket.getSubscribers()
+                                                .stream()
+                                                .map(TicketUserResponse::load)
+                                                .toList(),
                                           TicketProjectResponse.load(ticket.getProject()),
                                           ticket.getStatus().getName(),
                                           history.stream()

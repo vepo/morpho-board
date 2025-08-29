@@ -1,7 +1,10 @@
 package dev.vepo.morphoboard.ticket;
 
+import static java.util.Collections.emptySet;
+
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Set;
 
 import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.project.Project;
@@ -9,11 +12,15 @@ import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -58,6 +65,10 @@ public class Ticket {
     @JoinColumn(name = "assignee_id", nullable = true)
     private User assignee;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "tb_tickets_subscribers", joinColumns = @JoinColumn(name = "ticket_id"), inverseJoinColumns = @JoinColumn(name = "subscriber_id"))
+    private Set<User> subscribers;
+
     @ManyToOne
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
@@ -75,6 +86,7 @@ public class Ticket {
         this.status = status;
         this.createdAt = this.updatedAt = Instant.now();
         this.deleted = false;
+        this.subscribers = emptySet();
     }
 
     public Long getId() {
@@ -173,6 +185,14 @@ public class Ticket {
         this.deleted = deleted;
     }
 
+    public Set<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(Set<User> subscribers) {
+        this.subscribers = subscribers;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hashCode(this.id);
@@ -191,16 +211,17 @@ public class Ticket {
 
     @Override
     public String toString() {
-        return "Ticket [id=%d, title=%s, description=%s, createdAt=%s, updatedAt=%s, category=%s, status=%s, author=%s, assignee=%s, project=%s, deleted=%b]".formatted(id,
-                                                                                                                                                                        title,
-                                                                                                                                                                        deleted,
-                                                                                                                                                                        createdAt,
-                                                                                                                                                                        updatedAt,
-                                                                                                                                                                        category,
-                                                                                                                                                                        status,
-                                                                                                                                                                        author,
-                                                                                                                                                                        assignee,
-                                                                                                                                                                        project,
-                                                                                                                                                                        deleted);
+        return "Ticket [id=%d, title=%s, description=%s, createdAt=%s, updatedAt=%s, category=%s, status=%s, author=%s, assignee=%s, subscribers=%s, project=%s, deleted=%b]".formatted(id,
+                                                                                                                                                                                        title,
+                                                                                                                                                                                        deleted,
+                                                                                                                                                                                        createdAt,
+                                                                                                                                                                                        updatedAt,
+                                                                                                                                                                                        category,
+                                                                                                                                                                                        status,
+                                                                                                                                                                                        author,
+                                                                                                                                                                                        assignee,
+                                                                                                                                                                                        subscribers,
+                                                                                                                                                                                        project,
+                                                                                                                                                                                        deleted);
     }
 }

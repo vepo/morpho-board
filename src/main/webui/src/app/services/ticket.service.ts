@@ -51,6 +51,7 @@ export interface TicketExpanded {
   category: string;
   author: TicketUser;
   assignee?: TicketUser;
+  subscribers: TicketUser[];
   project: TicketProject;
   status: string;
   history: TicketHistory[];
@@ -98,7 +99,7 @@ export class TicketService {
     });
   }
 
-  move(ticketId: number, toStatus: number) :Observable<Ticket> {
+  move(ticketId: number, toStatus: number): Observable<Ticket> {
     return this.http.post<Ticket>(`/api/tickets/${ticketId}/move`, { to: toStatus });
   }
 
@@ -120,5 +121,15 @@ export class TicketService {
 
   addComment(ticketId: number, request: CreateCommentRequest): Observable<Comment> {
     return this.http.post<Comment>(`/api/tickets/${ticketId}/comments`, request);
+  }
+
+  addSubscription(ticketId: number, userId: number): Observable<TicketExpanded> {
+    return this.http.put<TicketExpanded>(`/api/tickets/${ticketId}/subscribe`, {
+      subscriberId: userId
+    });
+  }
+
+  removeSubscription(ticketId: number, userId: number): Observable<TicketExpanded> {
+    return this.http.delete<TicketExpanded>(`/api/tickets/${ticketId}/subscribe/${userId}`);
   }
 }
