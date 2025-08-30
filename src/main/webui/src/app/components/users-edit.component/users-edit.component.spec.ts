@@ -40,12 +40,14 @@ describe('UsersEditComponent', () => {
     mockUsersService.create.and.returnValue(of({
       id: 1,
       name: 'name',
+      username: 'username',
       email: 'name@morpho.io',
       roles:['USER']
     }));
     mockUsersService.update.and.returnValue(of({
       id: 1,
       name: 'name',
+      username: 'username',
       email: 'name@morpho.io',
       roles:['USER']
     }));
@@ -91,6 +93,7 @@ describe('UsersEditComponent', () => {
       const testUser = {
         id: 1,
         name: 'Test User',
+        username: 'test',
         email: 'test@example.com',
         roles: ['admin']
       };
@@ -105,6 +108,7 @@ describe('UsersEditComponent', () => {
       expect(component.userId).toBe(1);
       expect(component.userForm.value).toEqual({
         name: 'Test User',
+        username: 'test',
         email: 'test@example.com',
         roles: ['admin']
       });
@@ -174,19 +178,22 @@ describe('UsersEditComponent', () => {
       // Set valid form values
       const nameInput = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="name"]' }));
       const emailInput = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="email"]' }));
+      const usernameInput = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="username"]' }));
       const adminCheckbox = await findCheckboxByLabel(await loader.getAllHarnesses(MatCheckboxHarness), 'Adminstrator');
       
       await nameInput.setValue('Test User');
+      await usernameInput.setValue('test');
       await emailInput.setValue('test@example.com');
       await adminCheckbox.check();
     });
 
     it('should call create when in create mode', async () => {
-      const saveButton = await loader.getHarness(MatButtonHarness.with({ text: 'Salve' }));
+      const saveButton = await loader.getHarness(MatButtonHarness.with({ text: 'Salvar' }));
       await saveButton.click();
       
       expect(mockUsersService.create).toHaveBeenCalledWith({
         name: 'Test User',
+        username: 'test',
         email: 'test@example.com',
         roles: ['admin']
       });
@@ -204,6 +211,7 @@ describe('UsersEditComponent', () => {
       
       expect(mockUsersService.update).toHaveBeenCalledWith(1, {
         name: 'Test User',
+        username: 'test',
         email: 'test@example.com',
         roles: ['admin']
       });
@@ -214,7 +222,7 @@ describe('UsersEditComponent', () => {
       component.userForm.reset();
       fixture.detectChanges();
       
-      const saveButton = await loader.getHarness(MatButtonHarness.with({ text: 'Salve' }));
+      const saveButton = await loader.getHarness(MatButtonHarness.with({ text: 'Salvar' }));
       await saveButton.click();
       
       expect(mockUsersService.create).not.toHaveBeenCalled();
@@ -224,15 +232,17 @@ describe('UsersEditComponent', () => {
 
   describe('UI Interactions', () => {
     it('should disable save button when form is invalid', async () => {
-      const saveButton = await loader.getHarness(MatButtonHarness.with({ text: 'Salve' }));
+      const saveButton = await loader.getHarness(MatButtonHarness.with({ text: 'Salvar' }));
       expect(await saveButton.isDisabled()).toBeTrue();
       
       // Make form valid
       const nameInput = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="name"]' }));
       const emailInput = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="email"]' }));
+      const usernameInput = await loader.getHarness(MatInputHarness.with({ selector: '[formControlName="username"]' }));
       const adminCheckbox = await findCheckboxByLabel(await loader.getAllHarnesses(MatCheckboxHarness), 'Adminstrator');
       
       await nameInput.setValue('Test User');
+      await usernameInput.setValue('test');
       await emailInput.setValue('test@example.com');
       await adminCheckbox.check();
       

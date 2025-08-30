@@ -18,6 +18,7 @@ export interface UserSearchFilter {
 
 export interface UpdateOrCreateUserRequest {
   name: string;
+  username: string;
   email: string;
   roles: string[];
 }

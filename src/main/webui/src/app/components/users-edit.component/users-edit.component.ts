@@ -73,14 +73,14 @@ export class UsersEditComponent implements OnInit {
   save() {
     console.log("Save call!")
     if (this.userForm.invalid) return;
-    const { name, email, roles } = this.userForm.value;
-    if (!name || !email || !roles) return;
+    const { name, username, email, roles } = this.userForm.value;
+    if (!name || !username || !email || !roles) return;
 
     if (this.userId) {
-      this.usersService.update(this.userId, { name, email, roles })
+      this.usersService.update(this.userId, { name, username, email, roles })
         .subscribe(user => this.router.navigate(['/', 'users']));
     } else {
-      this.usersService.create({ name, email, roles })
+      this.usersService.create({ name, username, email, roles })
         .subscribe(user => this.router.navigate(['/', 'users']));
     }
   }
