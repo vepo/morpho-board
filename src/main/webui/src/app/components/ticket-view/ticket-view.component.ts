@@ -23,9 +23,9 @@ export class TicketViewComponent implements OnInit {
   loadingComments = false;
   submittingComment = false;
 
-  constructor(private route: ActivatedRoute,
-    private ticketService: TicketService,
-    private authService: AuthService) { }
+  constructor(private readonly route: ActivatedRoute,
+              private readonly ticketService: TicketService,
+              private readonly authService: AuthService) { }
 
   ngOnInit(): void {
     this.route.data.subscribe(({ ticket }) => {
