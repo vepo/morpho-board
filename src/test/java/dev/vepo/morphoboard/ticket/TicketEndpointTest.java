@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
