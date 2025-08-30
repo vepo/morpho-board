@@ -19,7 +19,7 @@ export interface Status {
 export class StatusService {
   private readonly API_URL = 'http://localhost:8080/api';
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private readonly httpClient: HttpClient) { }
 
   findProjectsStatuses(projectId: number): Observable<ProjectStatus[]> {
     return this.httpClient.get<ProjectStatus[]>(`${this.API_URL}/projects/${projectId}/status`);

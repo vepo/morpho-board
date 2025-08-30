@@ -26,7 +26,7 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
-class ArchVerifier {
+class ArchitectureTest {
     private static ArchCondition<JavaMethod> haveBodyClassEndingWithRequest() {
         return new ArchCondition<JavaMethod>("have body class ending with Request") {
             @Override

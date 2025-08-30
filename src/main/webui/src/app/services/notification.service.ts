@@ -7,10 +7,10 @@ import { Observable, Subject } from "rxjs";
 export class NotificationService {
     private readonly API_URL: string = 'http://localhost:8080/api/notifications/register';
     private eventSource: EventSource | null = null;
-    private eventSubject = new Subject<any>();
-    private connectionSubject = new Subject<boolean>();
+    private readonly eventSubject = new Subject<any>();
+    private readonly connectionSubject = new Subject<boolean>();
 
-    constructor(private zone: NgZone) { }
+    constructor(private readonly zone: NgZone) { }
 
     /**
      * Connect to SSE stream with optional channel parameter
@@ -29,7 +29,7 @@ export class NotificationService {
             this.zone.run(() => {
                 try {
                     console.log(event.data);
-                    const data = event.data; // JSON.parse(event.data);
+                    const data = JSON.parse(event.data);
                     this.eventSubject.next(data);
                 } catch (error) {
                     console.error('Error parsing SSE data:', error);
@@ -43,7 +43,7 @@ export class NotificationService {
             this.zone.run(() => {
                 try {
                     console.log(event);
-                    const data =  event.data; //JSON.parse(event.data);
+                    const data = JSON.parse(event.data);
                     this.eventSubject.next({ ...data, type: 'ticket-changed' });
                 } catch (error) {
                     console.error('Error parsing user-registered event:', error);

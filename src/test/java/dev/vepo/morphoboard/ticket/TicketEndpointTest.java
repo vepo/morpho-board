@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
-import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -105,7 +104,7 @@ class TicketEndpointTest {
     @Test
     @Order(4)
     @DisplayName("It should be possible to search tickets by term on title or description")
-    void shouldSearchTicketsByTermTest() throws UnsupportedEncodingException {
+    void shouldSearchTicketsByTermTest() {
         given().header(pmAuthenticatedHeader)
                .accept(ContentType.JSON)
                .when()
@@ -146,7 +145,7 @@ class TicketEndpointTest {
     @Test
     @Order(6)
     @DisplayName("It should be possible to create a new ticket")
-    void shouldCreateNewTicketTest() throws UnsupportedEncodingException {
+    void shouldCreateNewTicketTest() {
         given().header(pmAuthenticatedHeader)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
@@ -198,7 +197,6 @@ class TicketEndpointTest {
     @DisplayName("It should return a expanded entity with ")
     void shouldReturnExpandedTicketInformationTest() {
         var category = Given.category(ticket.category());
-        var project = Given.project(ticket.project());
         given().header(userAuthenticatedHeader)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
@@ -210,8 +208,8 @@ class TicketEndpointTest {
                .body("title", equalTo(ticket.title()))
                .body("description", equalTo(ticket.description()))
                .body("category", equalTo(category.getName()))
-               .body("project.id", equalTo(project.getId().intValue()))
-               .body("project.name", equalTo(project.getName()));
+               .body("project.id", equalTo((int) project.id()))
+               .body("project.name", equalTo(project.name()));
         given().header(userAuthenticatedHeader)
                .contentType(ContentType.JSON)
                .accept(ContentType.JSON)
@@ -223,8 +221,8 @@ class TicketEndpointTest {
                .body("title", equalTo(ticket.title()))
                .body("description", equalTo(ticket.description()))
                .body("category", equalTo(category.getName()))
-               .body("project.id", equalTo(project.getId().intValue()))
-               .body("project.name", equalTo(project.getName()));
+               .body("project.id", equalTo((int) project.id()))
+               .body("project.name", equalTo(project.name()));
     }
 
     @Test

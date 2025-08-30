@@ -226,7 +226,7 @@ public class Given {
 
     public static int userIdByEmail(String email) {
         return inject(UserRepository.class).findByEmail(email)
-                                           .map(u -> u.getId())
+                                           .map(User::getId)
                                            .orElseThrow(() -> new IllegalStateException("User not found with email: " + email))
                                            .intValue();
     }

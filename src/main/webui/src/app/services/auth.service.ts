@@ -9,7 +9,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private tokenKey = 'jwt_token';
+  private readonly tokenKey = 'jwt_token';
   private readonly API_URL = 'http://localhost:8080/api';
 
   constructor(private readonly http: HttpClient) {}
