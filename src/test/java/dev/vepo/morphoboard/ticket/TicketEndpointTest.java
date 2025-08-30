@@ -23,7 +23,7 @@ import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.ProjectResponse;
 import dev.vepo.morphoboard.ticket.TicketEndpoint.SubscribeRequest;
-import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
+import dev.vepo.morphoboard.workflow.StatusEndpoint.StatusResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;

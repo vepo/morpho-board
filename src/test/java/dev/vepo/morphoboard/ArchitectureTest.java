@@ -24,6 +24,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 
 class ArchitectureTest {
@@ -33,7 +34,7 @@ class ArchitectureTest {
             public void check(JavaMethod method, ConditionEvents events) {
                 method.getParameters()
                       .stream()
-                      .filter(p -> !p.isAnnotatedWith(PathParam.class) && !p.isAnnotatedWith(QueryParam.class))
+                      .filter(p -> !p.isAnnotatedWith(PathParam.class) && !p.isAnnotatedWith(QueryParam.class) && !p.isAnnotatedWith(Context.class))
                       .filter(p -> !p.getType().getName().endsWith("Request"))
                       .map(p -> SimpleConditionEvent.violated(method, "Method %s has body parameter %s that is not a Request".formatted(method.getFullName(),
                                                                                                                                         p.getType().getName())))
@@ -85,7 +86,7 @@ class ArchitectureTest {
                  .or().areAnnotatedWith(DELETE.class)
                  .should()
                  .beDeclaredInClassesThat()
-                 .haveSimpleNameEndingWith("Resource")
+                 .haveSimpleNameEndingWith("Endpoint")
                  .andShould(haveBodyClassEndingWithRequest())
                  .check(importedClasses);
     }
@@ -102,7 +103,7 @@ class ArchitectureTest {
                  .or().areAnnotatedWith(DELETE.class)
                  .should()
                  .beDeclaredInClassesThat()
-                 .haveSimpleNameEndingWith("Resource")
+                 .haveSimpleNameEndingWith("Endpoint")
                  .andShould(haveReturnTypeAsResponse())
                  .check(importedClasses);
     }

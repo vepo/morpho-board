@@ -10,21 +10,21 @@ import jakarta.ws.rs.core.MediaType;
 
 @Path("status")
 @Produces(MediaType.APPLICATION_JSON)
-public class StatusResource {
+public class StatusEndpoint {
 
     public static final record StatusResponse(long id, String name) {}
 
     private final WorkflowRepository repository;
 
     @Inject
-    public StatusResource(WorkflowRepository repository) {
+    public StatusEndpoint(WorkflowRepository repository) {
         this.repository = repository;
     }
 
     @GET
     public List<StatusResponse> listAll() {
         return repository.findAllStatus()
-                         .map(StatusResource::toResponse)
+                         .map(StatusEndpoint::toResponse)
                          .toList();
     }
 
