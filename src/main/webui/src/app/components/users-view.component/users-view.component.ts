@@ -8,8 +8,7 @@ import { emptyFilter, User, UserSearchFilter, UsersService } from '../../service
 @Component({
   selector: 'app-users-view.component',
   imports: [MatIcon, MatButton, FormsModule, RouterLink],
-  templateUrl: './users-view.component.html',
-  styleUrl: './users-view.component.scss'
+  templateUrl: './users-view.component.html'
 })
 export class UsersViewComponent implements OnInit {
 

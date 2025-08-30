@@ -16,8 +16,7 @@ import { RoleDirective } from './directives/role.directive';
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule,
     MatIconModule, MatMenuModule, RoleDirective],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  templateUrl: './app.html'
 })
 export class AppComponent implements OnInit {
   anyStatus: Status = { id: -1, name: "Todos" };

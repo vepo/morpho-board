@@ -8,7 +8,6 @@ import { Ticket, TicketService } from '../../services/ticket.service';
 @Component({
   selector: 'app-search-tickets',
   templateUrl: './search-tickets.component.html',
-  styleUrls: ['./search-tickets.component.scss'],
   standalone: true,
   imports: [CommonModule, RouterLink]
 })

@@ -3,9 +3,9 @@ package dev.vepo.morphoboard.notifications;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.event.ObservesAsync;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -21,13 +21,12 @@ public class NotificationsEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationsEndpoint.class);
 
-    @Context
-    private Sse sse;
+    private final SseBroadcaster sseBroadcaster;
+    private final Sse sse;
 
-    private volatile SseBroadcaster sseBroadcaster;
-
-    @PostConstruct
-    public void init() {
+    @Inject
+    public NotificationsEndpoint(@Context Sse sse) {
+        this.sse = sse;
         this.sseBroadcaster = sse.newBroadcaster();
     }
 
@@ -38,7 +37,7 @@ public class NotificationsEndpoint {
         sseBroadcaster.register(eventSink);
     }
 
-    public void listenNotifications(@Observes Notification notification) {
+    public void listenNotifications(@ObservesAsync Notification notification) {
         logger.info("Processing CDI Event! event={}", notification);
         this.sseBroadcaster.broadcast(sse.newEventBuilder()
                                          .mediaType(MediaType.APPLICATION_JSON_TYPE)

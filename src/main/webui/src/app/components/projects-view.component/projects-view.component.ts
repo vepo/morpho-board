@@ -7,8 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-projects-view.component',
   imports: [RouterLink, MatIconModule, MatButtonModule],
-  templateUrl: './projects-view.component.html',
-  styleUrl: './projects-view.component.scss'
+  templateUrl: './projects-view.component.html'
 })
 export class ProjectsViewComponent implements OnInit {
   projects: Project[] = [];

@@ -11,7 +11,6 @@ import { UsersService } from '../../services/users.service';
   selector: 'app-users-edit.component',
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatButtonModule],
   templateUrl: './users-edit.component.html',
-  styleUrl: './users-edit.component.scss',
   standalone: true
 })
 export class UsersEditComponent implements OnInit {

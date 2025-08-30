@@ -370,7 +370,7 @@ public class TicketEndpoint {
         // Log status change
         historyService.logStatusChanged(ticket, user, fromStatus, toStatus);
         logger.info("Enviando evento CDI!");
-        notificationEmmiter.fire(new Notification(ticket.getId(), "Ticket mudou de status!"));
+        notificationEmmiter.fireAsync(new Notification(ticket.getId(), "Ticket mudou de status!"));
         return TicketResponse.load(ticket);
     }
 

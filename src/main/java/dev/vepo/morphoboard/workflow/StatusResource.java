@@ -14,8 +14,12 @@ public class StatusResource {
 
     public static final record StatusResponse(long id, String name) {}
 
+    private final WorkflowRepository repository;
+
     @Inject
-    private WorkflowRepository repository;
+    public StatusResource(WorkflowRepository repository) {
+        this.repository = repository;
+    }
 
     @GET
     public List<StatusResponse> listAll() {
