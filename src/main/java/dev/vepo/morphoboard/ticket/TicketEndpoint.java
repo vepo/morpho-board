@@ -407,8 +407,8 @@ public class TicketEndpoint {
     @Path("/{id}/subscribe/{subscriberId}")
     @Transactional
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public TicketExpandedResponse subscribe(@PathParam("id") Long id,
-                                            @PathParam("subscriberId") long subscriberId) {
+    public TicketExpandedResponse unubscribe(@PathParam("id") Long id,
+                                             @PathParam("subscriberId") long subscriberId) {
         var ticket = this.repository.findById(id)
                                     .orElseThrow(ticketNotFound(id));
         ticket.getSubscribers()

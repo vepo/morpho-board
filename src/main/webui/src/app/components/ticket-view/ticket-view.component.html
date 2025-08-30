@@ -2,15 +2,17 @@
 <div class="centered">
   <h1>
     #{{ ticket.identifier }} - {{ ticket.title }}
-    <button matButton (click)="toggle()" class="btn">
-      @if (isSubscribed()) {
-        <mat-icon fontIcon="notifications_off"></mat-icon>
-        Ignorar
-      } @else {
-        <mat-icon fontIcon="notifications_active"></mat-icon>
-        Observar
-      }
-    </button>
+    <div class="actions">
+      <button matButton (click)="toggle()" class="btn">
+        @if (isSubscribed()) {
+          <mat-icon fontIcon="notifications_off"></mat-icon>
+          Ignorar
+        } @else {
+          <mat-icon fontIcon="notifications_active"></mat-icon>
+          Observar
+        }
+      </button>
+    </div>
   </h1>
   <div class="left-aligned">
     <p><strong>Projeto:</strong> {{ ticket.project.name }}</p>
@@ -19,7 +21,11 @@
     <p><strong>Autor:</strong> {{ ticket.author.name }}</p>
     <p><strong>Responsável:</strong> {{ ticket.assignee?.name }}</p>
     <p><strong>Status:</strong> {{ ticket.status | normalize }}</p>
-    <p><strong>Subscritos:</strong> {{ ticket.subscribers | json }}</p>
+    <p><strong>Subscritos:</strong> 
+      @for(subs of ticket.subscribers; track subs.username) {
+        {{ subs | json }}
+      }
+    </p>
     <hr>
     
     <!-- Tabs Navigation -->

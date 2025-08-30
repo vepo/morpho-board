@@ -18,7 +18,8 @@ export class UsersEditComponent implements OnInit {
   editMode: boolean = false;
   userId: number | null = null;
   userForm = new FormGroup({
-    name: new FormControl('', Validators.required),
+    username: new FormControl('', [Validators.required, Validators.minLength(4), Validators.maxLength(15)]),
+    name: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.email, Validators.required]),
     roles: new FormControl([] as string[], Validators.required)
   });
@@ -35,6 +36,7 @@ export class UsersEditComponent implements OnInit {
       this.editMode = user != null;
       this.userId = user.id;
       this.userForm.setValue({
+        username: user.username,
         name: user.name,
         email: user.email,
         roles: user.roles

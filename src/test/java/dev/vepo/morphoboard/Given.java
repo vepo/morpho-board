@@ -6,9 +6,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dev.vepo.morphoboard.auth.AuthResponse;
 import dev.vepo.morphoboard.auth.LoginResponse;
 import dev.vepo.morphoboard.auth.PasswordEncoder;
 import dev.vepo.morphoboard.categories.Category;
@@ -26,13 +31,15 @@ import dev.vepo.morphoboard.workflow.WorkflowRepository;
 import dev.vepo.morphoboard.workflow.WorkflowResponse;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
 import io.quarkus.narayana.jta.QuarkusTransaction;
+import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import jakarta.enterprise.inject.spi.CDI;
 
 public class Given {
+    private static final Logger logger = LoggerFactory.getLogger(Given.class);
 
     public static Header authenticatedUser() {
-        ensureUser("User", "user@morpho-board.vepo.dev", Set.of(Role.USER));
+        ensureUser("user", "User", "user@morpho-board.vepo.dev", Set.of(Role.USER));
         var response = given().when()
                               .contentType("application/json")
                               .body("""
@@ -49,23 +56,54 @@ public class Given {
         return new Header("Authorization", "Bearer " + response.token());
     }
 
+    public static AuthResponse me(Header authentication) {
+        return given().header(authentication)
+                      .when()
+                      .accept(ContentType.JSON)
+                      .get("/api/auth/me")
+                      .then()
+                      .statusCode(200)
+                      .extract()
+                      .as(AuthResponse.class);
+    }
+
+    public static Header authenticatedAdmin() {
+        ensureUser("admin", "Admin", "sysadmin@morpho-board.ui", Set.of(Role.ADMIN));
+        var response = given().when()
+                              .contentType("application/json")
+                              .body("""
+                                    {
+                                        "email": "sysadmin@morpho-board.ui",
+                                        "password": "qwas1234"
+                                    }
+                                    """)
+                              .post("/api/auth/login")
+                              .then()
+                              .statusCode(200)
+                              .extract()
+                              .as(LoginResponse.class);
+        return new Header("Authorization", "Bearer " + response.token());
+    }
+
     public static User randomUser() {
-        var id = System.currentTimeMillis();
+        var id = SEQUENCE.incrementAndGet();
         String email = "user" + id + "@morpho-board.vepo.dev";
-        ensureUser("Random User " + id, email, Set.of(Role.USER));
+        ensureUser("user-" + id, "Random User " + id, email, Set.of(Role.USER));
         return inject(UserRepository.class).findByEmail(email)
                                            .orElseThrow(() -> new IllegalStateException("User created!"));
     }
 
+    private static final AtomicInteger SEQUENCE = new AtomicInteger(0);
+
     public static User randomUser(String email) {
-        var id = System.currentTimeMillis();
-        ensureUser("Random User " + id, email, Set.of(Role.USER));
+        var id = SEQUENCE.incrementAndGet();
+        ensureUser("user-" + id, "Random User " + id, email, Set.of(Role.USER));
         return inject(UserRepository.class).findByEmail(email)
                                            .orElseThrow(() -> new IllegalStateException("User created!"));
     }
 
     public static Header authenticatedProjectManager() {
-        ensureUser("PM", "pm@morpho-board.vepo.dev", Set.of(Role.PROJECT_MANAGER));
+        ensureUser("project-manager", "PM", "pm@morpho-board.vepo.dev", Set.of(Role.PROJECT_MANAGER));
         var response = given().when()
                               .contentType("application/json")
                               .body("""
@@ -137,8 +175,9 @@ public class Given {
                             {
                                 "name": "Test Project",
                                 "description": "This is a test project.",
+                                "prefix": "PRJ%d",
                                 "workflowId": %d
-                            }""".formatted(workflow.id()))
+                            }""".formatted(SEQUENCE.incrementAndGet(), workflow.id()))
                       .post("/api/projects")
                       .then()
                       .statusCode(201)
@@ -202,10 +241,12 @@ public class Given {
                                     .as(StatusResponse[].class));
     }
 
-    private static void ensureUser(String name, String email, Set<Role> roles) {
+    private static void ensureUser(String username, String name, String email, Set<Role> roles) {
+        logger.info("Creating user: username: {} name: {} email: {} roles: {}", username, name, email, roles);
         if (!inject(UserRepository.class).findByEmail(email).isPresent()) {
             transaction(() -> inject(UserRepository.class)
-                                                          .save(new User(name,
+                                                          .save(new User(username,
+                                                                         name,
                                                                          email,
                                                                          inject(PasswordEncoder.class).hashPassword("password"),
                                                                          roles)));

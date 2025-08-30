@@ -1,8 +1,6 @@
 package dev.vepo.morphoboard.ticket;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import dev.vepo.morphoboard.ticket.history.TicketHistory;
 

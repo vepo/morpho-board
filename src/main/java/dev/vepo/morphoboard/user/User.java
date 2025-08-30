@@ -23,6 +23,9 @@ public class User {
     private String name;
 
     @Column(nullable = false)
+    private String username;
+
+    @Column(nullable = false)
     private String email;
 
     @Column(name = "encoded_password", nullable = false)
@@ -36,7 +39,8 @@ public class User {
 
     public User() {}
 
-    public User(String name, String email, String encodedPassword, Set<Role> roles) {
+    public User(String username, String name, String email, String encodedPassword, Set<Role> roles) {
+        this.username = username;
         this.name = name;
         this.email = email;
         this.encodedPassword = encodedPassword;
@@ -50,6 +54,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {

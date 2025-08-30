@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.reactive.ResponseStatus;
 
 import jakarta.annotation.security.DenyAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -44,14 +45,16 @@ public class UserEndpoint {
     public UserResponse findUserById(@PathParam("userId") long userId) {
         return userRepository.findById(userId)
                              .map(UserResponse::load)
-                             .orElseThrow(() -> new BadRequestException("User not found!!! userId=%s".formatted(userId)));
+                             .orElseThrow(() -> new NotFoundException("User not found!!! userId=%s".formatted(userId)));
     }
 
     @POST
     @Transactional
+    @ResponseStatus(201)
     @RolesAllowed(Role.ADMIN_ROLE)
     public UserResponse create(@Valid CreateUserRequest request) {
-        return UserResponse.load(this.userRepository.save(new User(request.name(),
+        return UserResponse.load(this.userRepository.save(new User(request.username(),
+                                                                   request.name(),
                                                                    request.email(),
                                                                    passwordDefault,
                                                                    request.roles()

@@ -16,6 +16,7 @@ export interface Ticket {
 
 export interface TicketUser {
   id: number;
+  username: string;
   name: string;
   email: string;
 }

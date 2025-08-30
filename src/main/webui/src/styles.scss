@@ -94,6 +94,16 @@ input, select {
 h1, h2, h3, h4, h5, h6 {
     color: #01172F;
     margin: 1rem 0;
+
+    .actions {
+        float: right;
+        font-size: 1rem;
+        .material-icons {
+            font-size: 1.2rem;
+            height: 1.4rem;
+            vertical-align: middle;
+        }
+    }
 }
 
 .main-footer {

@@ -8,7 +8,10 @@ import static org.hamcrest.Matchers.is;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
+import org.assertj.core.api.Assertions;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -21,6 +24,7 @@ import dev.vepo.morphoboard.auth.AuthResponse;
 import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.categories.CategoryRepository;
 import dev.vepo.morphoboard.project.ProjectResponse;
+import dev.vepo.morphoboard.ticket.TicketEndpoint.SubscribeRequest;
 import dev.vepo.morphoboard.workflow.StatusResource.StatusResponse;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -200,6 +204,19 @@ class TicketEndpointTest {
                .accept(ContentType.JSON)
                .when()
                .get("/api/tickets/{id}/expanded", ticket.id())
+               .then()
+               .statusCode(200)
+               .body("id", equalTo((int) ticket.id()))
+               .body("title", equalTo(ticket.title()))
+               .body("description", equalTo(ticket.description()))
+               .body("category", equalTo(category.getName()))
+               .body("project.id", equalTo(project.getId().intValue()))
+               .body("project.name", equalTo(project.getName()));
+        given().header(userAuthenticatedHeader)
+               .contentType(ContentType.JSON)
+               .accept(ContentType.JSON)
+               .when()
+               .get("/api/tickets/{id}/expanded", ticket.identifier())
                .then()
                .statusCode(200)
                .body("id", equalTo((int) ticket.id()))
@@ -479,5 +496,57 @@ class TicketEndpointTest {
                .then()
                .statusCode(404)
                .body("message", equalTo("Category does not found! categoryId=9999"));
+    }
+
+    @Test
+    @Order(21)
+    @DisplayName("It should subscribe/unsubscribe to tickets")
+    void subsrcibeTest() {
+        var authUser = Given.me(userAuthenticatedHeader);
+        // subscribe to ticket
+        // execute the operation again to verify its idempotent
+        IntStream.range(0, 10)
+                 .forEach(count -> {
+                     given().header(userAuthenticatedHeader)
+                            .accept(ContentType.JSON)
+                            .contentType(ContentType.JSON)
+                            .when()
+                            .body(new SubscribeRequest(authUser.id()))
+                            .put("/api/tickets/" + ticket.id() + "/subscribe")
+                            .then()
+                            .statusCode(200);
+                     // check if user is subscribed
+                     given().header(userAuthenticatedHeader)
+                            .contentType(ContentType.JSON)
+                            .accept(ContentType.JSON)
+                            .when()
+                            .get("/api/tickets/{id}/expanded", ticket.id())
+                            .then()
+                            .statusCode(200)
+                            .body("id", equalTo((int) ticket.id()))
+                            .body("subscribers.size()", Matchers.equalTo(1))
+                            .body("subscribers[0].username", equalTo(authUser.username()));
+                 });
+        // unsubscribe
+        // execute the operation again to verify its idempotent
+        IntStream.range(0, 10)
+                 .forEach(count -> {
+                     given().header(userAuthenticatedHeader)
+                            .accept(ContentType.JSON)
+                            .contentType(ContentType.JSON)
+                            .when()
+                            .delete("/api/tickets/" + ticket.id() + "/subscribe/" + authUser.id())
+                            .then()
+                            .statusCode(200);
+                     given().header(userAuthenticatedHeader)
+                            .contentType(ContentType.JSON)
+                            .accept(ContentType.JSON)
+                            .when()
+                            .get("/api/tickets/{id}/expanded", ticket.id())
+                            .then()
+                            .statusCode(200)
+                            .body("id", equalTo((int) ticket.id()))
+                            .body("subscribers.size()", Matchers.equalTo(0));
+                 });
     }
 }
