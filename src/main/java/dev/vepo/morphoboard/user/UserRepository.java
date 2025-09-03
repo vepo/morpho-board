@@ -33,6 +33,13 @@ public class UserRepository {
                  .findFirst();
     }
 
+    public Optional<User> findByUsername(String username) {
+        return em.createQuery("FROM User WHERE username = :username", User.class)
+                 .setParameter("username", username)
+                 .getResultStream()
+                 .findFirst();
+    }
+
     public Optional<User> findById(Long id) {
         return em.createQuery("FROM User WHERE id = :id", User.class)
                  .setParameter("id", id)

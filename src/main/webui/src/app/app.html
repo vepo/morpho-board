@@ -24,10 +24,13 @@
   <div class="grow-space"></div>
   @if (isAuthenticated()) {
   <div class="user-menu">
+    <app-notification></app-notification>
+  </div>
+  <div class="user-menu">
     <button matButton [matMenuTriggerFor]="menu">
       <mat-icon fontIcon="menu"></mat-icon><span i18n>Menu</span>
     </button>
-    <mat-menu #menu="matMenu" class="user-menu-panel">
+    <mat-menu #menu="matMenu" class="menu-panel">
       <button mat-menu-item [routerLink]="'/account/settings'">
         <mat-icon fontIcon="person"></mat-icon><span i18n>Conta</span>
       </button>

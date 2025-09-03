@@ -7,15 +7,16 @@ import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { map } from 'rxjs';
 import { CreateTicketModalComponent } from './components/create-ticket-modal/create-ticket-modal.component';
+import { NotificationComponent } from './components/notification/notification.component';
 import { NormalizePipe } from './components/pipes/normalize.pipe';
+import { RoleDirective } from './directives/role.directive';
 import { AuthService } from './services/auth.service';
 import { Status, StatusService } from './services/status.service';
-import { RoleDirective } from './directives/role.directive';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, FormsModule, NormalizePipe, MatButtonModule, MatDialogModule,
-    MatIconModule, MatMenuModule, RoleDirective],
+    NotificationComponent, MatIconModule, MatMenuModule, RoleDirective],
   templateUrl: './app.html'
 })
 export class AppComponent implements OnInit {
@@ -25,16 +26,16 @@ export class AppComponent implements OnInit {
   statuses: Status[] = [this.anyStatus];
   selectStatus: Status = this.anyStatus;
 
-  constructor(private readonly router: Router, 
-              private readonly statusService: StatusService, 
-              private readonly dialog: MatDialog, 
-              private readonly route: ActivatedRoute,
-              private readonly authService: AuthService) { }
+  constructor(private readonly router: Router,
+    private readonly statusService: StatusService,
+    private readonly dialog: MatDialog,
+    private readonly route: ActivatedRoute,
+    private readonly authService: AuthService) { }
 
   onSearchKeydown(event: KeyboardEvent) {
-    this.goToSearch(this.searchTerm.trim(), this.selectStatus); 
+    this.goToSearch(this.searchTerm.trim(), this.selectStatus);
   }
-  
+
   goToSearch(term: string, status: Status) {
     let params: any = {};
 
@@ -54,11 +55,11 @@ export class AppComponent implements OnInit {
       this.searchTerm = params['q'] || this.searchTerm;
       let statusId = Number(params['status'] || this.selectStatus.id);
       this.statusService.findAll()
-                        .pipe(map(statuses => [this.anyStatus, ...statuses]))
-                        .subscribe(statuses => {
-                                       this.statuses = statuses;
-                                       this.selectStatus = this.statuses.find(s => s.id == statusId) || this.anyStatus;
-                                   });
+        .pipe(map(statuses => [this.anyStatus, ...statuses]))
+        .subscribe(statuses => {
+          this.statuses = statuses;
+          this.selectStatus = this.statuses.find(s => s.id == statusId) || this.anyStatus;
+        });
     });
   }
 

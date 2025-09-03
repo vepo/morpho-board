@@ -43,7 +43,8 @@ public class AuthenticationEndpoint {
                                   .map(user -> {
                                       Instant now = Instant.now();
                                       return new LoginResponse(Jwt.issuer("https://morpho-board.vepo.dev")
-                                                                  .upn(user.getEmail())
+                                                                  .upn(user.getUsername())
+                                                                  .claim("username", user.getUsername())
                                                                   .claim("id", user.getId())
                                                                   .claim("email", user.getEmail())
                                                                   .groups(user.getRoles().stream()

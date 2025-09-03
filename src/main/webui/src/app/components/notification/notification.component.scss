@@ -1,0 +1,47 @@
+.notification-container {
+    display: table;
+
+    .notification-item {
+        display: table-row;
+
+        &:first-child >* {
+            padding-top: 0.5rem;
+        }
+
+        &:last-child >* {
+            padding-bottom: 0.5rem
+        }
+
+        .notification-date {
+            text-align: right;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        >* {
+            display: table-cell;
+            vertical-align: middle;
+        }
+    }
+}
+.unread-box {
+    display: inline-flex;
+    transform: translate(-13px, -9px);
+    margin-right: 0 !important;
+    font-size: 0.9rem;
+    .unread {
+        width: 15px;
+        height: 15px;
+        border-radius: 2px;
+        margin-left: -10%;
+        background-color: #BF0603;
+        color: white;
+        display: flex;
+        vertical-align: baseline;
+        margin: auto;
+        span {
+            font-size: 0.8rem;
+            transform: translateX(3px);
+        }
+    }
+}

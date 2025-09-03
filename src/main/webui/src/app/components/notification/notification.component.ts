@@ -1,0 +1,36 @@
+import { Component, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { NotificationService, UserNotification } from '../../services/notification.service';
+import { DatePipe } from '@angular/common';
+
+@Component({
+  selector: 'app-notification',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, DatePipe],
+  styleUrl: './notification.component.scss',
+  templateUrl: './notification.component.html',
+  standalone: true,
+})
+export class NotificationComponent implements OnInit {
+
+  events: UserNotification[]=[];
+
+  constructor(private readonly notificationService: NotificationService) {
+  }
+
+  ngOnInit(): void {
+      this.notificationService.connect();
+      this.notificationService.listen()
+                              .subscribe(event => {
+                                if(this.events.indexOf(event) ==-1) { 
+                                  this.events.push(event);
+                                  this.events.sort((a, b) => b.timestamp - a.timestamp);
+                                }
+                              });
+  }
+
+  eventsUnread() : number {
+    return this.events.filter(e => !e.read).length;
+  }
+}

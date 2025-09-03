@@ -19,6 +19,7 @@ import jakarta.persistence.criteria.Predicate;
 @ApplicationScoped
 public class TicketRepository {
     private static final Logger logger = LoggerFactory.getLogger(TicketRepository.class);
+
     @PersistenceContext
     private EntityManager em;
 

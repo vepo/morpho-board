@@ -21,13 +21,9 @@ export class KanbanComponent implements OnInit {
   workflow?: ProjectWorkflow;
   constructor(private readonly activatedRoute: ActivatedRoute, 
               private readonly projectsService: ProjectsService, 
-              private readonly ticketService: TicketService,
-            private readonly notificationService: NotificationService) { }
+              private readonly ticketService: TicketService) { }
 
   ngOnInit(): void {
-    this.notificationService.connect();
-    this.notificationService.listen()
-                            .subscribe(event => console.log("Received event!", event));
     this.activatedRoute.data.subscribe(({ statuses, project, tickets }) => {
       this.project = project;
       this.tickets = (tickets as Ticket[]).map(t => this.fixLineBreak(t));

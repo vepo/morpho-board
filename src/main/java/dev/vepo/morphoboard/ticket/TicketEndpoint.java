@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import dev.vepo.morphoboard.categories.CategoryRepository;
-import dev.vepo.morphoboard.notifications.Notification;
+import dev.vepo.morphoboard.notifications.NotificationEvent;
 import dev.vepo.morphoboard.project.ProjectRepository;
 import dev.vepo.morphoboard.ticket.business.TicketHistoryService;
 import dev.vepo.morphoboard.ticket.comments.Comment;
@@ -67,8 +67,8 @@ public class TicketEndpoint {
         return () -> new NotFoundException("User does not found! userId=%d".formatted(userId));
     }
 
-    private static final Supplier<NotFoundException> userNotFound(String email) {
-        return () -> new NotFoundException("User does not found! email=%s".formatted(email));
+    private static final Supplier<NotFoundException> userNotFound(String username) {
+        return () -> new NotFoundException("User does not found! username=%s".formatted(username));
     }
 
     private static final Supplier<NotFoundException> projectNotFound(long projectId) {
@@ -85,7 +85,7 @@ public class TicketEndpoint {
     private final CategoryRepository categoryRepository;
     private final TicketHistoryService historyService;
     private final SecurityContext securityContext;
-    private final Event<Notification> notificationEmmiter;
+    private final Event<NotificationEvent> notificationEmmiter;
 
     @Inject
     public TicketEndpoint(TicketRepository repository,
@@ -94,7 +94,7 @@ public class TicketEndpoint {
                           CategoryRepository categoryRepository,
                           TicketHistoryService historyService,
                           @Context SecurityContext securityContext,
-                          Event<Notification> notificationEmmiter) {
+                          Event<NotificationEvent> notificationEmmiter) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.projectRepository = projectRepository;
@@ -236,8 +236,8 @@ public class TicketEndpoint {
         entity.setUpdatedAt(Instant.now());
 
         // Get authenticated user
-        String email = securityContext.getUserPrincipal().getName();
-        User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
+        String username = securityContext.getUserPrincipal().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(userNotFound(username));
 
         // Log changes if any
         if (hasChanges) {
@@ -268,8 +268,8 @@ public class TicketEndpoint {
         entity.setUpdatedAt(Instant.now());
 
         // Get authenticated user
-        String email = securityContext.getUserPrincipal().getName();
-        User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
+        String username = securityContext.getUserPrincipal().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(userNotFound(username));
 
         // Log assignee change
         historyService.logAssigneeChanged(entity, user, fromAssignee, toAssignee);
@@ -286,8 +286,8 @@ public class TicketEndpoint {
                                   .orElseThrow(ticketNotFound(id));
 
         // Get authenticated user
-        String email = securityContext.getUserPrincipal().getName();
-        User user = userRepository.findByEmail(email).orElseThrow(userNotFound(email));
+        String username = securityContext.getUserPrincipal().getName();
+        User user = userRepository.findByUsername(username).orElseThrow(userNotFound(username));
 
         // Log ticket deletion
         historyService.logTicketDeleted(ticket, user);
@@ -363,14 +363,19 @@ public class TicketEndpoint {
         ticket.setStatus(to);
 
         // Get authenticated user
-        var email = securityContext.getUserPrincipal().getName();
-        var user = userRepository.findByEmail(email)
-                                 .orElseThrow(userNotFound(email));
+        var username = securityContext.getUserPrincipal().getName();
+        var user = userRepository.findByUsername(username)
+                                 .orElseThrow(userNotFound(username));
 
         // Log status change
         historyService.logStatusChanged(ticket, user, fromStatus, toStatus);
         logger.info("Enviando evento CDI!");
-        notificationEmmiter.fireAsync(new Notification(ticket.getId(), "Ticket mudou de status!"));
+        notificationEmmiter.fireAsync(new NotificationEvent(ticket.getId(),
+                                                            "ticket-moved",
+                                                            "Ticket %s mudou de status! %s alterou de %s para %s".formatted(ticket.getIdentifier(),
+                                                                                                                            username,
+                                                                                                                            fromStatus,
+                                                                                                                            toStatus)));
         return TicketResponse.load(ticket);
     }
 
