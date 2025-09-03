@@ -28,7 +28,9 @@ export class RichTextEditorComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     // indetify external change on value
-    if (this.editorRef && changes['value'] && changes['value'].currentValue == '' && changes['value'].previousValue != '') {
+    if (this.editorRef && changes && changes['value'] && !changes['value'].previousValue && changes['value'].currentValue && changes['value'].firstChange) {
+      this.editorRef.nativeElement.innerHTML = changes['value'].currentValue;
+    } else if (this.editorRef && changes['value'] && changes['value'].currentValue == '' && changes['value'].previousValue != '') {
       this.editorRef.nativeElement.innerHTML = '';
     }
   }
@@ -79,10 +81,18 @@ export class RichTextEditorComponent implements AfterViewInit, OnChanges {
   }
 
   getPlainText(): string {
-    return this.editorRef.nativeElement.innerText || '';
+    if (this.editorRef && this.editorRef.nativeElement) {
+      return this.editorRef.nativeElement.innerText || '';
+    } else {
+      return '';
+    }
   }
 
   getHtml(): string {
-    return this.editorRef.nativeElement.innerHTML || '';
+    if (this.editorRef && this.editorRef.nativeElement) {
+      return this.editorRef.nativeElement.innerHTML || '';
+    } else {
+      return '';
+    }
   }
 } 

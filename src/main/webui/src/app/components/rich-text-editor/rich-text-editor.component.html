@@ -61,7 +61,7 @@
   <div 
     #editor
     class="editor-area"
-    contenteditable="true"
+    [contentEditable]="disabled ? 'false' : 'true'"
     [attr.placeholder]="placeholder"
     [class.disabled]="disabled">
   </div>
