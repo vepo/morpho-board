@@ -61,7 +61,7 @@ public class AuthenticationEndpoint {
     @Path("/me")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
     public AuthResponse me(@Context SecurityContext ctx) {
-        return userRepository.findByEmail(ctx.getUserPrincipal().getName())
+        return userRepository.findByUsername(ctx.getUserPrincipal().getName())
                              .map(AuthResponse::load)
                              .orElseThrow(() -> new NotFoundException("User not found!"));
     }
