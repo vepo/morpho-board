@@ -33,12 +33,11 @@
         width: 15px;
         height: 15px;
         border-radius: 2px;
-        margin-left: -10%;
         background-color: #BF0603;
         color: white;
         display: flex;
         vertical-align: baseline;
-        margin: auto;
+        margin: auto auto auto -10%;
         span {
             font-size: 0.8rem;
             transform: translateX(3px);

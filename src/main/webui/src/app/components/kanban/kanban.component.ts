@@ -6,7 +6,6 @@ import { Project, ProjectsService, ProjectWorkflow } from '../../services/projec
 import { ProjectStatus } from '../../services/status.service';
 import { Ticket, TicketService } from '../../services/ticket.service';
 import { NormalizePipe } from '../pipes/normalize.pipe';
-import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-kanban',
