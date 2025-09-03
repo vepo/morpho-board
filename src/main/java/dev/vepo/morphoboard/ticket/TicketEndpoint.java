@@ -176,7 +176,7 @@ public class TicketEndpoint {
     public TicketResponse create(@Valid CreateTicketRequest request) {
         var project = projectRepository.findById(request.projectId())
                                        .orElseThrow(projectNotFound(request.projectId()));
-        var author = userRepository.findByEmail(securityContext.getUserPrincipal().getName())
+        var author = userRepository.findByUsername(securityContext.getUserPrincipal().getName())
                                    .orElseThrow(userNotFound(securityContext.getUserPrincipal().getName()));
         var projectTickets = repository.countProjectTickets(request.projectId());
         var ticket = new Ticket("%s-%03d".formatted(project.getPrefix(), projectTickets + 1),
@@ -313,9 +313,9 @@ public class TicketEndpoint {
         var ticket = repository.findById(id)
                                .orElseThrow(ticketNotFound(id));
         // Pega usuário autenticado via JWT
-        var email = securityContext.getUserPrincipal().getName();
-        var user = userRepository.findByEmail(email)
-                                 .orElseThrow(userNotFound(email));
+        var username = securityContext.getUserPrincipal().getName();
+        var user = userRepository.findByUsername(username)
+                                 .orElseThrow(userNotFound(username));
         var comment = new Comment(ticket, user, request.content());
 
         // Save comment
