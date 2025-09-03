@@ -211,7 +211,7 @@ BEGIN
                             user_cto_id,
                             proj_morpho_id,
                             feature_id,
-                            progress_id,
+                            done_id,
                             NOW(), 
                             NOW());
 
@@ -222,7 +222,7 @@ BEGIN
                             user_cto_id,
                             proj_morpho_id,
                             feature_id,
-                            todo_id,
+                            progress_id,
                             NOW(), 
                             NOW());
 

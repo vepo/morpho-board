@@ -12,7 +12,7 @@
 </button>
 <mat-menu #notifications="matMenu" class="menu-panel notifications">
     @for(event of events; track $index) {
-    <button mat-menu-item>
+    <button mat-menu-item (click)="navigate(event)">
         <div class="notification-container">
             <div class="notification-item">
                 <div class="icon">

@@ -1,5 +1,6 @@
 package dev.vepo.morphoboard.notifications;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,5 +22,12 @@ public class NotificationRepository {
         return this.em.createQuery("FROM Notification n WHERE n.receive.username = :username", Notification.class)
                       .setParameter("username", username)
                       .getResultStream();
+    }
+
+    public Optional<Notification> findById(long id) {
+        return this.em.createQuery("FROM Notification n WHERE n.id = :id", Notification.class)
+                      .setParameter("id", id)
+                      .getResultStream()
+                      .findFirst();
     }
 }
