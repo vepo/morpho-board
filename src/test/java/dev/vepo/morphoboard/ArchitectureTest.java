@@ -56,16 +56,17 @@ class ArchitectureTest {
                     var types = method.getReturnType().getAllInvolvedRawTypes().toArray(JavaClass[]::new);
                     if (types.length == 1 || types[1].getSimpleName().equals("Object")) {
                         events.add(SimpleConditionEvent.violated(method, "Returned List/Set typet %s is not define!".formatted(method.getFullName())));
-                    } else if (!types[1].getSimpleName().endsWith("Response")) {
-                        events.add(SimpleConditionEvent.violated(method, "Returned List/Set type for %s is not a Response!".formatted(method.getFullName())));
+                    } else if (!(types[1].getSimpleName().endsWith("Response") || types[1].getSimpleName().endsWith("Event"))) {
+                        events.add(SimpleConditionEvent.violated(method,
+                                                                 "Returned List/Set type for %s is not a Response or an Event!".formatted(method.getFullName())));
                     }
                     return;
                 }
                 System.out.println("Checking method: " + method.getFullName());
                 System.out.println("Return type: " + method.getRawReturnType().getName());
                 if (!method.getRawReturnType().getClass().isInstance(Response.class) &&
-                        !method.getRawReturnType().getName().endsWith("Response")) {
-                    events.add(SimpleConditionEvent.violated(method, "Method %s does not return Response".formatted(method.getFullName())));
+                        !(method.getRawReturnType().getName().endsWith("Response") || method.getRawReturnType().getName().endsWith("Event"))) {
+                    events.add(SimpleConditionEvent.violated(method, "Method %s does not return Response or Event".formatted(method.getFullName())));
                 }
 
             }

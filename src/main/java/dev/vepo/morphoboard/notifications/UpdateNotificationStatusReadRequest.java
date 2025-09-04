@@ -1,4 +1,3 @@
 package dev.vepo.morphoboard.notifications;
 
-public record UpdateNotificationStatusReadRequest(boolean read) {    
-}
+public record UpdateNotificationStatusReadRequest(boolean read) {}
