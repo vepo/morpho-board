@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from "@angular/core";
+import { Injectable, NgZone, inject } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 import { ServerSideEventsClient } from "./sse.client";
 import { HttpClient } from "@angular/common/http";
@@ -16,11 +16,12 @@ export interface UserNotification {
     providedIn: 'root'
 })
 export class NotificationService {
+    private readonly zone = inject(NgZone);
+    private readonly httpClient = inject(HttpClient);
+    private readonly sseClient = inject(ServerSideEventsClient);
+
     private readonly API_URL: string = 'http://localhost:8080/api/notifications';
     private readonly eventSubject = new Subject<UserNotification>();
-    constructor(private readonly zone: NgZone, 
-                private readonly httpClient: HttpClient,
-                private readonly sseClient: ServerSideEventsClient) { }
 
     /**
      * Connect to SSE stream with optional channel parameter

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -14,6 +14,10 @@ import { UsersService } from '../../services/users.service';
   standalone: true
 })
 export class UsersEditComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly usersService = inject(UsersService);
+  private readonly router = inject(Router);
+
   editMode: boolean = false;
   userId: number | null = null;
   userForm = new FormGroup({
@@ -22,12 +26,6 @@ export class UsersEditComponent implements OnInit {
     email: new FormControl('', [Validators.email, Validators.required]),
     roles: new FormControl([] as string[], Validators.required)
   });
-
-
-  constructor(private readonly activatedRoute: ActivatedRoute,
-    private readonly usersService: UsersService,
-    private readonly router: Router) {
-  }
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ user }) => {

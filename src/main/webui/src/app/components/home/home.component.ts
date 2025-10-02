@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,10 +15,10 @@ import { TrimPipe } from '../pipes/trim.pipe';
   standalone: true
 })
 export class HomeComponent implements OnInit {
-  projects: Project[] = [];
+  private readonly projectsService = inject(ProjectsService);
+  private readonly authService = inject(AuthService);
 
-  constructor(private readonly projectsService: ProjectsService,
-              private readonly authService: AuthService) { }
+  projects: Project[] = [];
 
   ngOnInit() {
     this.projectsService.findAll().subscribe({

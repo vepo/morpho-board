@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,13 +14,13 @@ import { AuthService } from '../../services/auth.service';
   imports: [FormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule]
 })
 export class LoginComponent {
+  private readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
+
   email = '';
   password = '';
   error = '';
   hide = signal(true);
-
-  constructor(private readonly auth: AuthService, 
-              private readonly router: Router) {}
 
   login() {
     this.auth.login(this.email, this.password).subscribe({

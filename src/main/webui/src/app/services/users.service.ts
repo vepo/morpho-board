@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface User {
@@ -35,7 +35,8 @@ export function emptyFilter(): UserSearchFilter {
   providedIn: 'root'
 })
 export class UsersService {
-  constructor(private readonly http: HttpClient) { }
+  private readonly http = inject(HttpClient);
+
   private readonly API_URL = 'http://localhost:8080/api';
 
   findById(userId: number): Observable<User> {

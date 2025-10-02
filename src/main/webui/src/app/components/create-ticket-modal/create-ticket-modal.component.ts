@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatOptionModule } from '@angular/material/core';
@@ -19,6 +19,13 @@ import { CreateTicketRequest, TicketService } from '../../services/ticket.servic
   imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatSelectModule, MatOptionModule]
 })
 export class CreateTicketModalComponent implements OnInit {
+  private readonly dialogRef = inject<MatDialogRef<CreateTicketModalComponent>>(MatDialogRef);
+  private readonly ticketService = inject(TicketService);
+  private readonly categoryService = inject(CategoryService);
+  private readonly projectsService = inject(ProjectsService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
   authorId!: number;
   categories: Category[] = [];
   projects: Project[] = [];
@@ -30,13 +37,9 @@ export class CreateTicketModalComponent implements OnInit {
     categoryId: new FormControl(-1, [Validators.min(1)]),
   });
 
-  constructor(
-    private readonly dialogRef: MatDialogRef<CreateTicketModalComponent>,
-    private readonly ticketService: TicketService,
-    private readonly categoryService: CategoryService,
-    private readonly projectsService: ProjectsService,
-    private readonly authService: AuthService,
-    private readonly router: Router) {
+  constructor() {
+    const authService = this.authService;
+
     this.authorId = authService.getAuthUserId();
   }
 

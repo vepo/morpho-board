@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -20,17 +20,17 @@ import { Status, StatusService } from './services/status.service';
   templateUrl: './app.html'
 })
 export class AppComponent implements OnInit {
+  private readonly router = inject(Router);
+  private readonly statusService = inject(StatusService);
+  private readonly dialog = inject(MatDialog);
+  private readonly route = inject(ActivatedRoute);
+  private readonly authService = inject(AuthService);
+
   anyStatus: Status = { id: -1, name: "Todos" };
   title = 'morphoboard';
   searchTerm: string = '';
   statuses: Status[] = [this.anyStatus];
   selectStatus: Status = this.anyStatus;
-
-  constructor(private readonly router: Router,
-    private readonly statusService: StatusService,
-    private readonly dialog: MatDialog,
-    private readonly route: ActivatedRoute,
-    private readonly authService: AuthService) { }
 
   onSearchKeydown(event: KeyboardEvent) {
     this.goToSearch(this.searchTerm.trim(), this.selectStatus);

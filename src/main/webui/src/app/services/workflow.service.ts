@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface WorkflowTranstion {
@@ -18,9 +18,9 @@ export interface Workflow {
   providedIn: 'root'
 })
 export class WorkflowService {
-  private readonly API_URL = 'http://localhost:8080/api';
+  private readonly httpClient = inject(HttpClient);
 
-  constructor(private readonly httpClient: HttpClient) { }
+  private readonly API_URL = 'http://localhost:8080/api';
 
   findAll(): Observable<Workflow[]> {
     return this.httpClient.get<Workflow[]>(`${this.API_URL}/workflows`);

@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Project {
@@ -33,9 +33,9 @@ export interface CreateOrUpdateProjectRequest {
   providedIn: 'root'
 })
 export class ProjectsService {
-  private readonly API_URL = 'http://localhost:8080/api/projects';
+  private readonly http = inject(HttpClient);
 
-  constructor(private readonly http: HttpClient) { }
+  private readonly API_URL = 'http://localhost:8080/api/projects';
 
   findById(projectId: number): Observable<Project> {
     return this.http.get<Project>(`${this.API_URL}/${projectId}`);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TicketExpanded, TicketService, Comment, CreateCommentRequest } from '../../services/ticket.service';
 import { DatePipe, JsonPipe } from '@angular/common';
@@ -16,16 +16,16 @@ import { AuthService } from '../../services/auth.service';
   imports: [DatePipe, NormalizePipe, FormsModule, RichTextEditorComponent, JsonPipe, MatButtonModule, MatIconModule]
 })
 export class TicketViewComponent implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly ticketService = inject(TicketService);
+  private readonly authService = inject(AuthService);
+
   ticket?: TicketExpanded;
   comments: Comment[] = [];
   newComment: string = '';
   activeTab: 'history' | 'comments' = 'history';
   loadingComments = false;
   submittingComment = false;
-
-  constructor(private readonly route: ActivatedRoute,
-              private readonly ticketService: TicketService,
-              private readonly authService: AuthService) { }
 
   ngOnInit(): void {
     this.route.data.subscribe(({ ticket }) => {

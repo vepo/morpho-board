@@ -15,6 +15,7 @@ import { ticketsResolver } from './resolvers/tickets-resolver';
 import { userResolver, usersResolver } from './resolvers/users.resolver';
 import { authGuard } from './services/auth.guard';
 import { workflowsResolver } from './resolvers/workflow-resolver';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -26,6 +27,16 @@ export const routes: Routes = [
   {
     path: 'project/:projectId/kanban',
     component: KanbanComponent,
+    resolve: {
+      project: projectResolver,
+      statuses: statusResolver,
+      tickets: ticketsResolver
+    },
+    canActivate: [authGuard],
+  },
+  {
+    path: 'project/:projectId/dashboard',
+    component: DashboardComponent,
     resolve: {
       project: projectResolver,
       statuses: statusResolver,

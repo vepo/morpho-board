@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { EMPTY, Observable, Subject } from "rxjs";
 
@@ -11,13 +11,14 @@ export interface ServerSideEvent {
     providedIn: 'root'
 })
 export class ServerSideEventsClient {
+    private readonly authService = inject(AuthService);
+
 
     private open: boolean = true;
     private readonly connectionSubject = new Subject<boolean>();
     private readonly dataSubject = new Subject<ServerSideEvent>();
     private currentEvent: ServerSideEvent | null = null;
     private contentType: string | null = null;
-    constructor(private readonly authService: AuthService) { }
 
     connect(url: string): Observable<ServerSideEvent> {
         const token = this.authService.getToken();

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Project } from '../../services/projects.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,8 +10,9 @@ import { MatButtonModule } from '@angular/material/button';
   templateUrl: './projects-view.component.html'
 })
 export class ProjectsViewComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+
   projects: Project[] = [];
-  constructor(private readonly activatedRoute: ActivatedRoute) { }
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ projects }) => this.projects = projects);
   }

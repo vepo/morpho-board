@@ -1,0 +1,129 @@
+<!-- dashboard-configurator.component.html -->
+<div class="dashboard-configurator">
+  <div class="header">
+    <h2>Dashboard - {{ project?.name }}</h2>
+    <div class="controls">
+      <button matButton (click)="toggleEdit()" class="btn">
+        {{ isEditing ? 'Salvar Layout' : 'Editar Layout' }}
+      </button>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <!-- Available widgets panel (visible only in edit mode) -->
+    @if (isEditing) {
+    <div class="widgets-panel">
+      <h3>Widgets Disponíveis</h3>
+      <div 
+        cdkDropList
+        #availableList="cdkDropList"
+        [cdkDropListData]="availableWidgets"
+        [cdkDropListConnectedTo]="[dashboardList]"
+        class="widgets-list"
+        (cdkDropListDropped)="onDrop($event)">
+        @for (widget of availableWidgets; track widget.title) {
+        <div cdkDrag cdkDragclass="widget-item">
+          {{ widget.title }}
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Dashboard area -->
+    <div class="dashboard-area">
+      <div 
+        cdkDropList
+        #dashboardList="cdkDropList"
+        [cdkDropListData]="pageLayout.widgets"
+        [cdkDropListConnectedTo]="[availableList]"
+        class="widgets-grid"
+        (cdkDropListDropped)="onDrop($event)">
+        
+        @for(widget of pageLayout.widgets; track widget.id) {
+        <div 
+          cdkDrag
+          [class]="'widget widget-' + widget.type"
+          [style.gridColumn]="'span ' + widget.cols"
+          [style.gridRow]="'span ' + widget.rows">
+          
+          <div class="widget-header">
+            <h4>{{ widget.title }}</h4>
+            <button (click)="removeWidget($index)" class="btn-remove">×</button>
+          </div>
+          
+          <div class="widget-content">
+            @if (widget.type === 'chart') {
+              <div class="chart-container">
+                <!-- Componente de gráfico será renderizado aqui -->
+                <p>Gráfico: {{ widget.chartType }}</p>
+              </div>
+            }
+
+            @if (widget.type === 'kpi') {
+            <div class="kpi-container">
+              <!-- KPIs serão renderizados aqui -->
+              <p>KPIs de Performance</p>
+            </div>
+            }
+
+            @if (widget.type === 'table') {
+            <div class="table-container">
+              <!-- Tabela será renderizada aqui -->
+              <p>Tabela de Tickets</p>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <div class="dashboard-area">
+      <div class="widgets-grid">
+        
+        @for(widget of pageLayout.widgets; track widget.id) {
+        <div [class]="'widget widget-' + widget.type" [style.gridColumn]="'span ' + widget.cols" [style.gridRow]="'span ' + widget.rows">
+          
+          <div class="widget-header">
+            <h4>{{ widget.title }}</h4>
+          </div>
+          
+          <div class="widget-content">
+            @if (widget.type === 'chart') {
+              <div class="chart-container">
+                <!-- Componente de gráfico será renderizado aqui -->
+                <p>Gráfico: {{ widget.chartType }}</p>
+                @let chartData = load(widget) | async;
+                @if (chartData) {
+                  <canvas baseChart
+                          [data]="chartData"
+                          [type]="'pie'"
+                          [options]="pieChartOptions">
+                  </canvas>
+                } @else {
+                  <div class="loading">Carregando gráfico...</div>
+                }
+              </div>
+            }
+
+            @if (widget.type === 'kpi') {
+            <div class="kpi-container">
+              <!-- KPIs serão renderizados aqui -->
+              <p>KPIs de Performance</p>
+            </div>
+            }
+
+            @if (widget.type === 'table') {
+            <div class="table-container">
+              <!-- Tabela será renderizada aqui -->
+              <p>Tabela de Tickets</p>
+            </div>
+            }
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  }
+  </div>
+</div>

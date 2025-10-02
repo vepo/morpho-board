@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Project, ProjectsService } from '../../services/projects.service';
 import { Status, StatusService } from '../../services/status.service';
@@ -12,6 +12,11 @@ import { Ticket, TicketService } from '../../services/ticket.service';
   imports: [CommonModule, RouterLink]
 })
 export class SearchTicketsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private ticketService = inject(TicketService);
+  private statusService = inject(StatusService);
+  private projectService = inject(ProjectsService);
+
   tickets: Ticket[] = [];
   statuses: Status[] = [];
   projects: Project[] = [];
@@ -19,11 +24,6 @@ export class SearchTicketsComponent implements OnInit {
   error = '';
   term = '';
   statusId: number = -1;
-
-  constructor(private route: ActivatedRoute,
-              private ticketService: TicketService,
-              private statusService: StatusService,
-              private projectService: ProjectsService) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {

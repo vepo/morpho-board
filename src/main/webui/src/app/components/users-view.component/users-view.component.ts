@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -11,13 +11,13 @@ import { emptyFilter, User, UserSearchFilter, UsersService } from '../../service
   templateUrl: './users-view.component.html'
 })
 export class UsersViewComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly usersService = inject(UsersService);
+
 
   users: User[] = [];
   filter: UserSearchFilter = emptyFilter();
   lastSearch: UserSearchFilter = emptyFilter();
-
-  constructor(private readonly activatedRoute: ActivatedRoute,
-    private readonly usersService: UsersService) { }
   ngOnInit() {
     this.activatedRoute.data.subscribe(({ users }) => this.users = users);
   }

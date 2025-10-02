@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -14,12 +14,11 @@ import { Router } from '@angular/router';
   standalone: true,
 })
 export class NotificationComponent implements OnInit {
+  private readonly notificationService = inject(NotificationService);
+  private readonly router = inject(Router);
+
 
   events: UserNotification[] = [];
-
-  constructor(private readonly notificationService: NotificationService,
-              private readonly router: Router) {
-  }
 
   ngOnInit(): void {
     this.notificationService.connect();

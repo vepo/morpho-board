@@ -1,6 +1,6 @@
 import { CdkDragDrop, DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Project, ProjectsService, ProjectWorkflow } from '../../services/projects.service';
 import { ProjectStatus } from '../../services/status.service';
@@ -14,13 +14,14 @@ import { NormalizePipe } from '../pipes/normalize.pipe';
   standalone: true
 })
 export class KanbanComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly projectsService = inject(ProjectsService);
+  private readonly ticketService = inject(TicketService);
+
   statuses: ProjectStatus[] = [];
   project: Project = { id: -1, name: '', prefix: '', description: '' };
   tickets: Ticket[] = [];
   workflow?: ProjectWorkflow;
-  constructor(private readonly activatedRoute: ActivatedRoute, 
-              private readonly projectsService: ProjectsService, 
-              private readonly ticketService: TicketService) { }
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ statuses, project, tickets }) => {

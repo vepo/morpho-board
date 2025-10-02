@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Ticket {
@@ -71,9 +71,9 @@ export interface CreateTicketRequest {
   providedIn: 'root'
 })
 export class TicketService {
-  private readonly API_URL = 'http://localhost:8080/api';
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
+  private readonly API_URL = 'http://localhost:8080/api';
 
   findByProjectId(projectId: number): Observable<Ticket[]> {
     return this.http.get<Ticket[]>(`/api/projects/${projectId}/tickets`);

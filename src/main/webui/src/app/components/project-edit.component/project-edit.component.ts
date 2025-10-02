@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,10 @@ import { Workflow } from '../../services/workflow.service';
   templateUrl: './project-edit.component.html'
 })
 export class ProjectEditComponent implements OnInit {
+  private readonly activatedRoute = inject(ActivatedRoute);
+  private readonly projectsService = inject(ProjectsService);
+  private readonly router = inject(Router);
+
   editMode: boolean = false;
   projectId: number | null = null;
   workflows: Workflow[] = [];
@@ -23,12 +27,6 @@ export class ProjectEditComponent implements OnInit {
     prefix: new FormControl('', [Validators.minLength(3), Validators.maxLength(5), Validators.required]),
     workflow: new FormControl(-1, [Validators.required, Validators.min(1)])
   });
-
-
-  constructor(private readonly activatedRoute: ActivatedRoute,
-    private readonly projectsService: ProjectsService,
-    private readonly router: Router) {
-  }
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ project, workflows }) => {
