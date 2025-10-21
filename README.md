@@ -26,3 +26,7 @@
 * Vibe Coding Live IV: Angular, Java e os Desafios do Frontend! https://youtube.com/live/SwAHEWr-61s
 * Vibe Coding Live V: Implementando Server-Sent Events com CDI e Quarkus + Configuração de E-mail https://youtube.com/live/CQIngZ9OKv8
 * Vibe Coding Live VI: Implementando subscrição ao ticket https://youtube.com/live/yNErFoPJWhw
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=vepo/morpho-board&type=date&legend=top-left)](https://www.star-history.com/#vepo/morpho-board&type=date&legend=top-left)
