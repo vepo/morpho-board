@@ -1,5 +1,6 @@
 package dev.vepo.morphoboard.dashboards;
 
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -18,7 +19,7 @@ public class ColorGenerator {
         this.size = size;
         this.currentIndex = 0;
         this.colors = new int[size][3]; // [R, G, B]
-        this.random = new Random();
+        this.random = new SecureRandom();
 
         gerarCores();
     }
