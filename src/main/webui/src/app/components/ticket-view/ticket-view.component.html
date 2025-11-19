@@ -21,10 +21,15 @@
     <p><strong>Autor:</strong> {{ ticket.author.name }}</p>
     <p><strong>Responsável:</strong> {{ ticket.assignee?.name }}</p>
     <p><strong>Status:</strong> {{ ticket.status | normalize }}</p>
-    <p><strong>Subscritos:</strong> 
-      @for(subs of ticket.subscribers; track subs.username) {
-        {{ subs | json }}
-      }
+    <p>
+      <strong>Subscritos:</strong> 
+        <span class="labels">
+          @for(subs of ticket.subscribers; track subs.username) {
+            <span class="label">
+              {{ subs.name }}
+            </span>
+          }
+        </span>
     </p>
     <hr>
     

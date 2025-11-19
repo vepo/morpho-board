@@ -551,6 +551,17 @@ hr {
     border-top: 1px solid #CCCCCC;
 }
 
+span.labels {
+    display: inline-block;
+    margin-left: 0.5rem;
+    .label {
+        background-color: colors.$base-active-color;
+        color: colors.$base-secondary-bg-color;
+        padding: 0.2rem 0.5rem;
+        margin-right: 0.5rem;
+    }
+}
+
 div.table {
     background-color: colors.$base-background-color;
     color: #FFFFFF;

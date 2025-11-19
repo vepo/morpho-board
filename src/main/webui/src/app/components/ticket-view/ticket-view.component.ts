@@ -1,19 +1,19 @@
+import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { TicketExpanded, TicketService, Comment, CreateCommentRequest } from '../../services/ticket.service';
-import { DatePipe, JsonPipe } from '@angular/common';
-import { NormalizePipe } from '../pipes/normalize.pipe';
 import { FormsModule } from '@angular/forms';
-import { RichTextEditorComponent } from '../rich-text-editor/rich-text-editor.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { Comment, CreateCommentRequest, TicketExpanded, TicketService } from '../../services/ticket.service';
+import { NormalizePipe } from '../pipes/normalize.pipe';
+import { RichTextEditorComponent } from '../rich-text-editor/rich-text-editor.component';
 
 @Component({
   selector: 'app-ticket-view',
   templateUrl: './ticket-view.component.html',
   styleUrls: ['./ticket-view.component.scss'],
-  imports: [DatePipe, NormalizePipe, FormsModule, RichTextEditorComponent, JsonPipe, MatButtonModule, MatIconModule]
+  imports: [DatePipe, NormalizePipe, FormsModule, RichTextEditorComponent, MatButtonModule, MatIconModule]
 })
 export class TicketViewComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
