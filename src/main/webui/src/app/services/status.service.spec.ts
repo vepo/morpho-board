@@ -1,15 +1,22 @@
 import { TestBed } from '@angular/core/testing';
 
-import { StatusService } from './status.service';
-import { HttpTestingController } from '@angular/common/http/testing';
 import { HttpClient } from '@angular/common/http';
+import { StatusService } from './status.service';
+import { inject } from '@angular/core';
 
 describe('StatusService', () => {
   let service: StatusService;
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    service = new StatusService(httpClientSpy);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: HttpClient, useValue: httpClientSpy }
+      ]
+    });
+    TestBed.runInInjectionContext(() => {
+      service = inject(StatusService);
+    });
   });
 
   it('should be created', () => {

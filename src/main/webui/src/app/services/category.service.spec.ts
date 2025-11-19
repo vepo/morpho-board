@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CategoryService } from './category.service';
 import { HttpClient } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { CategoryService } from './category.service';
 
 describe('CategoryService', () => {
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
@@ -9,7 +10,14 @@ describe('CategoryService', () => {
 
   beforeEach(() => {
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    service = new CategoryService(httpClientSpy);
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: HttpClient, useValue: httpClientSpy }
+      ]
+    });
+    TestBed.runInInjectionContext(() => {
+      service = inject(CategoryService);
+    });      
   });
 
   it('should be created', () => {

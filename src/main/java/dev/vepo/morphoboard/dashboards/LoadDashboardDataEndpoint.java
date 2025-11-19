@@ -55,8 +55,8 @@ public class LoadDashboardDataEndpoint {
     @GET
     @Path("pie/{dashboardType}")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public PieChartData loadPieData(@PathParam("projectId") Long projectId,
-                                    @PathParam("dashboardType") DashboardType type) {
+    public PieChartDataResponse loadPieData(@PathParam("projectId") Long projectId,
+                                            @PathParam("dashboardType") DashboardType type) {
         return switch (type) {
             case TICKETS_BY_PRIORITY -> loadTicketsByPriority(projectId);
             case TICKETS_BY_DAY -> loadTicketByDay(projectId);
@@ -68,71 +68,69 @@ public class LoadDashboardDataEndpoint {
     @GET
     @Path("table/{dashboardType}")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public TableData loadTableData(@PathParam("projectId") Long projectId,
-                                   @PathParam("dashboardType") DashboardType type) {
+    public TableDataResponse loadTableData(@PathParam("projectId") Long projectId,
+                                           @PathParam("dashboardType") DashboardType type) {
         return switch (type) {
             case RECENT_TICKETS -> recentTickets(projectId);
             default -> throw new BadRequestException("Invalid chart type!!");
         };
     }
 
-
-
     @GET
     @Path("kpi/{dashboardType}")
     @RolesAllowed({ Role.USER_ROLE, Role.ADMIN_ROLE, Role.PROJECT_MANAGER_ROLE })
-    public KpiData loadKpiData(@PathParam("projectId") Long projectId,
-                                   @PathParam("dashboardType") DashboardType type) {
+    public KpiDataResponse loadKpiData(@PathParam("projectId") Long projectId,
+                                       @PathParam("dashboardType") DashboardType type) {
         return switch (type) {
             case PERFORMANCE_KPI -> performanceKpi(projectId);
             default -> throw new BadRequestException("Invalid chart type!!");
         };
     }
 
-    private KpiData performanceKpi(Long projectId) {
+    private KpiDataResponse performanceKpi(Long projectId) {
         var projectTickets = this.ticketRepository.findByProjectId(projectId)
                                                   .toList();
         if (projectTickets.isEmpty()) {
-            return new KpiData(0, Collections.emptyMap());
+            return new KpiDataResponse(0, Collections.emptyMap());
         }
-        
-        return new KpiData(projectTickets.size(), projectTickets.stream()
-                                                                .collect(Collectors.groupingBy(ticket -> ticket.getStatus().getName(),
-                                                                                               Collectors.summingInt(i -> 1))));
+
+        return new KpiDataResponse(projectTickets.size(), projectTickets.stream()
+                                                                        .collect(Collectors.groupingBy(ticket -> ticket.getStatus().getName(),
+                                                                                                       Collectors.summingInt(i -> 1))));
     }
 
-    private TableData recentTickets(Long projectId) {
-        return new TableData(new String[] { "Identificador", "Título", "Última atualização" },
-                             this.ticketRepository.findByProjectId(projectId)
-                                                  .sorted(Comparator.comparing(Ticket::getUpdatedAt).reversed())
-                                                  .map(ticket -> new TableRowData(new String[] { //
-                                                      ticket.getIdentifier(), //
-                                                      ticket.getTitle(), //
-                                                      DATETIME_FORMATTER.format(ticket.getUpdatedAt()
-                                                                                      .atZone(ZoneId.systemDefault()))
-                                                  }))
-                                                  .toArray(TableRowData[]::new));
+    private TableDataResponse recentTickets(Long projectId) {
+        return new TableDataResponse(new String[] { "Identificador", "Título", "Última atualização" },
+                                     this.ticketRepository.findByProjectId(projectId)
+                                                          .sorted(Comparator.comparing(Ticket::getUpdatedAt).reversed())
+                                                          .map(ticket -> new TableRowData(new String[] { //
+                                                              ticket.getIdentifier(), //
+                                                              ticket.getTitle(), //
+                                                              DATETIME_FORMATTER.format(ticket.getUpdatedAt()
+                                                                                              .atZone(ZoneId.systemDefault()))
+                                                          }))
+                                                          .toArray(TableRowData[]::new));
     }
 
-    private PieChartData loadTicketByDay(Long projectId) {
+    private PieChartDataResponse loadTicketByDay(Long projectId) {
         return generatePieChart(projectId, LoadDashboardDataEndpoint::extractTicketDay);
     }
 
-    private PieChartData loadTicketByStatus(Long projectId) {
+    private PieChartDataResponse loadTicketByStatus(Long projectId) {
         return generatePieChart(projectId, ((Function<Ticket, WorkflowStatus>) Ticket::getStatus).andThen(WorkflowStatus::getName));
     }
 
-    private PieChartData loadTicketsByPriority(long projectId) {
+    private PieChartDataResponse loadTicketsByPriority(long projectId) {
         return generatePieChart(projectId, ticket -> "Alta");
     }
 
-    private PieChartData generatePieChart(Long projectId, Function<Ticket, String> keyExtractor) {
+    private PieChartDataResponse generatePieChart(Long projectId, Function<Ticket, String> keyExtractor) {
         var projectTickets = this.ticketRepository.findByProjectId(projectId)
                                                   .toList();
         if (projectTickets.isEmpty()) {
             var project = this.projectRepository.findById(projectId)
                                                 .orElseThrow(() -> new NotFoundException("Project not found!"));
-            return new PieChartData(new String[] {}, new Dataset[] { new Dataset(project.getName(), new Number[] {}, new String[] {}) });
+            return new PieChartDataResponse(new String[] {}, new Dataset[] { new Dataset(project.getName(), new Number[] {}, new String[] {}) });
         }
         var project = projectTickets.stream()
                                     .findFirst()
@@ -145,11 +143,11 @@ public class LoadDashboardDataEndpoint {
                                    .toArray(String[]::new);
         Map<String, List<Ticket>> ticketsMap = projectTickets.stream()
                                                              .collect(Collectors.groupingBy(keyExtractor));
-        return new PieChartData(labels, new Dataset[] { new Dataset(project.getName(),
-                                                                    Stream.of(labels)
-                                                                          .map(ticketsMap::get)
-                                                                          .map(List::size)
-                                                                          .toArray(Number[]::new),
-                                                                    ColorGenerator.asArray(labels.length)) });
+        return new PieChartDataResponse(labels, new Dataset[] { new Dataset(project.getName(),
+                                                                            Stream.of(labels)
+                                                                                  .map(ticketsMap::get)
+                                                                                  .map(List::size)
+                                                                                  .toArray(Number[]::new),
+                                                                            ColorGenerator.asArray(labels.length)) });
     }
 }
