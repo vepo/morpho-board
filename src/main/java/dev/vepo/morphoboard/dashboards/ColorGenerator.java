@@ -1,6 +1,7 @@
 package dev.vepo.morphoboard.dashboards;
 
 import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -47,14 +48,10 @@ public class ColorGenerator {
         // Se o tamanho solicitado for menor ou igual à paleta base, usa as cores
         // diretamente
         if (size <= paletaBase.length) {
-            for (int i = 0; i < size; i++) {
-                colors[i] = paletaBase[i];
-            }
+            System.arraycopy(paletaBase, 0, colors, 0, size);
         } else {
             // Preenche com a paleta base primeiro
-            for (int i = 0; i < paletaBase.length && i < size; i++) {
-                colors[i] = paletaBase[i];
-            }
+            System.arraycopy(paletaBase, 0, colors, 0, paletaBase.length);
 
             // Gera cores adicionais baseadas na paleta existente com variações
             for (int i = paletaBase.length; i < size; i++) {
@@ -71,7 +68,7 @@ public class ColorGenerator {
         // Varia cada componente em até ±30, mantendo dentro do range 0-255
         for (int i = 0; i < 3; i++) {
             int novoValor = corBase[i] + random.nextInt(61) - 30; // -30 a +30
-            variacao[i] = Math.max(0, Math.min(255, novoValor));
+            variacao[i] = Math.clamp(novoValor, 0, 255);
         }
 
         return variacao;
