@@ -6,6 +6,9 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.project.Project;
 import dev.vepo.morphoboard.user.User;
@@ -42,9 +45,11 @@ public class Ticket {
     @Column(columnDefinition = "boolean default false")
     private boolean deleted;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 

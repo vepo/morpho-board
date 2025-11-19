@@ -89,11 +89,9 @@
           </div>
           
           <div class="widget-content">
-            @if (widget.type === 'chart') {
+            @if (widget.chartType === 'pie') {
               <div class="chart-container">
-                <!-- Componente de gráfico será renderizado aqui -->
-                <p>Gráfico: {{ widget.chartType }}</p>
-                @let chartData = load(widget) | async;
+                @let chartData = loadPieData(widget) | async;
                 @if (chartData) {
                   <canvas baseChart
                           [data]="chartData"
@@ -109,14 +107,56 @@
             @if (widget.type === 'kpi') {
             <div class="kpi-container">
               <!-- KPIs serão renderizados aqui -->
-              <p>KPIs de Performance</p>
+              @let kpiData = loadKpiData(widget) | async;
+              @if (kpiData) {
+                <div class="dashboar table">
+                  <div class="header">
+                    <div class="header-cell">Métrica</div>
+                    <div class="header-cell">Valor</div>
+                  </div>
+                  <div class="body">
+                    <div class="row odd">
+                      <div>Total</div>
+                      <div>{{ kpiData.total }}</div>
+                    </div>
+                    @for (item of kpiData.perStatus | keyvalue; track $index) {
+                      <div class="row odd">
+                        <div>{{ item.key | normalize }}</div>
+                        <div>{{ item.value }}</div>
+                      </div>
+                    }
+                  </div>
+                </div>
+                } @else {
+                <div class="loading">Carregando gráfico...</div>
+              }
             </div>
             }
 
             @if (widget.type === 'table') {
             <div class="table-container">
               <!-- Tabela será renderizada aqui -->
-              <p>Tabela de Tickets</p>
+              @let tableData = loadTableData(widget) | async;
+                @if (tableData) {
+                  <div class="dashboar table">
+                    <div class="header">
+                      @for (column of tableData.columns; track $index) {
+                        <div class="header-cell">{{ column }}</div>
+                      }
+                    </div>
+                    <div class="body">
+                      @for (row of tableData.rows; track $index) {
+                        <div class="row {{ $even ? 'even' : 'odd' }}">
+                          @for (data of row.data; track $index) {
+                            <div>{{data}}</div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                } @else {
+                  <div class="loading">Carregando gráfico...</div>
+                }
             </div>
             }
           </div>

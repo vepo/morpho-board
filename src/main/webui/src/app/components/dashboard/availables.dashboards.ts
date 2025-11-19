@@ -24,6 +24,22 @@ export interface DashboardLayout {
     layout: string[]; // Grid layout representation
 }
 
+export type PieChartData = ChartData<'pie', number[], string | string[]>;
+
+export interface TableChartRowData {
+    data: string[];
+}
+
+export interface TableChartData {
+    columns: string[];
+    rows: TableChartRowData[];
+}
+
+export interface KpiData {
+    total: number;
+    perStatus: Map<string, number>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AvailablesDashboards {
     private readonly httpClient = inject(HttpClient);
@@ -33,8 +49,8 @@ export class AvailablesDashboards {
         id: 'tickets-by-day',
         title: 'Tickets por Dia',
         type: 'chart',
-        chartType: 'line',
-        cols: 2,
+        chartType: 'pie',
+        cols: 1,
         rows: 1
     }, {
         id: 'tickets-by-status',
@@ -47,8 +63,8 @@ export class AvailablesDashboards {
         id: 'tickets-by-priority',
         title: 'Tickets por Prioridade',
         type: 'chart',
-        chartType: 'bar',
-        cols: 2,
+        chartType: 'pie',
+        cols: 1,
         rows: 1
     }, {
         id: 'performance-kpi',
@@ -64,13 +80,13 @@ export class AvailablesDashboards {
         rows: 2
     }];
 
-    public loadData(chart: DashboardWidget, projectId: number): Observable<ChartData<'pie', number[], string | string[]>> {
-        return this.httpClient.get<ChartData<'pie', number[], string | string[]>>(`${this.API_URL}/${projectId}/dashboard/${chart.id}`)
+    public loadPieData(chart: DashboardWidget, projectId: number): Observable<PieChartData> {
+        return this.httpClient.get<PieChartData>(`${this.API_URL}/${projectId}/dashboard/pie/${chart.id}`)
                               .pipe(retry(1), 
-                                    startWith(this.getLoadingChartData()),
+                                    startWith(this.getLoadingPieChartData()),
                                     catchError(error =>{
                                         console.log("Error requesting data", error);
-                                        return of(this.getErrorChartData());
+                                        return of(this.getErrorPieChartData());
                                     }),
                                     retry({
                                         delay: (error, retryCount) => {
@@ -86,7 +102,51 @@ export class AvailablesDashboards {
                                 );
     }
 
-    private getLoadingChartData(): ChartData<'pie', number[], string | string[]> {
+    public loadKpiData(chart: DashboardWidget, projectId: number): Observable<KpiData> {
+        return this.httpClient.get<KpiData>(`${this.API_URL}/${projectId}/dashboard/kpi/${chart.id}`)
+                              .pipe(retry(1), 
+                                    startWith(this.getLoadingKpiChartData()),
+                                    catchError(error =>{
+                                        console.log("Error requesting data", error);
+                                        return of(this.getErrorKpiChartData());
+                                    }),
+                                    retry({
+                                        delay: (error, retryCount) => {
+                                            // Retenta apenas para erros de rede/timeout
+                                            if (error.status && error.status >= 400 && error.status < 500) {
+                                                throw error; // Não retenta para erros 4xx
+                                            }
+  
+                                            console.log(`Tentativa ${retryCount} falhou. Retentando...`);
+                                            return timer(1000 * retryCount); // Delay crescente
+                                        }
+                                    })
+                                );
+    }
+
+    public loadTableData(chart: DashboardWidget, projectId: number): Observable<TableChartData> {
+        return this.httpClient.get<TableChartData>(`${this.API_URL}/${projectId}/dashboard/table/${chart.id}`)
+                              .pipe(retry(1), 
+                                    startWith(this.getLoadingTableChartData()),
+                                    catchError(error =>{
+                                        console.log("Error requesting data", error);
+                                        return of(this.getErrorTableChartData());
+                                    }),
+                                    retry({
+                                        delay: (error, retryCount) => {
+                                            // Retenta apenas para erros de rede/timeout
+                                            if (error.status && error.status >= 400 && error.status < 500) {
+                                                throw error; // Não retenta para erros 4xx
+                                            }
+  
+                                            console.log(`Tentativa ${retryCount} falhou. Retentando...`);
+                                            return timer(1000 * retryCount); // Delay crescente
+                                        }
+                                    })
+                                );
+    }
+
+    private getLoadingPieChartData(): PieChartData {
         return {
             labels: ['Carregando...'],
             datasets: [{
@@ -95,9 +155,27 @@ export class AvailablesDashboards {
             label: 'Carregando dados'
             }]
         };
-        }
+    }
 
-        private getErrorChartData(): ChartData<'pie', number[], string | string[]> {
+    private getLoadingTableChartData(): TableChartData {
+        return { columns: [], rows: [] };
+    }
+
+
+    private getLoadingKpiChartData(): KpiData {
+        return { total: 0, perStatus: new Map() };
+    }
+
+    private getErrorTableChartData(): TableChartData {
+        return { columns: [], rows: [] };
+    }
+
+    private getErrorKpiChartData(): KpiData {
+        return { total: 0, perStatus: new Map() };
+    }
+
+
+    private getErrorPieChartData(): PieChartData {
         return {
             labels: ['Erro ao carregar', 'Tente novamente'],
             datasets: [{
@@ -106,5 +184,5 @@ export class AvailablesDashboards {
             label: 'Status'
             }]
         };
-        }
+    }
 }

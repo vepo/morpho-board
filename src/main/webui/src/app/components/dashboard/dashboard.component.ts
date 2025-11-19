@@ -1,19 +1,20 @@
 import { CdkDragDrop, CdkDropList, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { AsyncPipe, JsonPipe } from '@angular/common';
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute } from '@angular/router';
-import { ChartConfiguration, ChartData } from 'chart.js';
+import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
+import { Observable, shareReplay } from 'rxjs';
 import { Project } from '../../services/projects.service';
-import { AvailablesDashboards, DashboardLayout, DashboardWidget } from './availables.dashboards';
-import { catchError, filter, Observable, of, shareReplay, startWith } from 'rxjs';
+import { AvailablesDashboards, DashboardLayout, DashboardWidget, KpiData, PieChartData, TableChartData } from './availables.dashboards';
+import { NormalizePipe } from '../pipes/normalize.pipe';
 
 @Component({
   selector: 'app-dashboard.component',
-  imports: [DragDropModule, MatButtonModule, MatSelectModule, FormsModule, JsonPipe, BaseChartDirective, AsyncPipe],
+  imports: [DragDropModule, MatButtonModule, MatSelectModule, FormsModule, BaseChartDirective, AsyncPipe, KeyValuePipe, NormalizePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
@@ -68,31 +69,80 @@ export class DashboardComponent implements OnInit {
     });
   }
   
-  private chartCache = new Map<string, {
-    data: Observable<ChartData<'pie', number[], string | string[]>>;
-    timestamp: number;
-  }>();
+  private pieChartDataCache = new Map<string, { data: Observable<PieChartData>; timestamp: number; }>();
+  private tableChartDataCache = new Map<string, { data: Observable<TableChartData>; timestamp: number; }>();
+  private kpiChartDataCache = new Map<string, { data: Observable<KpiData>; timestamp: number; }>();
 
-  load(chart: DashboardWidget): Observable<ChartData<'pie', number[], string | string[]>> {
-    // return this.availableDasboards.loadData(chart, this.project!.id);
-    console.log("Updating data...");
+  loadTableData(chart: DashboardWidget): Observable<TableChartData> {
     const cacheKey = `${chart.id}-${this.project!.id}`;
     const now = Date.now();
     const cacheDuration = 15000; // 15 segundos
 
     // Verifica se existe cache válido
-    const cached = this.chartCache.get(cacheKey);
+    const cached = this.tableChartDataCache.get(cacheKey);
     if (cached && (now - cached.timestamp) < cacheDuration) {
       return cached.data;
     }
 
     // Cria novo observable com cache
-    const newData = this.availableDasboards.loadData(chart, this.project!.id).pipe(
+    const newData = this.availableDasboards.loadTableData(chart, this.project!.id).pipe(
       shareReplay(1) // Compartilha a última emissão
     );
 
     // Atualiza cache
-    this.chartCache.set(cacheKey, {
+    this.tableChartDataCache.set(cacheKey, {
+      data: newData,
+      timestamp: now
+    });
+
+    return newData;
+  }
+
+  loadKpiData(chart: DashboardWidget): Observable<KpiData> {
+    console.log("Updating data...", chart);
+    const cacheKey = `${chart.id}-${this.project!.id}`;
+    const now = Date.now();
+    const cacheDuration = 15000; // 15 segundos
+
+    // Verifica se existe cache válido
+    const cached = this.kpiChartDataCache.get(cacheKey);
+    if (cached && (now - cached.timestamp) < cacheDuration) {
+      return cached.data;
+    }
+
+    // Cria novo observable com cache
+    const newData = this.availableDasboards.loadKpiData(chart, this.project!.id).pipe(
+      shareReplay(1) // Compartilha a última emissão
+    );
+
+    // Atualiza cache
+    this.kpiChartDataCache.set(cacheKey, {
+      data: newData,
+      timestamp: now
+    });
+
+    return newData;
+  }
+
+  loadPieData(chart: DashboardWidget): Observable<PieChartData> {
+    console.log("Updating data...", chart);
+    const cacheKey = `${chart.id}-${this.project!.id}`;
+    const now = Date.now();
+    const cacheDuration = 15000; // 15 segundos
+
+    // Verifica se existe cache válido
+    const cached = this.pieChartDataCache.get(cacheKey);
+    if (cached && (now - cached.timestamp) < cacheDuration) {
+      return cached.data;
+    }
+
+    // Cria novo observable com cache
+    const newData = this.availableDasboards.loadPieData(chart, this.project!.id).pipe(
+      shareReplay(1) // Compartilha a última emissão
+    );
+
+    // Atualiza cache
+    this.pieChartDataCache.set(cacheKey, {
       data: newData,
       timestamp: now
     });
