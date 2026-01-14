@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualização de Ticket {ticket.identifier}</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Roboto", sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #EFEFEF;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Header */
+        .header {
+            background: #023164;
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .ticket-id {
+            background-color: rgba(255, 255, 255, 0.2);
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        /* Content */
+        .content {
+            padding: 40px;
+        }
+        
+        .ticket-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #01172F;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .notification-box {
+            background-color: #ECF0FE;
+            border-left: 4px solid #446DF6;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 25px 0;
+        }
+        
+        .notification-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #446DF6;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .notification-content {
+            font-size: 16px;
+            color: #01172F;
+            white-space: pre-line;
+        }
+        
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+            padding: 25px;
+            background-color: #F2F7F4;
+            border-radius: 4px;
+            border: 1px solid #D9E8DF;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666666;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-size: 15px;
+            color: #01172F;
+            font-weight: 500;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #446DF6;
+            color: #FFFFFF;
+        }
+        
+        /* Status específico - usar cores do sistema */
+        .badge-status {
+            background-color: #446DF6;
+            color: #FFFFFF;
+        }
+        
+        .badge-category {
+            background-color: #03458C;
+            color: #FFFFFF;
+        }
+        
+        /* Status Color Variations usando esquema do app */
+        .status-open { 
+            background-color: #446DF6; 
+            color: #FFFFFF; 
+        }
+        .status-in-progress { 
+            background-color: #03458C; 
+            color: #FFFFFF; 
+        }
+        .status-em-andamento { 
+            background-color: #03458C; 
+            color: #FFFFFF; 
+        }
+        .status-resolved { 
+            background-color: #00635D; 
+            color: #FFFFFF; 
+        }
+        .status-resolvido { 
+            background-color: #00635D; 
+            color: #FFFFFF; 
+        }
+        .status-closed { 
+            background-color: #BF0603; 
+            color: #FFFFFF; 
+        }
+        .status-fechado { 
+            background-color: #BF0603; 
+            color: #FFFFFF; 
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #023164;
+            padding: 25px 40px;
+            text-align: center;
+            border-top: 1px solid #03458C;
+            color: #FFFFFF;
+            font-size: 14px;
+        }
+        
+        .footer p {
+            color: #FFFFFF;
+        }
+        
+        .footer-links {
+            margin-top: 15px;
+        }
+        
+        .footer-link {
+            color: #FFFFFF;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 2px;
+        }
+        
+        .footer-link:hover {
+            color: #FC4D4A;
+            border-bottom-color: #FC4D4A;
+        }
+        
+        .footer-note {
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Botão de ação */
+        .action-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 24px;
+            background-color: #446DF6;
+            color: #FFFFFF;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .action-button:hover {
+            background-color: #1549F4;
+        }
+        
+        .action-button.secondary {
+            background-color: #ECF0FE;
+            color: #446DF6;
+            border: 1px solid #446DF6;
+        }
+        
+        .action-button.secondary:hover {
+            background-color: #C5D1FC;
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .content, .header, .footer {
+                padding: 25px 20px;
+            }
+            
+            .details-grid {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .ticket-title {
+                font-size: 20px;
+            }
+        }
+        
+        /* Links internos */
+        a {
+            color: #446DF6;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #FC4D4A;
+        }
+        
+        em {
+            color: #666666;
+            font-style: italic;
+        }
+        
+        hr {
+            border: 0;
+            border-top: 1px solid #D9E8DF;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">MorphoBoard</div>
+            <h1>Ticket Atualizado</h1>
+            <div class="ticket-id">#{ticket.identifier}</div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <h2 class="ticket-title">{ticket.title}</h2>
+            
+            <!-- Notification Box -->
+            <div class="notification-box">
+                <div class="notification-label">Nova Atualização</div>
+                <div class="notification-content">{event.content}</div>
+            </div>
+            
+            <!-- Botão de ação principal -->
+            <div style="text-align: center; margin: 25px 0;">
+                <a href="{baseUrl}/ticket/{ticket.identifier}" class="action-button">
+                    Ver Ticket no Sistema
+                </a>
+            </div>
+            
+            <!-- Ticket Details -->
+            <div class="details-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Status</div>
+                    {#if ticket.status}
+                    <div class="detail-value">
+                        <span class="badge">
+                            {ticket.status.name}
+                        </span>
+                    </div>
+                    {/if}
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Categoria</div>
+                    <div class="detail-value">
+                        {#if ticket.category}
+                        <span class="badge badge-category">{ticket.category.name}</span>
+                        {/if}
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Autor</div>
+                    <div class="detail-value">{ticket.author.name}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Responsável</div>
+                    <div class="detail-value">
+                        {#if ticket.assignee}
+                        {ticket.assignee.name}
+                        {#else}
+                        <em>Não atribuído</em>
+                        {/if}
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Data de Criação</div>
+                    <div class="detail-value">
+                        {#if ticket.createdAt}
+                            {ticket.createdAt.format('dd/MM/yyyy HH:mm')}
+                        {#else}
+                            N/A
+                        {/if}
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Última Atualização</div>
+                    <div class="detail-value">
+                        {#if ticket.updatedAt}
+                            {ticket.updatedAt.format('dd/MM/yyyy HH:mm')}
+                        {#else}
+                            N/A
+                        {/if}
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Projeto</div>
+                    <div class="detail-value">
+                        {#if ticket.project}
+                        	{ticket.project.name}
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Description (if exists) -->
+            {#if ticket.description}
+            <hr>
+            <div class="detail-item">
+                <div class="detail-label">Descrição</div>
+                <div class="detail-value" style="margin-top: 10px; line-height: 1.8;">
+                    {ticket.description}
+                </div>
+            </div>
+            {/if}
+            
+            <!-- Subscribers Count -->
+            <div class="detail-item">
+                <div class="detail-label">Inscritos</div>
+                <div class="detail-value">
+                    {#if ticket.subscribers && ticket.subscribers.size() > 0}
+                    {ticket.subscribers.size()} {ticket.subscribers.size() == 1 ? 'pessoa' : 'pessoas'} acompanhando
+                    {#else}
+                    <em>Nenhum inscrito</em>
+                    {/if}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Você está recebendo este e-mail porque está inscrito neste ticket ou está diretamente envolvido.</p>
+            <p><strong>Não responda a este e-mail</strong> - Para atualizar o ticket, acesse o sistema.</p>
+            
+            <div class="footer-links">
+                <a href="{baseUrl}/ticket/{ticket.identifier}" class="footer-link">Ver Ticket</a>
+                <a href="{baseUrl}" class="footer-link">Acessar Sistema</a>
+                <a href="{baseUrl}/notificacoes/configurar" class="footer-link">Configurar Notificações</a>
+            </div>
+            
+            <div class="footer-note">
+                © 2025 MorphoBoard. Todos os direitos reservados.<br>
+                Este é um e-mail automático, por favor não responda.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

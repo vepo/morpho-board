@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HomeComponent } from './components/home/home.component';
 import { KanbanComponent } from './components/kanban/kanban.component';
 import { LoginComponent } from './components/login/login.component';
+import { PasswordResetRequestComponent } from './components/password-reset-request/password-reset-request.component';
+import { PasswordResetComponent } from './components/password-reset/password-reset.component';
 import { ProjectEditComponent } from './components/project-edit.component/project-edit.component';
 import { ProjectsViewComponent } from './components/projects-view.component/projects-view.component';
 import { SearchTicketsComponent } from './components/search-tickets/search-tickets.component';
@@ -13,12 +16,13 @@ import { statusResolver } from './resolvers/status-resolver';
 import { ticketResolver } from './resolvers/ticket.resolver';
 import { ticketsResolver } from './resolvers/tickets-resolver';
 import { userResolver, usersResolver } from './resolvers/users.resolver';
-import { authGuard } from './services/auth.guard';
 import { workflowsResolver } from './resolvers/workflow-resolver';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
+  { path: 'login/reset-password', component: PasswordResetRequestComponent },
+  { path: 'login/reset-password/:token', component: PasswordResetComponent },
   {
     path: '',
     component: HomeComponent,

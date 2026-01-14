@@ -1,6 +1,6 @@
 package dev.vepo.morphoboard.ticket;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -233,7 +233,7 @@ public class TicketEndpoint {
         entity.setTitle(request.title());
         entity.setDescription(request.description());
         entity.setCategory(newCategory);
-        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedAt(LocalDateTime.now());
 
         // Get authenticated user
         String username = securityContext.getUserPrincipal().getName();
@@ -265,7 +265,7 @@ public class TicketEndpoint {
 
         // Update entity
         entity.setAssignee(newAssignee);
-        entity.setUpdatedAt(Instant.now());
+        entity.setUpdatedAt(LocalDateTime.now());
 
         // Get authenticated user
         String username = securityContext.getUserPrincipal().getName();

@@ -29,7 +29,7 @@ public class Notification {
     @JoinColumn(name = "reffer_id", nullable = false)
     private Ticket reffer;
 
-    @Column
+    @Column(columnDefinition = "VARCHAR(56)")
     private String type;
 
     @Column

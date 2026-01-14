@@ -13,6 +13,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @ApplicationScoped
 public class UserRepository {
@@ -23,7 +25,6 @@ public class UserRepository {
     @Inject
     public UserRepository(EntityManager entityManager) {
         this.em = entityManager;
-
     }
 
     public Optional<User> findByEmail(String email) {
@@ -85,5 +86,13 @@ public class UserRepository {
         return em.createQuery(cq)
                  .getResultStream()
                  .filter(u -> roles.isEmpty() || u.getRoles().containsAll(roles));
+    }
+
+    public Optional<User> findByEmailOrUsername(String credential) {
+        logger.debug("Searching for user: credential={}", credential);
+        return em.createQuery("FROM User WHERE email = :credential OR username = :credential", User.class)
+                 .setParameter("credential", credential)
+                 .getResultStream()
+                 .findFirst();
     }
 }

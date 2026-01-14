@@ -1,5 +1,6 @@
 package dev.vepo.morphoboard.categories;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,8 +14,10 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "VARCHAR(64)")
     private String name;
 
+    @Column(columnDefinition = "VARCHAR(16)")
     private String color;
 
     public Category() {

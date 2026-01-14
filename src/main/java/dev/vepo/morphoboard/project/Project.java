@@ -17,10 +17,10 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, columnDefinition = "VARCHAR(15)")
     private String prefix;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, columnDefinition = "VARCHAR(64)")
     private String name;
 
     @Column(columnDefinition = "text")

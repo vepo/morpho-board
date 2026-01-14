@@ -7,10 +7,13 @@ export interface AuthResponse {
   token: string;
 }
 
+export interface RecoveryResponse {
+  message: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-
   private readonly tokenKey = 'jwt_token';
   private readonly API_URL = 'http://localhost:8080/api';
 
@@ -19,6 +22,10 @@ export class AuthService {
                     .pipe(tap(res => {
                                 if (res.token) this.saveToken(res.token);
                           }));
+  }
+
+  recoverPassword(credential: string) {
+      return this.http.post<RecoveryResponse>(`${this.API_URL}/auth/recovery`, { credential });
   }
 
   saveToken(token: string) {

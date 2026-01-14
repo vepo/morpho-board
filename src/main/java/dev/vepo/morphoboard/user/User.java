@@ -22,7 +22,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "VARCHAR(15)")
     private String username;
 
     @Column(nullable = false)

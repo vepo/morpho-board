@@ -24,12 +24,25 @@ body {
 
 button.btn.mdc-button,
 button {
-    border: solid 1px #2958F5;
+    border: solid 1px colors.$base-active-color;
     border-radius: 0.2rem;
     padding: 0.3rem 1.3rem;
     background-color: colors.$base-active-color;
     color: #FFFFFF;
     cursor: pointer;
+
+    &.btn-secondary {
+        border-color: colors.$base-secondary-color;
+        background-color: colors.$base-secondary-bg-color;
+        color: colors.$base-secondary-color;
+        .mdc-button__label, .mat-icon {
+            color: colors.$base-secondary-color;
+        }
+
+        &:hover {
+            background-color: colors.$base-secondary-bg-active-color;
+        }
+    }
     
     &.btn-cancel {
         background-color: colors.$base-error-color;
@@ -629,4 +642,14 @@ form.edit {
         background-color: #F0F0F0;
         border-top: solid 1px #444444;
     }
+}
+
+
+
+/* Position classes */
+.toast-container {
+    position: fixed;
+    z-index: 9999;
+    max-width: 100%;
+    box-sizing: border-box;
 }

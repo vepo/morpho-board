@@ -115,12 +115,12 @@
                     <div class="header-cell">Valor</div>
                   </div>
                   <div class="body">
-                    <div class="row odd">
+                    <div class="row even">
                       <div>Total</div>
                       <div>{{ kpiData.total }}</div>
                     </div>
                     @for (item of kpiData.perStatus | keyvalue; track $index) {
-                      <div class="row odd">
+                      <div class="row {{ $even ? 'odd' : 'even' }}">
                         <div>{{ item.key | normalize }}</div>
                         <div>{{ item.value }}</div>
                       </div>

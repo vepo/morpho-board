@@ -2,7 +2,7 @@ package dev.vepo.morphoboard.ticket;
 
 import static java.util.Collections.emptySet;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,7 +33,7 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, columnDefinition = "VARCHAR(25)")
     private String identifier;
 
     @Column(nullable = false)
@@ -47,11 +47,11 @@ public class Ticket {
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
-    private Instant updatedAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
@@ -88,7 +88,7 @@ public class Ticket {
         this.assignee = assignee;
         this.project = project;
         this.status = status;
-        this.createdAt = this.updatedAt = Instant.now();
+        this.createdAt = this.updatedAt = LocalDateTime.now();
         this.deleted = false;
         this.subscribers = emptySet();
     }
@@ -125,19 +125,19 @@ public class Ticket {
         this.description = description;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 

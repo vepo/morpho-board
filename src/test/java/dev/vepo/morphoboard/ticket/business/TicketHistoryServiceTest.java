@@ -1,10 +1,8 @@
 package dev.vepo.morphoboard.ticket.business;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import dev.vepo.morphoboard.categories.Category;
 import dev.vepo.morphoboard.project.Project;
 import dev.vepo.morphoboard.ticket.Ticket;
-import dev.vepo.morphoboard.ticket.history.TicketHistory;
 import dev.vepo.morphoboard.ticket.history.TicketHistoryRepository;
 import dev.vepo.morphoboard.user.User;
 import dev.vepo.morphoboard.workflow.WorkflowStatus;
@@ -70,8 +67,8 @@ class TicketHistoryServiceTest {
         ticket.setCategory(category);
         ticket.setProject(project);
         ticket.setStatus(status);
-        ticket.setCreatedAt(Instant.now());
-        ticket.setUpdatedAt(Instant.now());
+        ticket.setCreatedAt(LocalDateTime.now());
+        ticket.setUpdatedAt(LocalDateTime.now());
     }
 
     @Test
